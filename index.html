@@ -37,7 +37,39 @@
         }
         return gk_fileData[filename] || "";
         }
-        </script><!DOCTYPE html>
+        </script><script type="text/javascript">
+    var gk_isXlsx = false;
+    var gk_xlsxFileLookup = {};
+    var gk_fileData = {};
+    function filledCell(cell) {
+      return cell !== '' && cell != null;
+    }
+    function loadFileData(filename) {
+      if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+          try {
+              var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+              var firstSheetName = workbook.SheetNames[0];
+              var worksheet = workbook.Sheets[firstSheetName];
+              var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+              var filteredData = jsonData.filter(row => row.some(filledCell));
+              var headerRowIndex = filteredData.findIndex((row, index) =>
+                row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+              );
+              if (headerRowIndex === -1 || headerRowIndex > 25) {
+                headerRowIndex = 0;
+              }
+              var csv = XLSX.utils.sheet_to_csv(XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)), { header: 1 });
+              console.log(`XLSX 파일 ${filename} 파싱 성공`);
+              return csv;
+          } catch (e) {
+              console.error("XLSX 파싱 오류:", e.name, e.message, e.stack);
+              showToast(`XLSX 파싱 실패: ${e.message || '알 수 없는 오류'}`);
+              return "";
+          }
+      }
+      return gk_fileData[filename] || "";
+    }
+</script><!DOCTYPE html>
 <html lang="ko" data-theme="dark">
 <head>
     <meta charset="UTF-8">
@@ -221,14 +253,62 @@
 
     function generateMatches(players) {
         if (players.length !== 6) return [];
-        const matches = [
-            [players[0], players[1], players[2], players[3]], // A+B vs C+D
-            [players[0], players[4], players[1], players[5]], // A+E vs B+F
-            [players[2], players[5], players[3], players[4]], // C+F vs D+E
-            [players[0], players[2], players[4], players[5]], // A+C vs E+F
-            [players[1], players[3], players[2], players[4]], // B+D vs C+E
-            [players[0], players[5], players[1], players[3]]  // A+F vs B+D
-        ];
+        const playerData = players.map(name => {
+            const player = document.querySelector(`.ranking-player[value="${name}${name.includes('*') ? '*' : ''}"]`)?.parentElement;
+            const mmr = player ? parseInt(player.querySelector('.mmr').value) || 1500 : 1500;
+            const isFemale = name.includes('*');
+            return { name: name.replace('*', ''), mmr, isFemale };
+        });
+
+        // 성별 분류
+        const females = playerData.filter(p => p.isFemale).sort((a, b) => b.mmr - a.mmr);
+        const males = playerData.filter(p => !p.isFemale).sort((a, b) => b.mmr - a.mmr);
+
+        let matches = [];
+        if (females.length >= 4) {
+            // 여여 vs 여여 우선
+            const femalePairs = [];
+            for (let i = 0; i < females.length; i += 2) {
+                if (i + 1 < females.length) femalePairs.push([females[i], females[i + 1]]);
+            }
+            matches = femalePairs.map(pair => [pair[0].name + (pair[0].isFemale ? '*' : ''), pair[1].name + (pair[1].isFemale ? '*' : '')]);
+        } else if (females.length > 0 && males.length > 0) {
+            // 남녀 vs 남녀
+            const mixedPairs = [];
+            let femaleIndex = 0, maleIndex = 0;
+            while (mixedPairs.length < 3 && (femaleIndex < females.length || maleIndex < males.length)) {
+                const p1 = femaleIndex < females.length ? females[femaleIndex++] : males[maleIndex++];
+                const p2 = maleIndex < males.length ? males[maleIndex++] : females[femaleIndex++];
+                if (p1 && p2) mixedPairs.push([p1, p2]);
+            }
+            matches = mixedPairs.map(pair => [
+                pair[0].name + (pair[0].isFemale ? '*' : ''),
+                pair[1].name + (pair[1].isFemale ? '*' : '')
+            ]);
+        } else {
+            // 남남 vs 남남
+            const malePairs = [];
+            for (let i = 0; i < males.length; i += 2) {
+                if (i + 1 < males.length) malePairs.push([males[i], males[i + 1]]);
+            }
+            matches = malePairs.map(pair => [pair[0].name, pair[1].name]);
+        }
+
+        // MMR 기반 최적화
+        matches = matches.map(([p1Name, p2Name]) => {
+            const p1 = playerData.find(p => p.name === p1Name.replace('*', '') && p.isFemale === p1Name.includes('*'));
+            const p2 = playerData.find(p => p.name === p2Name.replace('*', '') && p.isFemale === p2Name.includes('*'));
+            if (!p1 || !p2) return [p1Name, p2Name];
+            const opponents = playerData.filter(p => p !== p1 && p !== p2);
+            const [op1, op2] = opponents.sort((a, b) => {
+                const teamMMR = (p1.mmr + p2.mmr);
+                const aDiff = Math.abs(teamMMR - (a.mmr + (opponents.find(op => op !== a)?.mmr || 1500)));
+                const bDiff = Math.abs(teamMMR - (b.mmr + (opponents.find(op => op !== b)?.mmr || 1500)));
+                return aDiff - bDiff;
+            }).slice(0, 2);
+            return [p1Name, p2Name, op1.name + (op1.isFemale ? '*' : ''), op2.name + (op2.isFemale ? '*' : '')];
+        });
+
         return matches;
     }
 
@@ -239,12 +319,12 @@
             .sort((a, b) => b.wins - a.wins);
         
         const finalAMatch = [
-            aSorted[0].name, aSorted[1].name, // A코트 1,2위
-            bSorted[0].name, bSorted[1].name  // B코트 1,2위
+            aSorted[0].name, aSorted[1].name,
+            bSorted[0].name, bSorted[1].name
         ];
         const finalBMatch = [
-            aSorted[2].name, aSorted[3].name, // A코트 3,4위
-            bSorted[2].name, bSorted[3].name  // B코트 3,4위
+            aSorted[2].name, aSorted[3].name,
+            bSorted[2].name, bSorted[3].name
         ];
         return { finalA: finalAMatch, finalB: finalBMatch };
     }
@@ -984,9 +1064,8 @@
             btn.addEventListener('click', () => {
                 const roundId = btn.getAttribute('data-round-id');
                 const court = btn.getAttribute('data-court');
-                const players = Array.from(document.querySelectorAll(`.${court.toLowerCase()}-player[data-round-id="${roundId}"]`))
-                    .map(input => input.value.trim())
-                    .filter(name => name);
+                const playerInputs = document.querySelectorAll(`.${court.toLowerCase()}-player[data-round-id="${roundId}"]`);
+                const players = Array.from(playerInputs).map(input => input.value.trim()).filter(name => name);
                 if (players.length !== 6) {
                     showToast(`${court}코트에 6명 입력해야 자동 배치 가능!`);
                     return;
