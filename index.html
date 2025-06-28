@@ -136,12 +136,14 @@
         .court-table { width: 48%; }
         .player-input-section { margin-bottom: var(--spacing-md); }
         .player-input-section input { margin-right: var(--spacing-sm); margin-bottom: var(--spacing-sm); flex: 1; min-width: 50px; max-width: 90px; }
-        .player-input-section div { display: flex; flex-wrap: wrap; gap: var(--spacing-sm); align-items: center; flex-direction: row; }
+        .player-input-section .player-label { white-space: nowrap; margin-right: var(--spacing-md); }
+        .player-input-section .player-inputs { display: flex; flex-wrap: wrap; gap: var(--spacing-sm); }
         @media screen and (max-width: 600px) {
             th, td { padding: 6px 4px; font-size: 0.8rem; }
             input[type="text"] { min-width: 40px; max-width: 80px; font-size: 0.8rem; }
             input.ranking-player, input.mmr { min-width: 70px; max-width: 100px; }
             .player-input-section input { min-width: 40px; max-width: 90px; }
+            .player-input-section .player-label { display: block; width: 100%; }
             .court-table { width: 100%; }
             .btn { padding: 8px 12px; font-size: 0.9rem; }
             h1 { font-size: 2rem; }
@@ -349,13 +351,13 @@
                     <summary>${i}회차</summary>
                     <div class="player-input-section">
                         <h3>참가자 입력</h3>
-                        <div>
-                            <label>A코트 (6명):</label>
+                        <div class="player-label">A코트 (6명):</div>
+                        <div class="player-inputs">
                             ${Array(6).fill().map((_, idx) => `<input type="text" placeholder="이름 ${idx + 1}" class="a-player" data-round-id="${i}" data-index="${idx}">`).join('')}
                             <button class="btn auto-match-btn" data-round-id="${i}" data-court="A">A코트 자동 배치</button>
                         </div>
-                        <div style="margin-bottom: var(--spacing-md);">
-                            <label>B코트 (6명):</label>
+                        <div class="player-label">B코트 (6명):</div>
+                        <div class="player-inputs" style="margin-bottom: var(--spacing-md);">
                             ${Array(6).fill().map((_, idx) => `<input type="text" placeholder="이름 ${idx + 1}" class="b-player" data-round-id="${i}" data-index="${idx}">`).join('')}
                             <button class="btn auto-match-btn" data-round-id="${i}" data-court="B">B코트 자동 배치</button>
                         </div>
