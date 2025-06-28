@@ -113,6 +113,7 @@
         .rank-nochange { color: var(--text-secondary-color); }
         #ranking-table th:nth-child(2), #ranking-table td:nth-child(2) { position: sticky; left: 0; background: var(--surface-color); z-index: 1; }
         input[type="text"] { width: 100%; min-width: 50px; max-width: 100px; padding: var(--spacing-sm); background-color: var(--surface-color); border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; color: var(--text-color); font-family: 'Noto Sans KR', sans-serif; text-align: center; }
+        input.ranking-player, input.mmr { min-width: 80px; max-width: 120px; }
         input.readonly { background-color: #252525; color: var(--text-secondary-color); font-weight: bold; }
         html[data-theme="light"] input.readonly { background-color: #f0f0f0; }
         .btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: var(--spacing-lg); }
@@ -135,12 +136,13 @@
         .court-table { width: 48%; }
         .player-input-section { margin-bottom: var(--spacing-md); }
         .player-input-section input { margin-right: var(--spacing-sm); margin-bottom: var(--spacing-sm); flex: 1; min-width: 50px; max-width: 90px; }
-        .player-input-section div { display: flex; flex-wrap: wrap; gap: var(--spacing-sm); align-items: center; }
+        .player-input-section div { display: flex; flex-wrap: wrap; gap: var(--spacing-sm); align-items: center; flex-direction: row; }
         @media screen and (max-width: 600px) {
             th, td { padding: 6px 4px; font-size: 0.8rem; }
             input[type="text"] { min-width: 40px; max-width: 80px; font-size: 0.8rem; }
+            input.ranking-player, input.mmr { min-width: 70px; max-width: 100px; }
+            .player-input-section input { min-width: 40px; max-width: 90px; }
             .court-table { width: 100%; }
-            .player-input-section input { min-width: 40px; max-width: 70px; }
             .btn { padding: 8px 12px; font-size: 0.9rem; }
             h1 { font-size: 2rem; }
             h2 { font-size: 1.5rem; }
@@ -352,7 +354,7 @@
                             ${Array(6).fill().map((_, idx) => `<input type="text" placeholder="이름 ${idx + 1}" class="a-player" data-round-id="${i}" data-index="${idx}">`).join('')}
                             <button class="btn auto-match-btn" data-round-id="${i}" data-court="A">A코트 자동 배치</button>
                         </div>
-                        <div>
+                        <div style="margin-bottom: var(--spacing-md);">
                             <label>B코트 (6명):</label>
                             ${Array(6).fill().map((_, idx) => `<input type="text" placeholder="이름 ${idx + 1}" class="b-player" data-round-id="${i}" data-index="${idx}">`).join('')}
                             <button class="btn auto-match-btn" data-round-id="${i}" data-court="B">B코트 자동 배치</button>
