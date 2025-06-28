@@ -138,12 +138,19 @@
         .player-input-section input { margin-right: var(--spacing-sm); margin-bottom: var(--spacing-sm); flex: 1; min-width: 50px; max-width: 90px; }
         .player-input-section .player-label { white-space: nowrap; margin-right: var(--spacing-md); }
         .player-input-section .player-inputs { display: flex; flex-wrap: wrap; gap: var(--spacing-sm); }
+        .schedule-table td input.player1, .schedule-table td input.player2,
+        .schedule-table td input.player3, .schedule-table td input.player4 { min-width: 80px; }
+        .schedule-table td input.score { min-width: 70px; font-size: 0.7rem; }
         @media screen and (max-width: 600px) {
             th, td { padding: 6px 4px; font-size: 0.8rem; }
             input[type="text"] { min-width: 40px; max-width: 80px; font-size: 0.8rem; }
             input.ranking-player, input.mmr { min-width: 70px; max-width: 100px; }
             .player-input-section input { min-width: 40px; max-width: 90px; }
             .player-input-section .player-label { display: block; width: 100%; }
+            .schedule-table { min-width: 100%; }
+            .schedule-table td input.player1, .schedule-table td input.player2,
+            .schedule-table td input.player3, .schedule-table td input.player4 { min-width: 60px; }
+            .schedule-table td input.score { min-width: 50px; }
             .court-table { width: 100%; }
             .btn { padding: 8px 12px; font-size: 0.9rem; }
             h1 { font-size: 2rem; }
@@ -764,7 +771,7 @@
 
                     if (team1IsMixed) {
                         let handicap = 0;
-                        if (p1Raw.includes('*')) handicap += getDynamicHandicap(players[p1].mmr);
+                        if (p1Raw.includes('*')) handicap += getDynamicHandicap(players[p1].mr);
                         if (p2Raw.includes('*')) handicap += getDynamicHandicap(players[p2].mmr);
                         effectiveTeam1MMR += handicap / (p1Raw.includes('*') && p2Raw.includes('*') ? 2 : 1);
                         effectiveTeam1MMR *= 1.5;
