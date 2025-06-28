@@ -100,9 +100,9 @@
         html[data-theme="light"] details[open] > summary { color: var(--secondary-color); }
         .round-group-content { padding: 15px 10px 5px 10px; background: rgba(0,0,0,0.1); border-top: 1px solid var(--border-color); }
         html[data-theme="light"] .round-group-content { background: rgba(0,0,0,0.02); }
-        .table-wrapper { overflow-x: auto; overflow-y: auto; max-height: 70vh; max-width: 100%; -webkit-overflow-scrolling: touch; }
-        table { width: 100%; min-width: 100%; border-collapse: collapse; }
-        th, td { padding: var(--spacing-md) 8px; text-align: center; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; white-space: nowrap; }
+        .table-wrapper { overflow-x: auto; overflow-y: auto; max-height: 70vh; max-width: 95%; margin: 0 auto; -webkit-overflow-scrolling: touch; }
+        table { width: 100%; min-width: 95%; border-collapse: collapse; }
+        th, td { padding: var(--spacing-md) 4px; text-align: center; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; white-space: nowrap; }
         #ranking-table thead th { position: sticky; top: 0; background: var(--surface-color); z-index: 10; }
         th { font-family: 'Poppins', sans-serif; background-color: rgba(0, 0, 0, 0.2); color: var(--primary-variant-color); font-weight: 700; }
         html[data-theme="light"] th { background-color: #F9FAFB; }
@@ -139,20 +139,21 @@
         .player-input-section .player-label { white-space: nowrap; margin-right: var(--spacing-md); }
         .player-input-section .player-inputs { display: flex; flex-wrap: wrap; gap: var(--spacing-sm); }
         .schedule-table td input.player1, .schedule-table td input.player2,
-        .schedule-table td input.player3, .schedule-table td input.player4 { min-width: 80px; }
-        .schedule-table td input.score { min-width: 70px; font-size: 0.7rem; }
+        .schedule-table td input.player3, .schedule-table td input.player4 { min-width: 70px; max-width: 90px; }
+        .schedule-table td input.score { min-width: 60px; max-width: 80px; font-size: 0.7rem; }
         @media screen and (max-width: 600px) {
-            th, td { padding: 6px 4px; font-size: 0.8rem; }
-            input[type="text"] { min-width: 40px; max-width: 80px; font-size: 0.8rem; }
-            input.ranking-player, input.mmr { min-width: 70px; max-width: 100px; }
+            th, td { padding: 4px 2px; font-size: 0.7rem; }
+            input[type="text"] { min-width: 40px; max-width: 70px; font-size: 0.7rem; }
+            input.ranking-player, input.mmr { min-width: 60px; max-width: 90px; }
             .player-input-section input { min-width: 40px; max-width: 90px; }
             .player-input-section .player-label { display: block; width: 100%; }
-            .schedule-table { min-width: 100%; }
+            .table-wrapper { max-width: 95%; }
+            .schedule-table { min-width: 95%; }
             .schedule-table td input.player1, .schedule-table td input.player2,
-            .schedule-table td input.player3, .schedule-table td input.player4 { min-width: 60px; }
-            .schedule-table td input.score { min-width: 50px; }
+            .schedule-table td input.player3, .schedule-table td input.player4 { min-width: 50px; max-width: 70px; }
+            .schedule-table td input.score { min-width: 45px; max-width: 65px; }
             .court-table { width: 100%; }
-            .btn { padding: 8px 12px; font-size: 0.9rem; }
+            .btn { padding: 6px 10px; font-size: 0.8rem; }
             h1 { font-size: 2rem; }
             h2 { font-size: 1.5rem; }
         }
@@ -771,7 +772,7 @@
 
                     if (team1IsMixed) {
                         let handicap = 0;
-                        if (p1Raw.includes('*')) handicap += getDynamicHandicap(players[p1].mr);
+                        if (p1Raw.includes('*')) handicap += getDynamicHandicap(players[p1].mmr);
                         if (p2Raw.includes('*')) handicap += getDynamicHandicap(players[p2].mmr);
                         effectiveTeam1MMR += handicap / (p1Raw.includes('*') && p2Raw.includes('*') ? 2 : 1);
                         effectiveTeam1MMR *= 1.5;
