@@ -195,12 +195,18 @@
             font-weight: 700;
         }
         #ranking-table th {
-            width: 8.5%;
+            width: 8%;
         }
         #ranking-table th[data-sort="player"] {
             width: 15%;
         }
         #ranking-table th[data-sort="mmr"] {
+            width: 12%;
+        }
+        #ranking-table th[data-sort="avgGameDiff"] {
+            width: 10%;
+        }
+        #ranking-table th[data-sort="bestPartner"] {
             width: 12%;
         }
         input[type="text"] {
@@ -514,25 +520,63 @@
 
         function saveAllData() {
             const savedRounds = new Map();
+            let savedCount = 0;
             document.querySelectorAll('.schedule-table').forEach(table => {
                 const roundId = table.dataset.roundId;
                 const rows = table.querySelectorAll('tbody tr');
-                const roundData = {
-                    timestamp: new Date().toISOString(),
-                    matches: Array.from(rows).map(row => ({
-                        player1: row.querySelector('.player1').value,
-                        player2: row.querySelector('.player2').value,
-                        player3: row.querySelector('.player3').value,
-                        player4: row.querySelector('.player4').value,
-                        score: row.querySelector('.score').value,
-                        isFourPoint: row.querySelector('.is-four-point').checked
-                    })),
-                    champions: []
-                };
-                savedRounds.set(parseInt(roundId), roundData);
+                const matches = Array.from(rows).map(row => ({
+                    player1: row.querySelector('.player1').value.trim(),
+                    player2: row.querySelector('.player2').value.trim(),
+                    player3: row.querySelector('.player3').value.trim(),
+                    player4: row.querySelector('.player4').value.trim(),
+                    score: row.querySelector('.score').value.trim(),
+                    isFourPoint: row.querySelector('.is-four-point').checked
+                })).filter(match => 
+                    match.player1 && match.player2 && match.player3 && match.player4 && match.score
+                );
+                if (matches.length > 0) {
+                    savedRounds.set(parseInt(roundId), {
+                        timestamp: new Date().toISOString(),
+                        matches,
+                        champions: []
+                    });
+                    savedCount++;
+                }
             });
             localStorage.setItem('savedRounds', JSON.stringify([...savedRounds]));
-            showToast('모든 데이터 저장됨');
+            console.log('Saved rounds:', savedRounds);
+            showToast(`${savedCount}개 회차 저장됨`);
+            return savedRounds;
+        }
+
+        function saveRoundData(roundId) {
+            let savedRounds = new Map(JSON.parse(localStorage.getItem('savedRounds') || '[]'));
+            const table = document.querySelector(`.schedule-table[data-round-id="${roundId}"]`);
+            const rows = table.querySelectorAll('tbody tr');
+            const matches = Array.from(rows).map(row => ({
+                player1: row.querySelector('.player1').value.trim(),
+                player2: row.querySelector('.player2').value.trim(),
+                player3: row.querySelector('.player3').value.trim(),
+                player4: row.querySelector('.player4').value.trim(),
+                score: row.querySelector('.score').value.trim(),
+                isFourPoint: row.querySelector('.is-four-point').checked
+            })).filter(match => 
+                match.player1 && match.player2 && match.player3 && match.player4 && match.score
+            );
+            if (matches.length > 0) {
+                savedRounds.set(parseInt(roundId), {
+                    timestamp: new Date().toISOString(),
+                    matches,
+                    champions: []
+                });
+                localStorage.setItem('savedRounds', JSON.stringify([...savedRounds]));
+                console.log(`Saved round ${roundId}:`, savedRounds.get(parseInt(roundId)));
+                showToast(`${roundId}회 저장됨`);
+            } else {
+                savedRounds.delete(parseInt(roundId));
+                localStorage.setItem('savedRounds', JSON.stringify([...savedRounds]));
+                showToast(`${roundId}회 데이터가 비어 있어 저장되지 않음`);
+            }
             return savedRounds;
         }
 
@@ -541,7 +585,7 @@
             const playerStats = new Map();
             savedRounds.forEach((roundData, roundId) => {
                 roundData.matches.forEach(match => {
-                    if (!match.score || !match.player1 || !match.player2 || !match.player3 || !match.player4) return; // 필수 데이터 없으면 스킵
+                    if (!match.score || !match.player1 || !match.player2 || !match.player3 || !match.player4) return;
                     const [score1, score2] = match.score.split('-').map(Number);
                     if (isNaN(score1) || isNaN(score2)) return;
                     const team1 = [match.player1, match.player2].filter(p => p);
@@ -634,7 +678,6 @@
                 };
             }).sort((a, b) => b.mmr - a.mmr);
 
-            // 데이터 없으면 더미 데이터로 최소 20명 채우기
             if (rankings.length < 20) {
                 for (let i = rankings.length; i < 20; i++) {
                     rankings.push({
@@ -655,6 +698,73 @@
 
             console.log('Generated rankings:', rankings);
             return rankings;
+        }
+
+        function exportToCSV() {
+            let savedRounds;
+            try {
+                savedRounds = new Map(JSON.parse(localStorage.getItem('savedRounds') || '[]'));
+            } catch (e) {
+                console.error('Failed to parse savedRounds for CSV export:', e);
+                savedRounds = new Map();
+            }
+
+            if (savedRounds.size === 0) {
+                showToast('저장된 데이터가 없습니다.');
+                return;
+            }
+
+            // 회차별 성적 데이터
+            const roundData = [];
+            savedRounds.forEach((round, roundId) => {
+                round.matches.forEach(match => {
+                    roundData.push({
+                        '회차': roundId,
+                        'Player 1': match.player1,
+                        'Player 2': match.player2,
+                        'Player 3': match.player3,
+                        'Player 4': match.player4,
+                        '스코어': match.score,
+                        '4점 선취': match.isFourPoint ? '예' : '아니오',
+                        '저장 날짜': new Date(round.timestamp).toLocaleString('ko-KR')
+                    });
+                });
+            });
+
+            // 순위표 데이터
+            const rankings = calculateRankings(savedRounds);
+            const rankingData = rankings.map((rank, i) => ({
+                '순위': i + 1,
+                '선수': rank.player,
+                'MMR': rank.mmr,
+                '우승': rank.championships,
+                '승': rank.wins,
+                '패': rank.losses,
+                '승률(%)': rank.winRate,
+                '평균 게임 득실': rank.avgGameDiff,
+                '접전률(%)': rank.closeRate,
+                '압도승률(%)': rank.dominantWinRate,
+                '압도패률(%)': rank.dominantLossRate,
+                '최고 파트너': rank.bestPartner
+            }));
+
+            // XLSX 워크북 생성
+            const wb = XLSX.utils.book_new();
+            const wsRounds = XLSX.utils.json_to_sheet(roundData);
+            const wsRankings = XLSX.utils.json_to_sheet(rankingData);
+            XLSX.utils.book_append_sheet(wb, wsRounds, '회차별 성적');
+            XLSX.utils.book_append_sheet(wb, wsRankings, '순위표');
+
+            // 파일명 생성 (현재 날짜 기반)
+            const today = new Date();
+            const dateStr = today.getFullYear() + '' + 
+                           String(today.getMonth() + 1).padStart(2, '0') + 
+                           String(today.getDate()).padStart(2, '0');
+            const fileName = `TennisOpen_${dateStr}.csv`;
+
+            // CSV 파일 다운로드
+            XLSX.write(wb, fileName, { bookType: 'csv', type: 'binary' });
+            showToast('CSV 파일 다운로드 완료');
         }
 
         function createScheduleRounds(savedRounds = new Map()) {
@@ -710,12 +820,12 @@
             }
             container.innerHTML = roundsHtml;
 
-            // 저장 버튼 이벤트
             document.querySelectorAll('.save-round-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    const savedRounds = saveAllData();
+                    const roundId = btn.dataset.roundId;
+                    const savedRounds = saveRoundData(roundId);
+                    createScheduleRounds(savedRounds);
                     createRankingRows(savedRounds);
-                    showToast('모든 데이터 저장 및 순위 갱신');
                 });
             });
         }
@@ -763,19 +873,16 @@
                 themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
             });
 
-            // 초기 테마 설정
             const savedTheme = localStorage.getItem('theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
             themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
 
-            // 모든 데이터 저장 버튼
             document.getElementById('save-all-data').addEventListener('click', () => {
                 const savedRounds = saveAllData();
+                createScheduleRounds(savedRounds);
                 createRankingRows(savedRounds);
-                showToast('모든 데이터 저장 및 순위 갱신');
             });
 
-            // 순위 업데이트 버튼
             document.getElementById('update-ranking').addEventListener('click', () => {
                 let savedRounds;
                 try {
@@ -788,12 +895,11 @@
                 showToast('순위 갱신됨');
             });
 
-            // 하단 버튼 페이지 이동
             document.getElementById('dashboard-btn').addEventListener('click', () => {
                 window.location.href = 'dash.html';
             });
             document.getElementById('export-csv-btn').addEventListener('click', () => {
-                console.log('CSV 저장 클릭');
+                exportToCSV();
             });
             document.getElementById('personal-stats-btn').addEventListener('click', () => {
                 window.location.href = 'h2h.html';
