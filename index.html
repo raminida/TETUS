@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -61,7 +63,7 @@
         }
         .section {
             background: var(--surface);
-            padding: var(--spacing-md); /* 여백 줄임 */
+            padding: 2px; /* 좌우 여백 최소화 */
             border-radius: var(--radius);
             box-shadow: 0 10px 30px var(--shadow);
             margin-bottom: 2.5rem;
@@ -77,11 +79,11 @@
             border-bottom: 3px solid var(--border);
         }
         details {
-            margin-bottom: 2px; /* 여백 최소화 */
+            margin: 0; /* 좌우 여백 완전 제거 */
             border-radius: var(--radius);
             overflow: hidden;
             border: 2px solid var(--border);
-            width: 100%; /* 최대 폭 */
+            width: 100%;
         }
         details summary {
             padding: var(--spacing-md) 15px;
@@ -102,11 +104,11 @@
             color: var(--bg);
         }
         .round-group-content {
-            padding: 8px 2px 2px 2px; /* 최소 여백 유지 */
+            padding: 8px 2px 2px 2px;
             background: rgba(0, 0, 0, 0.05);
             border-top: 2px solid var(--border);
             margin-bottom: 0;
-            width: 100%; /* 최대 폭 */
+            width: 100%;
         }
         [data-theme="light"] .round-group-content {
             background: rgba(0, 0, 0, 0.02);
@@ -119,7 +121,7 @@
             -webkit-overflow-scrolling: touch;
             margin-bottom: 0;
             padding: 0 2px;
-            width: 100%; /* 최대 폭 */
+            width: 100%;
         }
         table {
             width: 100%;
@@ -132,53 +134,6 @@
             border-bottom: 1px solid var(--border);
             font-size: 0.9rem;
             color: var(--text);
-        }
-        #ranking-table thead th {
-            position: sticky;
-            top: 0;
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.15), var(--surface));
-            z-index: 10;
-            cursor: pointer;
-            color: var(--primary-variant);
-            font-family: 'Poppins', sans-serif;
-            font-weight: 700;
-        }
-        #ranking-table thead th:hover {
-            background: var(--primary);
-            color: var(--bg);
-        }
-        [data-theme="light"] #ranking-table thead th {
-            background: linear-gradient(135deg, #F9FAFB, #FFFFFF);
-            color: var(--primary);
-        }
-        .rank-cell {
-            font-weight: 900;
-            color: var(--gold);
-            text-shadow: 0 0 5px var(--shadow);
-            position: relative;
-            line-height: 1.2;
-        }
-        .streak-cell {
-            font-size: 0.7rem;
-            white-space: nowrap;
-            margin-left: var(--spacing-sm);
-        }
-        .streak-win {
-            color: #4CAF50;
-            font-weight: bold;
-        }
-        .streak-loss {
-            color: #D32F2F;
-            font-weight: bold;
-        }
-        .streak-none {
-            color: var(--text-sec);
-        }
-        #ranking-table th:nth-child(2), #ranking-table td:nth-child(2) {
-            position: sticky;
-            left: 0;
-            background: var(--surface);
-            z-index: 1;
         }
         input[type="text"] {
             width: 100%;
@@ -306,100 +261,6 @@
         .theme-toggle:hover {
             transform: rotate(360deg);
         }
-        .ranking-filter {
-            display: flex;
-            gap: var(--spacing-sm);
-            margin-bottom: var(--spacing-md);
-        }
-        .filter-btn {
-            padding: var(--spacing-sm) var(--spacing-md);
-            background: var(--surface);
-            border: 2px solid var(--border);
-            border-radius: var(--radius);
-            cursor: pointer;
-            color: var(--text);
-            font-weight: 700;
-            transition: background 0.2s, color 0.2s;
-        }
-        .filter-btn.active {
-            background: var(--primary);
-            color: var(--bg);
-        }
-        .filter-btn:hover {
-            background: var(--primary-variant);
-            color: var(--bg);
-        }
-        .toggle-btn {
-            padding: var(--spacing-sm) var(--spacing-md);
-            margin: var(--spacing-sm) auto;
-            display: block;
-        }
-        tr.lower-rank {
-            display: none;
-        }
-        tr.lower-rank.show {
-            display: table-row;
-        }
-        .saved-indicator {
-            color: var(--gold);
-            margin-left: 5px;
-            font-size: 0.9rem;
-        }
-        .saved-info {
-            color: var(--text-sec);
-            margin-left: 5px;
-            font-size: 0.8rem;
-        }
-        .champion-name {
-            color: var(--gold);
-            font-weight: bold;
-        }
-        input[type="checkbox"] {
-            margin: 0 auto;
-            display: block;
-        }
-        .popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: var(--surface);
-            padding: var(--spacing-lg);
-            border-radius: var(--radius);
-            box-shadow: 0 10px 30px var(--shadow);
-            z-index: 2000;
-            color: var(--text);
-            border: 2px solid var(--border);
-            max-width: 400px;
-            text-align: center;
-        }
-        .popup.show {
-            display: block;
-        }
-        .close-btn {
-            position: absolute;
-            top: var(--spacing-sm);
-            right: var(--spacing-sm);
-            background: none;
-            border: none;
-            color: var(--text);
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-        }
-        .overlay.show {
-            display: block;
-        }
         @media screen and (max-width: 600px) {
             th, td {
                 padding: 4px 1px;
@@ -461,14 +322,77 @@
                 padding: var(--spacing-md);
             }
             .section {
-                padding: var(--spacing-sm); /* 모바일에서 더 줄임 */
+                padding: 0; /* 모바일에서 좌우 여백 완전 제거 */
             }
             details {
-                margin-bottom: 0; /* 모바일에서 여백 제거 */
+                margin: 0;
             }
         }
     </style>
 </head>
+<body>
+    <div class="container">
+        <h1>2025 테친 오픈</h1>
+        <div class="section" id="schedule-section">
+            <h2>경기 일정</h2>
+            <details>
+                <summary>1회차</summary>
+                <div class="round-group-content">
+                    <div class="table-wrapper">
+                        <table class="schedule-table">
+                            <thead>
+                                <tr>
+                                    <th>경기</th>
+                                    <th>플레이어 1</th>
+                                    <th>점수</th>
+                                    <th>플레이어 2</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td><input type="text" class="player1" placeholder="플레이어 1"></td>
+                                    <td><input type="text" class="score" placeholder="점수"></td>
+                                    <td><input type="text" class="player2" placeholder="플레이어 2"></td>
+                                </tr>
+                                <!-- 더 많은 경기 행 추가 가능 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </details>
+            <details>
+                <summary>2회차</summary>
+                <div class="round-group-content">
+                    <div class="table-wrapper">
+                        <table class="schedule-table">
+                            <thead>
+                                <tr>
+                                    <th>경기</th>
+                                    <th>플레이어 1</th>
+                                    <th>점수</th>
+                                    <th>플레이어 2</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td><input type="text" class="player1" placeholder="플레이어 1"></td>
+                                    <td><input type="text" class="score" placeholder="점수"></td>
+                                    <td><input type="text" class="player2" placeholder="플레이어 2"></td>
+                                </tr>
+                                <!-- 더 많은 경기 행 추가 가능 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </details>
+            <!-- 추가 회차 details 추가 가능 -->
+        </div>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+</body>
+</html>
 <body>
     <button class="theme-toggle" id="theme-toggle">☀️</button>
     <div class="container">
