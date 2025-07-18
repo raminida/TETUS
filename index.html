@@ -180,7 +180,7 @@
             table-layout: fixed;
         }
         #ranking-table {
-            min-width: 800px;
+            min-width: 900px;
         }
         th, td {
             padding: var(--spacing-sm);
@@ -189,21 +189,19 @@
             font-size: 0.9rem;
             color: var(--text);
             white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
         th {
             background: var(--surface);
             font-weight: 700;
         }
         #ranking-table th {
-            width: 8.33%;
+            width: 8.5%;
         }
         #ranking-table th[data-sort="player"] {
-            width: 12%;
+            width: 15%;
         }
         #ranking-table th[data-sort="mmr"] {
-            width: 10%;
+            width: 12%;
         }
         input[type="text"] {
             width: 100%;
@@ -385,7 +383,7 @@
                 min-width: 400px;
             }
             #ranking-table {
-                min-width: 600px;
+                min-width: 700px;
             }
             .schedule-table th, .schedule-table td {
                 padding: 2px;
@@ -514,7 +512,153 @@
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
+        function saveAllData() {
+            const savedRounds = new Map();
+            document.querySelectorAll('.schedule-table').forEach(table => {
+                const roundId = table.dataset.roundId;
+                const rows = table.querySelectorAll('tbody tr');
+                const roundData = {
+                    timestamp: new Date().toISOString(),
+                    matches: Array.from(rows).map(row => ({
+                        player1: row.querySelector('.player1').value,
+                        player2: row.querySelector('.player2').value,
+                        player3: row.querySelector('.player3').value,
+                        player4: row.querySelector('.player4').value,
+                        score: row.querySelector('.score').value,
+                        isFourPoint: row.querySelector('.is-four-point').checked
+                    })),
+                    champions: []
+                };
+                savedRounds.set(parseInt(roundId), roundData);
+            });
+            localStorage.setItem('savedRounds', JSON.stringify([...savedRounds]));
+            showToast('모든 데이터 저장됨');
+            return savedRounds;
+        }
+
+        function calculateRankings(savedRounds) {
+            console.log('Calculating rankings with savedRounds:', savedRounds);
+            const playerStats = new Map();
+            savedRounds.forEach((roundData, roundId) => {
+                roundData.matches.forEach(match => {
+                    if (!match.score || !match.player1 || !match.player2 || !match.player3 || !match.player4) return; // 필수 데이터 없으면 스킵
+                    const [score1, score2] = match.score.split('-').map(Number);
+                    if (isNaN(score1) || isNaN(score2)) return;
+                    const team1 = [match.player1, match.player2].filter(p => p);
+                    const team2 = [match.player3, match.player4].filter(p => p);
+                    team1.forEach(player => {
+                        if (!playerStats.has(player)) {
+                            playerStats.set(player, {
+                                mmr: 1500,
+                                wins: 0,
+                                losses: 0,
+                                gameDiff: 0,
+                                closeGames: 0,
+                                dominantWins: 0,
+                                dominantLosses: 0,
+                                partners: new Map()
+                            });
+                        }
+                        const stats = playerStats.get(player);
+                        const diff = score1 - score2;
+                        stats.gameDiff += diff;
+                        if (score1 > score2) {
+                            stats.wins += 1;
+                            stats.mmr += 25;
+                            if (diff >= 4) stats.dominantWins += 1;
+                            else if (diff <= 2) stats.closeGames += 1;
+                        } else {
+                            stats.losses += 1;
+                            stats.mmr = Math.max(1000, stats.mmr - 25);
+                            if (diff <= -4) stats.dominantLosses += 1;
+                            else if (diff >= -2) stats.closeGames += 1;
+                        }
+                        team2.forEach(opponent => {
+                            stats.partners.set(opponent, (stats.partners.get(opponent) || 0) + 1);
+                        });
+                    });
+                    team2.forEach(player => {
+                        if (!playerStats.has(player)) {
+                            playerStats.set(player, {
+                                mmr: 1500,
+                                wins: 0,
+                                losses: 0,
+                                gameDiff: 0,
+                                closeGames: 0,
+                                dominantWins: 0,
+                                dominantLosses: 0,
+                                partners: new Map()
+                            });
+                        }
+                        const stats = playerStats.get(player);
+                        const diff = score2 - score1;
+                        stats.gameDiff += diff;
+                        if (score2 > score1) {
+                            stats.wins += 1;
+                            stats.mmr += 25;
+                            if (diff >= 4) stats.dominantWins += 1;
+                            else if (diff <= 2) stats.closeGames += 1;
+                        } else {
+                            stats.losses += 1;
+                            stats.mmr = Math.max(1000, stats.mmr - 25);
+                            if (diff <= -4) stats.dominantLosses += 1;
+                            else if (diff >= -2) stats.closeGames += 1;
+                        }
+                        team1.forEach(opponent => {
+                            stats.partners.set(opponent, (stats.partners.get(opponent) || 0) + 1);
+                        });
+                    });
+                });
+            });
+
+            const rankings = Array.from(playerStats.entries()).map(([player, stats]) => {
+                const totalGames = stats.wins + stats.losses;
+                const winRate = totalGames ? (stats.wins / totalGames * 100).toFixed(1) : 0;
+                const avgGameDiff = totalGames ? (stats.gameDiff / totalGames).toFixed(2) : 0;
+                const closeRate = totalGames ? (stats.closeGames / totalGames * 100).toFixed(1) : 0;
+                const dominantWinRate = totalGames ? (stats.dominantWins / totalGames * 100).toFixed(1) : 0;
+                const dominantLossRate = totalGames ? (stats.dominantLosses / totalGames * 100).toFixed(1) : 0;
+                const bestPartner = Array.from(stats.partners.entries()).sort((a, b) => b[1] - a[1])[0]?.[0] || '-';
+                return {
+                    player,
+                    mmr: stats.mmr,
+                    championships: 0,
+                    wins: stats.wins,
+                    losses: stats.losses,
+                    winRate,
+                    avgGameDiff,
+                    closeRate,
+                    dominantWinRate,
+                    dominantLossRate,
+                    bestPartner
+                };
+            }).sort((a, b) => b.mmr - a.mmr);
+
+            // 데이터 없으면 더미 데이터로 최소 20명 채우기
+            if (rankings.length < 20) {
+                for (let i = rankings.length; i < 20; i++) {
+                    rankings.push({
+                        player: `선수 ${i + 1}`,
+                        mmr: 1500,
+                        championships: 0,
+                        wins: 0,
+                        losses: 0,
+                        winRate: 0,
+                        avgGameDiff: 0,
+                        closeRate: 0,
+                        dominantWinRate: 0,
+                        dominantLossRate: 0,
+                        bestPartner: '-'
+                    });
+                }
+            }
+
+            console.log('Generated rankings:', rankings);
+            return rankings;
+        }
+
         function createScheduleRounds(savedRounds = new Map()) {
+            console.log('Creating schedule rounds with savedRounds:', savedRounds);
             const container = document.getElementById('schedule-container');
             if (!container) return;
             let roundsHtml = '';
@@ -545,15 +689,15 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    ${Array(3).fill().map(() => `
+                                    ${Array(3).fill().map((_, idx) => `
                                     <tr>
-                                        <td><input type="text" placeholder="이름" class="player1"></td>
-                                        <td><input type="text" placeholder="이름" class="player2"></td>
+                                        <td><input type="text" placeholder="이름" class="player1" value="${roundData?.matches?.[idx]?.player1 || ''}"></td>
+                                        <td><input type="text" placeholder="이름" class="player2" value="${roundData?.matches?.[idx]?.player2 || ''}"></td>
                                         <td>vs</td>
-                                        <td><input type="text" placeholder="이름" class="player3"></td>
-                                        <td><input type="text" placeholder="이름" class="player4"></td>
-                                        <td><input type="text" placeholder="6-4" class="score"></td>
-                                        <td><input type="checkbox" class="is-four-point"></td>
+                                        <td><input type="text" placeholder="이름" class="player3" value="${roundData?.matches?.[idx]?.player3 || ''}"></td>
+                                        <td><input type="text" placeholder="이름" class="player4" value="${roundData?.matches?.[idx]?.player4 || ''}"></td>
+                                        <td><input type="text" placeholder="6-4" class="score" value="${roundData?.matches?.[idx]?.score || ''}"></td>
+                                        <td><input type="checkbox" class="is-four-point" ${roundData?.matches?.[idx]?.isFourPoint ? 'checked' : ''}></td>
                                     </tr>
                                     `).join('')}
                                 </tbody>
@@ -566,80 +710,49 @@
             }
             container.innerHTML = roundsHtml;
 
-            // 저장 버튼 이벤트 추가
+            // 저장 버튼 이벤트
             document.querySelectorAll('.save-round-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    const roundId = btn.dataset.roundId;
-                    const table = document.querySelector(`.schedule-table[data-round-id="${roundId}"]`);
-                    const rows = table.querySelectorAll('tbody tr');
-                    const roundData = {
-                        timestamp: new Date().toISOString(),
-                        matches: Array.from(rows).map(row => ({
-                            player1: row.querySelector('.player1').value,
-                            player2: row.querySelector('.player2').value,
-                            player3: row.querySelector('.player3').value,
-                            player4: row.querySelector('.player4').value,
-                            score: row.querySelector('.score').value,
-                            isFourPoint: row.querySelector('.is-four-point').checked
-                        })),
-                        champions: [] // 임시로 빈 배열
-                    };
-                    savedRounds.set(parseInt(roundId), roundData);
-                    localStorage.setItem('savedRounds', JSON.stringify([...savedRounds]));
-                    showToast(`${roundId}회 데이터 저장됨`);
-                    createScheduleRounds(savedRounds); // UI 갱신
+                    const savedRounds = saveAllData();
+                    createRankingRows(savedRounds);
+                    showToast('모든 데이터 저장 및 순위 갱신');
                 });
             });
         }
 
-        function saveAllData() {
-            const savedRounds = new Map(JSON.parse(localStorage.getItem('savedRounds') || '[]'));
-            document.querySelectorAll('.schedule-table').forEach(table => {
-                const roundId = table.dataset.roundId;
-                const rows = table.querySelectorAll('tbody tr');
-                const roundData = {
-                    timestamp: new Date().toISOString(),
-                    matches: Array.from(rows).map(row => ({
-                        player1: row.querySelector('.player1').value,
-                        player2: row.querySelector('.player2').value,
-                        player3: row.querySelector('.player3').value,
-                        player4: row.querySelector('.player4').value,
-                        score: row.querySelector('.score').value,
-                        isFourPoint: row.querySelector('.is-four-point').checked
-                    })),
-                    champions: []
-                };
-                savedRounds.set(parseInt(roundId), roundData);
-            });
-            localStorage.setItem('savedRounds', JSON.stringify([...savedRounds]));
-            showToast('모든 데이터 저장됨');
-            createScheduleRounds(savedRounds);
-        }
-
-        function createRankingRows() {
+        function createRankingRows(savedRounds = new Map()) {
+            console.log('Creating ranking rows with savedRounds:', savedRounds);
             const rankingBody = document.querySelector('#ranking-table tbody');
             if (!rankingBody) return;
-            rankingBody.innerHTML = Array(20).fill().map((_, i) => `
+            const rankings = calculateRankings(savedRounds);
+            rankingBody.innerHTML = rankings.map((rank, i) => `
                 <tr>
                     <td class="rank-cell">${i + 1}</td>
-                    <td><input type="text" placeholder="선수 ${i + 1}" class="ranking-player"></td>
-                    <td><input type="text" class="mmr readonly" readonly value="1500"></td>
-                    <td><span class="championship-star"></span></td>
-                    <td><input type="text" class="wins readonly" readonly value="0"></td>
-                    <td><input type="text" class="losses readonly" readonly value="0"></td>
-                    <td><input type="text" class="win-rate readonly" readonly value="0"></td>
-                    <td><input type="text" class="avg-game-diff readonly" readonly value="0.00"></td>
-                    <td><input type="text" class="close-rate readonly" readonly value="0"></td>
-                    <td><input type="text" class="dominant-wins readonly" readonly value="0"></td>
-                    <td><input type="text" class="dominant-losses readonly" readonly value="0"></td>
-                    <td><input type="text" class="best-partner readonly" readonly value="-"></td>
+                    <td><input type="text" class="ranking-player readonly" readonly value="${rank.player || '선수 ' + (i + 1)}"></td>
+                    <td><input type="text" class="mmr readonly" readonly value="${rank.mmr}"></td>
+                    <td><span class="championship-star">${rank.championships ? '★'.repeat(rank.championships) : ''}</span></td>
+                    <td><input type="text" class="wins readonly" readonly value="${rank.wins}"></td>
+                    <td><input type="text" class="losses readonly" readonly value="${rank.losses}"></td>
+                    <td><input type="text" class="win-rate readonly" readonly value="${rank.winRate}"></td>
+                    <td><input type="text" class="avg-game-diff readonly" readonly value="${rank.avgGameDiff}"></td>
+                    <td><input type="text" class="close-rate readonly" readonly value="${rank.closeRate}"></td>
+                    <td><input type="text" class="dominant-wins readonly" readonly value="${rank.dominantWinRate}"></td>
+                    <td><input type="text" class="dominant-losses readonly" readonly value="${rank.dominantLossRate}"></td>
+                    <td><input type="text" class="best-partner readonly" readonly value="${rank.bestPartner}"></td>
                 </tr>`).join('');
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            const savedRounds = new Map(JSON.parse(localStorage.getItem('savedRounds') || '[]'));
+            let savedRounds;
+            try {
+                savedRounds = new Map(JSON.parse(localStorage.getItem('savedRounds') || '[]'));
+            } catch (e) {
+                console.error('Failed to parse savedRounds:', e);
+                savedRounds = new Map();
+            }
+            console.log('Initial savedRounds:', savedRounds);
             createScheduleRounds(savedRounds);
-            createRankingRows();
+            createRankingRows(savedRounds);
 
             const themeToggle = document.getElementById('theme-toggle');
             themeToggle.addEventListener('click', () => {
@@ -656,13 +769,38 @@
             themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
 
             // 모든 데이터 저장 버튼
-            document.getElementById('save-all-data').addEventListener('click', saveAllData);
+            document.getElementById('save-all-data').addEventListener('click', () => {
+                const savedRounds = saveAllData();
+                createRankingRows(savedRounds);
+                showToast('모든 데이터 저장 및 순위 갱신');
+            });
 
-            // 하단 버튼 더미 이벤트
-            document.getElementById('dashboard-btn').addEventListener('click', () => console.log('대시보드 클릭'));
-            document.getElementById('export-csv-btn').addEventListener('click', () => console.log('CSV 저장 클릭'));
-            document.getElementById('personal-stats-btn').addEventListener('click', () => console.log('개인전적&상대전적 보기 클릭'));
-            document.getElementById('partner-stats-btn').addEventListener('click', () => console.log('파트너 전적 보기 클릭'));
+            // 순위 업데이트 버튼
+            document.getElementById('update-ranking').addEventListener('click', () => {
+                let savedRounds;
+                try {
+                    savedRounds = new Map(JSON.parse(localStorage.getItem('savedRounds') || '[]'));
+                } catch (e) {
+                    console.error('Failed to parse savedRounds for update:', e);
+                    savedRounds = new Map();
+                }
+                createRankingRows(savedRounds);
+                showToast('순위 갱신됨');
+            });
+
+            // 하단 버튼 페이지 이동
+            document.getElementById('dashboard-btn').addEventListener('click', () => {
+                window.location.href = 'dash.html';
+            });
+            document.getElementById('export-csv-btn').addEventListener('click', () => {
+                console.log('CSV 저장 클릭');
+            });
+            document.getElementById('personal-stats-btn').addEventListener('click', () => {
+                window.location.href = 'h2h.html';
+            });
+            document.getElementById('partner-stats-btn').addEventListener('click', () => {
+                window.location.href = 'partner.html';
+            });
         });
     </script>
 </body>
