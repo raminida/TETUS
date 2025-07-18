@@ -189,13 +189,21 @@
             font-size: 0.9rem;
             color: var(--text);
             white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         th {
             background: var(--surface);
             font-weight: 700;
         }
         #ranking-table th {
-            width: 8.33%; /* 12 columns, equal width */
+            width: 8.33%;
+        }
+        #ranking-table th[data-sort="player"] {
+            width: 12%;
+        }
+        #ranking-table th[data-sort="mmr"] {
+            width: 10%;
         }
         input[type="text"] {
             width: 100%;
@@ -250,7 +258,7 @@
         .save-round-btn:hover, .btn:hover {
             transform: scale(1.05);
         }
-        .update-btn {
+        .update-btn, .save-all-btn {
             width: 100%;
             margin: var(--spacing-lg) var(--spacing-md);
             padding: 15px;
@@ -263,7 +271,10 @@
             cursor: pointer;
             transition: transform 0.2s;
         }
-        .update-btn:hover {
+        .save-all-btn {
+            background: linear-gradient(135deg, #4CAF50, #66BB6A);
+        }
+        .update-btn:hover, .save-all-btn:hover {
             transform: scale(1.05);
         }
         .ranking-filter {
@@ -298,6 +309,13 @@
             background: linear-gradient(135deg, var(--primary), var(--primary-variant));
             color: var(--bg);
         }
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: var(--spacing-lg) var(--spacing-md);
+            justify-content: center;
+        }
         .saved-indicator {
             margin-left: 8px;
             color: var(--gold);
@@ -330,6 +348,29 @@
         .theme-toggle:hover {
             transform: rotate(360deg);
         }
+        .toast {
+            position: fixed;
+            bottom: var(--spacing-lg);
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #333, #111);
+            color: #fff;
+            padding: var(--spacing-md) 25px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px var(--shadow);
+            opacity: 0;
+            transition: opacity 0.4s, transform 0.4s;
+            font-weight: 700;
+            font-family: 'Roboto Condensed', sans-serif;
+            z-index: 1000;
+        }
+        [data-theme="light"] .toast {
+            background: linear-gradient(135deg, #F9FAFB, #FFFFFF);
+            color: #001F3F;
+        }
+        .toast.show {
+            opacity: 1;
+        }
         @media screen and (max-width: 600px) {
             h1 {
                 font-size: 2rem;
@@ -346,47 +387,67 @@
             #ranking-table {
                 min-width: 600px;
             }
-            th, td {
-                padding: 4px;
+            .schedule-table th, .schedule-table td {
+                padding: 2px;
                 font-size: 0.7rem;
             }
-            input[type="text"] {
-                min-width: 40px;
-                max-width: 60px;
-                font-size: 0.7rem;
-                padding: 4px;
-            }
-            input.score {
+            .schedule-table input[type="text"] {
                 min-width: 35px;
                 max-width: 50px;
+                font-size: 0.7rem;
+                padding: 2px;
             }
-            input.ranking-player, input.mmr {
+            .schedule-table input.score {
+                min-width: 30px;
+                max-width: 40px;
+            }
+            #ranking-table th, #ranking-table td {
+                padding: 2px;
+                font-size: 0.65rem;
+            }
+            #ranking-table input[type="text"] {
+                min-width: 50px;
+                max-width: 80px;
+                font-size: 0.65rem;
+                padding: 2px;
+            }
+            #ranking-table input.ranking-player, #ranking-table input.mmr {
                 min-width: 60px;
-                max-width: 100px;
+                max-width: 90px;
             }
             .save-round-btn, .btn {
                 padding: 6px 12px;
                 font-size: 0.8rem;
             }
-            .update-btn {
+            .update-btn, .save-all-btn {
                 padding: 10px;
                 font-size: 1rem;
             }
             .ranking-filter {
-                flex-direction: column;
-                align-items: center;
+                flex-direction: row;
+                flex-wrap: nowrap;
+                gap: 5px;
             }
             .filter-btn {
-                width: 100%;
-                max-width: 200px;
+                padding: 6px 10px;
+                font-size: 0.75rem;
+                min-width: 80px;
             }
             .input-group {
                 flex-direction: column;
                 align-items: center;
             }
+            .btn-group {
+                flex-direction: column;
+                align-items: center;
+            }
+            .btn-group .btn {
+                width: 100%;
+                max-width: 200px;
+            }
             .saved-info {
                 font-size: 0.65rem;
-                max-width: 100px;
+                max-width: 80px;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 display: inline-block;
@@ -405,6 +466,7 @@
                 <button id="how-to-use-btn" class="btn">이용방법</button>
             </div>
             <div id="schedule-container"></div>
+            <button id="save-all-data" class="btn save-all-btn">모든 데이터 저장</button>
             <button id="update-ranking" class="btn update-btn">순위 업데이트</button>
         </div>
         <div class="section">
@@ -436,8 +498,22 @@
                 </table>
             </div>
         </div>
+        <div class="btn-group">
+            <button class="btn" id="dashboard-btn">대시보드</button>
+            <button class="btn" id="export-csv-btn">CSV 저장</button>
+            <button class="btn" id="personal-stats-btn">개인전적&상대전적 보기</button>
+            <button class="btn" id="partner-stats-btn">파트너 전적 보기</button>
+        </div>
     </div>
+    <div class="toast" id="toast"></div>
     <script>
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
         function createScheduleRounds(savedRounds = new Map()) {
             const container = document.getElementById('schedule-container');
             if (!container) return;
@@ -489,6 +565,55 @@
                 roundsHtml += `</div></details>`;
             }
             container.innerHTML = roundsHtml;
+
+            // 저장 버튼 이벤트 추가
+            document.querySelectorAll('.save-round-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const roundId = btn.dataset.roundId;
+                    const table = document.querySelector(`.schedule-table[data-round-id="${roundId}"]`);
+                    const rows = table.querySelectorAll('tbody tr');
+                    const roundData = {
+                        timestamp: new Date().toISOString(),
+                        matches: Array.from(rows).map(row => ({
+                            player1: row.querySelector('.player1').value,
+                            player2: row.querySelector('.player2').value,
+                            player3: row.querySelector('.player3').value,
+                            player4: row.querySelector('.player4').value,
+                            score: row.querySelector('.score').value,
+                            isFourPoint: row.querySelector('.is-four-point').checked
+                        })),
+                        champions: [] // 임시로 빈 배열
+                    };
+                    savedRounds.set(parseInt(roundId), roundData);
+                    localStorage.setItem('savedRounds', JSON.stringify([...savedRounds]));
+                    showToast(`${roundId}회 데이터 저장됨`);
+                    createScheduleRounds(savedRounds); // UI 갱신
+                });
+            });
+        }
+
+        function saveAllData() {
+            const savedRounds = new Map(JSON.parse(localStorage.getItem('savedRounds') || '[]'));
+            document.querySelectorAll('.schedule-table').forEach(table => {
+                const roundId = table.dataset.roundId;
+                const rows = table.querySelectorAll('tbody tr');
+                const roundData = {
+                    timestamp: new Date().toISOString(),
+                    matches: Array.from(rows).map(row => ({
+                        player1: row.querySelector('.player1').value,
+                        player2: row.querySelector('.player2').value,
+                        player3: row.querySelector('.player3').value,
+                        player4: row.querySelector('.player4').value,
+                        score: row.querySelector('.score').value,
+                        isFourPoint: row.querySelector('.is-four-point').checked
+                    })),
+                    champions: []
+                };
+                savedRounds.set(parseInt(roundId), roundData);
+            });
+            localStorage.setItem('savedRounds', JSON.stringify([...savedRounds]));
+            showToast('모든 데이터 저장됨');
+            createScheduleRounds(savedRounds);
         }
 
         function createRankingRows() {
@@ -512,7 +637,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            const savedRounds = new Map(); // 임시로 빈 Map 사용
+            const savedRounds = new Map(JSON.parse(localStorage.getItem('savedRounds') || '[]'));
             createScheduleRounds(savedRounds);
             createRankingRows();
 
@@ -529,6 +654,15 @@
             const savedTheme = localStorage.getItem('theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
             themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+
+            // 모든 데이터 저장 버튼
+            document.getElementById('save-all-data').addEventListener('click', saveAllData);
+
+            // 하단 버튼 더미 이벤트
+            document.getElementById('dashboard-btn').addEventListener('click', () => console.log('대시보드 클릭'));
+            document.getElementById('export-csv-btn').addEventListener('click', () => console.log('CSV 저장 클릭'));
+            document.getElementById('personal-stats-btn').addEventListener('click', () => console.log('개인전적&상대전적 보기 클릭'));
+            document.getElementById('partner-stats-btn').addEventListener('click', () => console.log('파트너 전적 보기 클릭'));
         });
     </script>
 </body>
