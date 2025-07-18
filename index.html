@@ -375,6 +375,50 @@
         .toast.show {
             opacity: 1;
         }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: var(--surface);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius);
+            max-width: 400px;
+            width: 90%;
+            position: relative;
+            box-shadow: 0 5px 15px var(--shadow);
+            color: var(--text);
+        }
+        [data-theme="light"] .modal-content {
+            background: #FFFFFF;
+            color: #001F3F;
+        }
+        .modal-content p {
+            font-size: 1rem;
+            line-height: 1.5;
+            margin: 0 0 var(--spacing-md) 0;
+        }
+        .modal-close {
+            position: absolute;
+            top: var(--spacing-sm);
+            right: var(--spacing-sm);
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text);
+        }
+        .modal-close:hover {
+            color: var(--primary);
+        }
         @media screen and (max-width: 600px) {
             h1 {
                 font-size: 2rem;
@@ -457,6 +501,13 @@
                 display: inline-block;
                 vertical-align: middle;
             }
+            .modal-content {
+                width: 90%;
+                padding: var(--spacing-md);
+            }
+            .modal-content p {
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
@@ -510,6 +561,12 @@
         </div>
     </div>
     <div class="toast" id="toast"></div>
+    <div class="modal" id="how-to-use-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="modal-close">✕</button>
+            <p>게임 끝나면 회차 눌러 빈 회차에 이름 작성 (6게임 또는 4게임만 가능, 4게임은 체크 필수). 여성은 이름 뒤에 * 붙이고, 스코어 입력 후 '저장' 버튼 누르면 끝!</p>
+        </div>
+    </div>
     <script>
         function showToast(message) {
             const toast = document.getElementById('toast');
@@ -714,7 +771,6 @@
                 return;
             }
 
-            // 회차별 성적 데이터
             const roundData = [];
             savedRounds.forEach((round, roundId) => {
                 round.matches.forEach(match => {
@@ -731,7 +787,6 @@
                 });
             });
 
-            // 순위표 데이터
             const rankings = calculateRankings(savedRounds);
             const rankingData = rankings.map((rank, i) => ({
                 '순위': i + 1,
@@ -748,21 +803,18 @@
                 '최고 파트너': rank.bestPartner
             }));
 
-            // XLSX 워크북 생성
             const wb = XLSX.utils.book_new();
             const wsRounds = XLSX.utils.json_to_sheet(roundData);
             const wsRankings = XLSX.utils.json_to_sheet(rankingData);
             XLSX.utils.book_append_sheet(wb, wsRounds, '회차별 성적');
             XLSX.utils.book_append_sheet(wb, wsRankings, '순위표');
 
-            // 파일명 생성 (현재 날짜 기반)
             const today = new Date();
             const dateStr = today.getFullYear() + '' + 
                            String(today.getMonth() + 1).padStart(2, '0') + 
                            String(today.getDate()).padStart(2, '0');
             const fileName = `TennisOpen_${dateStr}.csv`;
 
-            // CSV 파일 다운로드
             XLSX.write(wb, fileName, { bookType: 'csv', type: 'binary' });
             showToast('CSV 파일 다운로드 완료');
         }
@@ -906,6 +958,24 @@
             });
             document.getElementById('partner-stats-btn').addEventListener('click', () => {
                 window.location.href = 'partner.html';
+            });
+
+            const modal = document.getElementById('how-to-use-modal');
+            const modalBtn = document.getElementById('how-to-use-btn');
+            const modalClose = document.getElementById('modal-close');
+
+            modalBtn.addEventListener('click', () => {
+                modal.style.display = 'flex';
+            });
+
+            modalClose.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
             });
         });
     </script>
