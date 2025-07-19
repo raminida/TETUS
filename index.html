@@ -168,10 +168,14 @@
         }
         .table-wrapper::-webkit-scrollbar-track {
             background: var(--surface);
+            border-radius: var(--radius);
         }
         .table-wrapper::-webkit-scrollbar-thumb {
             background: var(--primary);
             border-radius: var(--radius);
+        }
+        .table-wrapper::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-variant);
         }
         table {
             width: 100%;
@@ -350,7 +354,7 @@
             border-radius: 50%;
             width: 40px;
             height: 40px;
-            font-size: 1.5rem;
+ allocates: 1.5rem;
             cursor: pointer;
             color: var(--text);
             display: flex;
@@ -438,27 +442,28 @@
             }
             .table-wrapper {
                 max-height: 50vh;
-                overflow-x: auto; /* 스크롤 허용 */
+                overflow-x: auto; /* 수평 스크롤 활성화 */
+                -webkit-overflow-scrolling: touch; /* 모바일에서 부드러운 터치 스크롤 */
             }
             table {
-                min-width: 320px; /* 테이블 최소 폭 줄여서 모바일에 맞춤 */
+                min-width: 360px; /* 테이블 최소 폭 약간 늘려서 4점 선취 체크칸 포함 */
                 width: 100%;
             }
             #ranking-table {
                 min-width: 700px;
             }
             .schedule-table {
-                table-layout: fixed; /* 고정 레이아웃으로 셀 폭 강제 조정 */
+                table-layout: fixed;
             }
             .schedule-table th, .schedule-table td {
-                padding: 2px 0; /* 좌우 패딩 0 */
+                padding: 2px 0;
                 border: 0.5px solid var(--border);
                 font-size: 0.65rem;
                 margin: 0;
                 box-sizing: border-box;
             }
             .schedule-table th:nth-child(1), .schedule-table td:nth-child(1) { /* Player 1 */
-                width: 18%; /* 폭 줄임 */
+                width: 18%;
             }
             .schedule-table th:nth-child(2), .schedule-table td:nth-child(2) { /* Player 2 */
                 width: 18%;
@@ -481,7 +486,7 @@
                 width: 10%;
             }
             .schedule-table input[type="text"] {
-                min-width: 30px; /* 입력 필드 더 작게 */
+                min-width: 30px;
                 max-width: 40px;
                 font-size: 0.65rem;
                 padding: 1px;
@@ -491,14 +496,14 @@
                 box-sizing: border-box;
             }
             .schedule-table input.score {
-                min-width: 20px; /* 스코어칸 더 작게 */
+                min-width: 20px;
                 max-width: 30px;
                 padding: 1px;
                 margin: 0;
                 border: none;
             }
             .schedule-table input[type="checkbox"] {
-                width: 14px; /* 체크박스 더 작게 */
+                width: 14px;
                 height: 14px;
                 margin: 0 auto;
                 border: none;
