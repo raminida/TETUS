@@ -446,28 +446,37 @@
                 min-width: 700px;
             }
             .schedule-table th, .schedule-table td {
-                padding: 2px 0; /* 모바일에서 좌우 패딩 0으로, 이름칸 공백 완전 제거 */
+                padding: 2px 0; /* 좌우 패딩 완전 제거 */
                 border: 0.5px solid var(--border);
-                font-size: 0.65rem; /* 폰트 크기 더 줄여서 촘촘하게 */
+                font-size: 0.65rem;
+                margin: 0; /* 셀 간 마진 제거 */
             }
             .schedule-table input[type="text"] {
-                min-width: 35px; /* 이름칸 폭 더 줄여서 타이트 */
+                min-width: 35px; /* 입력 필드 폭 최소화 */
                 max-width: 45px;
                 font-size: 0.65rem;
-                padding: 1px; /* 입력 필드 내부 패딩 최소화 */
-                margin: 0; /* 입력 필드 간 마진 제거 */
+                padding: 1px;
+                margin: 0; /* 입력 필드 마진 제거 */
                 border-radius: 4px;
+                border: none; /* 입력 필드 테두리 제거로 더 붙은 느낌 */
             }
             .schedule-table input.score {
-                min-width: 25px; /* 스코어칸 폭 더 줄임 */
+                min-width: 25px;
                 max-width: 35px;
                 padding: 1px;
                 margin: 0;
+                border: none;
             }
             .schedule-table input[type="checkbox"] {
-                width: 16px; /* 체크박스 크기 줄임 */
+                width: 16px;
                 height: 16px;
-                margin: 0 auto; /* 체크박스 중앙 정렬, 여백 제거 */
+                margin: 0 auto;
+                border: none;
+            }
+            .schedule-table td:nth-child(3) { /* vs 셀 */
+                padding: 2px 0; /* vs도 좌우 패딩 제거 */
+                margin: 0;
+                width: 10%; /* 폭 유지하되 공백 없애기 */
             }
             #ranking-table th, #ranking-table td {
                 padding: 2px;
