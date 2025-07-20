@@ -447,7 +447,7 @@
                 -webkit-overflow-scrolling: touch;
             }
             table {
-                min-width: 320px; /* 모바일에서 4점 선취 열 포함하도록 약간 늘림 */
+                min-width: 320px;
                 width: 100%;
             }
             #ranking-table {
@@ -464,30 +464,30 @@
                 box-sizing: border-box;
             }
             .schedule-table th:nth-child(1), .schedule-table td:nth-child(1) { /* Player 1 */
-                width: 20%;
+                width: 18%;
             }
             .schedule-table th:nth-child(2), .schedule-table td:nth-child(2) { /* Player 2 */
-                width: 20%;
+                width: 18%;
             }
             .schedule-table th:nth-child(3), .schedule-table td:nth-child(3) { /* vs */
-                width: 10%;
+                width: 8%;
                 padding: 2px 0;
                 margin: 0;
             }
             .schedule-table th:nth-child(4), .schedule-table td:nth-child(4) { /* Player 3 */
-                width: 20%;
+                width: 18%;
             }
             .schedule-table th:nth-child(5), .schedule-table td:nth-child(5) { /* Player 4 */
-                width: 20%;
+                width: 18%;
             }
             .schedule-table th:nth-child(6), .schedule-table td:nth-child(6) { /* Score */
                 width: 10%;
-                min-width: 40px; /* 스코어 열 충분히 보이도록 */
+                min-width: 40px;
             }
             .schedule-table th:nth-child(7), .schedule-table td:nth-child(7) { /* 4점 선취 */
-                width: 15%; /* 폭 늘려서 체크박스 완전히 보이게 */
-                min-width: 40px; /* 모바일에서 체크박스 공간 확보 */
-                padding: 2px 4px; /* 패딩 늘려서 체크박스 여유롭게 */
+                width: 20%;
+                min-width: 40px;
+                padding: 2px 4px;
             }
             .schedule-table input[type="text"] {
                 min-width: 40px;
@@ -507,11 +507,11 @@
                 border: none;
             }
             .schedule-table input[type="checkbox"] {
-                width: 18px; /* 체크박스 더 키워서 터치 편하게 */
+                width: 18px;
                 height: 18px;
                 margin: 0 auto;
                 border: none;
-                transform: scale(1.2); /* 체크박스 시각적으로 더 선명하게 */
+                transform: scale(1.2);
             }
             #ranking-table th, #ranking-table td {
                 padding: 2px;
@@ -937,13 +937,13 @@
                             <table class="schedule-table" data-round-id="${i}">
                                 <thead>
                                     <tr>
-                                        <th style="width: 20%;">Player 1</th>
-                                        <th style="width: 20%;">Player 2</th>
-                                        <th style="width: 10%;">vs</th>
-                                        <th style="width: 20%;">Player 3</th>
-                                        <th style="width: 20%;">Player 4</th>
+                                        <th style="width: 18%;">Player 1</th>
+                                        <th style="width: 18%;">Player 2</th>
+                                        <th style="width: 8%;">vs</th>
+                                        <th style="width: 18%;">Player 3</th>
+                                        <th style="width: 18%;">Player 4</th>
                                         <th style="width: 10%; min-width: 40px;">Score</th>
-                                        <th style="width: 15%; min-width: 40px;">4점 선취</th>
+                                        <th style="width: 20%; min-width: 40px;">4점 선취</th>
                                     </tr>
                                 </thead>
                                 <tbody>
