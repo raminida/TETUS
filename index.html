@@ -484,8 +484,8 @@
                 width: 10%;
                 min-width: 40px;
             }
-            .schedule-table th:nth-child(7), .schedule-table td:nth-child(7) { /* 4점 선취 */
-                width: 20%;
+            .schedule-table th:nth-child(7), .schedule-table td:nth-child(7) { /* 4점제 */
+                width: 10%;
                 min-width: 40px;
                 padding: 2px 4px;
             }
@@ -877,7 +877,7 @@
                         'Player 3': match.player3,
                         'Player 4': match.player4,
                         '스코어': match.score,
-                        '4점 선취': match.isFourPoint ? '예' : '아니오',
+                        '4점제': match.isFourPoint ? '예' : '아니오',
                         '저장 날짜': new Date(round.timestamp).toLocaleString('ko-KR')
                     });
                 });
@@ -943,7 +943,7 @@
                                         <th style="width: 18%;">Player 3</th>
                                         <th style="width: 18%;">Player 4</th>
                                         <th style="width: 10%; min-width: 40px;">Score</th>
-                                        <th style="width: 20%; min-width: 40px;">4점 선취</th>
+                                        <th style="width: 10%; min-width: 40px;">4점제</th>
                                     </tr>
                                 </thead>
                                 <tbody>
