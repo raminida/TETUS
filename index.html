@@ -215,8 +215,8 @@
             width: 12%;
         }
         .schedule-table th, .schedule-table td {
-            padding: var(--spacing-sm) 2px;
-            border: 0.5px solid var(--border);
+            padding: 4px 1px;
+            border: none;
         }
         .schedule-table th:nth-child(3), .schedule-table td:nth-child(3) { /* vs */
             padding: 0 !important;
@@ -240,13 +240,13 @@
             outline: none;
         }
         .schedule-table input[type="text"] {
-            min-width: 40px;
-            max-width: 50px;
+            min-width: 35px;
+            max-width: 45px;
             padding: 2px;
         }
         input.score {
-            min-width: 30px;
-            max-width: 40px;
+            min-width: 25px;
+            max-width: 35px;
         }
         input.ranking-player, input.mmr {
             min-width: 70px;
@@ -460,9 +460,9 @@
                 table-layout: fixed;
             }
             .schedule-table th, .schedule-table td {
-                padding: 2px 0;
-                border: 0.5px solid var(--border);
-                font-size: 0.65rem;
+                padding: 1px 0;
+                border: none;
+                font-size: 0.6rem;
                 margin: 0;
                 box-sizing: border-box;
             }
@@ -470,45 +470,45 @@
             .schedule-table th:nth-child(2), .schedule-table td:nth-child(2), /* Player 2 */
             .schedule-table th:nth-child(4), .schedule-table td:nth-child(4), /* Player 3 */
             .schedule-table th:nth-child(5), .schedule-table td:nth-child(5) { /* Player 4 */
-                width: 12%;
+                width: 10%;
             }
             .schedule-table th:nth-child(3), .schedule-table td:nth-child(3) { /* vs */
-                width: 8%;
+                width: 5%;
                 padding: 0 !important;
                 margin: 0;
             }
             .schedule-table th:nth-child(6), .schedule-table td:nth-child(6) { /* Score */
-                width: 14%;
-                min-width: 40px;
+                width: 10%;
+                min-width: 30px;
             }
             .schedule-table th:nth-child(7), .schedule-table td:nth-child(7) { /* 4점제 */
-                width: 14%;
-                min-width: 40px;
-                padding: 2px 4px;
+                width: 10%;
+                min-width: 30px;
+                padding: 1px 1px;
             }
             .schedule-table input[type="text"] {
-                min-width: 40px;
-                max-width: 50px;
-                font-size: 0.65rem;
-                padding: 2px;
+                min-width: 30px;
+                max-width: 40px;
+                font-size: 0.6rem;
+                padding: 1px;
                 margin: 0;
                 border: none;
                 border-radius: 4px;
                 box-sizing: border-box;
             }
             .schedule-table input.score {
-                min-width: 30px;
-                max-width: 40px;
-                padding: 2px;
+                min-width: 20px;
+                max-width: 30px;
+                padding: 1px;
                 margin: 0;
                 border: none;
             }
             .schedule-table input[type="checkbox"] {
-                width: 18px;
-                height: 18px;
+                width: 14px;
+                height: 14px;
                 margin: 0 auto;
                 border: none;
-                transform: scale(1.2);
+                transform: scale(1);
             }
             #ranking-table th, #ranking-table td {
                 padding: 2px;
@@ -936,11 +936,11 @@
                                     <tr>
                                         <th style="width: 12%;">Player 1</th>
                                         <th style="width: 12%;">Player 2</th>
-                                        <th style="width: 8%;">vs</th>
+                                        <th style="width: 6%;">vs</th>
                                         <th style="width: 12%;">Player 3</th>
                                         <th style="width: 12%;">Player 4</th>
-                                        <th style="width: 14%; min-width: 40px;">Score</th>
-                                        <th style="width: 14%; min-width: 40px;">4점제</th>
+                                        <th style="width: 11%; min-width: 35px;">Score</th>
+                                        <th style="width: 11%; min-width: 35px;">4점제</th>
                                     </tr>
                                 </thead>
                                 <tbody>
