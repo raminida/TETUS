@@ -49,14 +49,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root {
-            --bg: #001F3F; /* US Open 다크 블루 */
-            --surface: #003087; /* 테니스 코트 느낌 */
-            --primary: #D32F2F; /* 가독성 좋은 레드 */
-            --primary-variant: #F44336; /* 부드러운 레드 */
-            --text: #FFFFFF; /* 화이트 텍스트 */
-            --text-sec: #CFD8DC; /* 대비 좋은 연한 블루-그레이 */
-            --gold: #FFD700; /* 어워드용 골드 */
-            --border: #4682B4; /* 테니스 코트 라인 */
+            --bg: #001F3F;
+            --surface: #003087;
+            --primary: #D32F2F;
+            --primary-variant: #F44336;
+            --text: #FFFFFF;
+            --text-sec: #CFD8DC;
+            --gold: #FFD700;
+            --border: #4682B4;
             --shadow: rgba(0, 0, 0, 0.7);
             --spacing-sm: 8px;
             --spacing-md: 12px;
@@ -64,13 +64,13 @@
             --radius: 8px;
         }
         [data-theme="light"] {
-            --bg: #F5F6F5; /* 밝은 그레이-화이트 */
-            --surface: #FFFFFF; /* 깨끗한 화이트 */
-            --primary: #003087; /* US Open 블루 */
-            --primary-variant: #4682B4; /* 라이트 블루 */
-            --text: #001F3F; /* 다크 블루 텍스트 */
-            --text-sec: #455A64; /* 대비 좋은 그레이 */
-            --border: #B0C4DE; /* 연한 블루 */
+            --bg: #F5F6F5;
+            --surface: #FFFFFF;
+            --primary: #003087;
+            --primary-variant: #4682B4;
+            --text: #001F3F;
+            --text-sec: #455A64;
+            --border: #B0C4DE;
             --shadow: rgba(0, 0, 0, 0.2);
         }
         body {
@@ -201,14 +201,14 @@
             white-space: normal;
             min-width: 250px;
         }
-        td.score-diff {
+        td.score-diff, td.mmr-change {
             color: var(--gold);
         }
-        td.score-diff.positive {
-            color: #4CAF50; /* 승리 색상 */
+        td.score-diff.positive, td.mmr-change.positive {
+            color: #4CAF50;
         }
-        td.score-diff.negative {
-            color: #D32F2F; /* 패배 색상 */
+        td.score-diff.negative, td.mmr-change.negative {
+            color: #D32F2F;
         }
         .stats-grid {
             display: grid;
@@ -357,6 +357,7 @@
                             <th>대진</th>
                             <th>스코어</th>
                             <th>스코어차</th>
+                            <th>MMR 변화</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -372,26 +373,6 @@
         var gk_fileData = {};
         function filledCell(cell) {
             return cell !== '' && cell != null;
-        }
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            if (toast) {
-                toast.textContent = message;
-                toast.classList.add('show');
-                setTimeout(() => toast.classList.remove('show'), 3000);
-            } else {
-                console.warn("Toast 요소 없음!");
-            }
-        }
-        function applyTheme(theme) {
-            const validTheme = theme === 'light' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', validTheme);
-            localStorage.setItem('theme', validTheme);
-            const themeToggle = document.getElementById('theme-toggle');
-            if (themeToggle) {
-                themeToggle.textContent = validTheme === 'dark' ? '☀️' : '🌙';
-            }
-            console.log(`테마 적용: ${validTheme}`);
         }
         function loadFileData(filename) {
             if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
@@ -411,87 +392,121 @@
                     console.log(`XLSX 파일 ${filename} 파싱 성공`);
                     return csv;
                 } catch (e) {
-                    console.error("XLSX 파싱 오류:", e.name, e.message, e.stack);
+                    console.error("XLSX 파싱 오류:", e);
                     showToast(`XLSX 파싱 실패: ${e.message || '알 수 없는 오류'}`);
                     return "";
                 }
             }
             return gk_fileData[filename] || "";
         }
-    </script>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAlcszFYMqJjaJQHajx7K695zoeRS7PsxU",
-            authDomain: "tennis-plan-jibung.firebaseapp.com",
-            projectId: "tennis-plan-jibung",
-            storageBucket: "tennis-plan-jibung.appspot.com",
-            messagingSenderId: "491083537160",
-            appId: "1:491083537160:web:0c2ec53b1285aa1cdc6abd"
-        };
-
-        let db;
-        try {
-            db = getFirestore(initializeApp(firebaseConfig));
-            console.log("Firebase 초기화 성공!");
-        } catch (e) {
-            console.error("Firebase 초기화 실패:", e.name, e.code, e.message, e.stack);
-            showToast(`Firebase 초기화 실패: ${e.message || '알 수 없는 오류'}`);
-        }
-
-        async function loadPlayerNames() {
-            if (!db) {
-                showToast("DB 연결 실패!");
-                return [];
-            }
-            try {
-                const rankingDoc = await getDoc(doc(db, 'league', 'data', 'rankings', 'v1'));
-                const playerList = document.getElementById('player-list');
-                if (rankingDoc.exists()) {
-                    const players = rankingDoc.data().players || [];
-                    playerList.innerHTML = players.map(player => 
-                        `<option value="${player.isFemale ? `${player.name}*` : player.name}"></option>`
-                    ).join('');
-                    console.log("선수 목록 로드 완료:", players.length);
-                    return players;
-                } else {
-                    console.warn("랭킹 데이터 없음!");
-                    showToast("선수 목록이 없습니다!");
-                    return [];
-                }
-            } catch (e) {
-                console.error("선수 목록 로드 실패:", e.name, e.code, e.message, e.stack);
-                showToast(`선수 목록 로드 실패: ${e.message || '알 수 없는 오류'}`);
-                return [];
+        function showToast(message, duration = 3000) {
+            const toast = document.getElementById('toast');
+            if (toast) {
+                toast.textContent = message;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), duration);
+            } else {
+                console.warn("Toast 요소 없음!");
             }
         }
 
-        async function loadMatches() {
-            if (!db) {
-                showToast("DB 연결 실패!");
-                return [];
+        function applyTheme(theme) {
+            const validTheme = theme === 'light' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', validTheme);
+            localStorage.setItem('theme', validTheme);
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) {
+                themeToggle.textContent = validTheme === 'dark' ? '☀️' : '🌙';
             }
-            try {
-                const scheduleDoc = await getDoc(doc(db, 'league', 'data', 'schedule', 'v1'));
-                if (scheduleDoc.exists()) {
-                    return scheduleDoc.data().matches || [];
-                } else {
-                    console.warn("스케줄 데이터 없음!");
-                    showToast("스케줄 데이터가 없습니다!");
-                    return [];
-                }
-            } catch (e) {
-                console.error("스케줄 로드 실패:", e.name, e.code, e.message, e.stack);
-                showToast(`스케줄 로드 실패: ${e.message || '알 수 없는 오류'}`);
-                return [];
-            }
+            console.log(`테마 적용: ${validTheme}`);
         }
+
+        const femalePlayersList = ["남정주", "김유하", "성예진", "한혜령", "조지영", "이은지", "고경리", "김나경", "김지원", "이지화", "정연화", "차경련", "한정아", "유시연", "김유미", "신현정", "이예은", "이선미", "박선숙", "박아름", "이아름", "서유나", "허선영", "송은주", "육하나", "이가영", "이유빈", "정해영", "조수희", "조아현", "최주연", "황수진"];
 
         function normalizeName(name) {
             return name ? name.replace(/[@.*\s]+/g, '').toLowerCase() : '';
+        }
+
+        function isMixedTeam(p1, p2, data) {
+            const player1 = data.find(p => normalizeName(p.name) === normalizeName(p1));
+            const player2 = data.find(p => normalizeName(p.name) === normalizeName(p2));
+            return player1 && player2 && ((player1.isFemale && !player2.isFemale) || (!player1.isFemale && player2.isFemale));
+        }
+
+        function isMaleTeam(p1, p2, data) {
+            const player1 = data.find(p => normalizeName(p.name) === normalizeName(p1));
+            const player2 = data.find(p => normalizeName(p.name) === normalizeName(p2));
+            return player1 && player2 && !player1.isFemale && !player2.isFemale;
+        }
+
+        function calculateMMRChange(match, playerName, isPlayerTeam1, players) {
+            const BASE_MMR = 1500;
+            let multiplier = 1.0;
+            const winnerIsMixed = isMixedTeam(match.winnerPlayer1, match.winnerPlayer2, players);
+            const loserIsMixed = isMixedTeam(match.loserPlayer1, match.loserPlayer2, players);
+            const winnerIsMale = isMaleTeam(match.winnerPlayer1, match.winnerPlayer2, players);
+            const loserIsMale = isMaleTeam(match.loserPlayer1, match.loserPlayer2, players);
+            if (winnerIsMixed && loserIsMale) multiplier = 2.0;
+            else if (winnerIsMale && loserIsMixed) multiplier = 0.5;
+            const change = Math.round(25 * multiplier);
+            const isWinner = isPlayerTeam1 ? match.score.split('-').map(Number)[0] > match.score.split('-').map(Number)[1] : match.score.split('-').map(Number)[1] > match.score.split('-').map(Number)[0];
+            return { mmrChange: isWinner ? change : -change, reason: `멀티플라이어: ${multiplier}, 혼성: ${winnerIsMixed}/${loserIsMixed}` };
+        }
+
+        function loadPlayerNames() {
+            try {
+                const rankingData = JSON.parse(localStorage.getItem('rankingData') || '[]');
+                const playerList = document.getElementById('player-list');
+                if (!playerList) {
+                    console.error("player-list 요소 없음");
+                    showToast("선수 목록 요소 오류!");
+                    return [];
+                }
+                if (rankingData.length === 0) {
+                    console.warn("랭킹 데이터 없음");
+                    showToast("선수 목록이 없습니다!");
+                    return [];
+                }
+                playerList.innerHTML = rankingData.map(player => 
+                    `<option value="${player.isFemale ? `${player.name}*` : player.name}"></option>`
+                ).join('');
+                console.log("선수 목록 로드 완료:", rankingData.length);
+                return rankingData;
+            } catch (e) {
+                console.error("선수 목록 로드 실패:", E);
+                showToast("선수 목록 로드 실패!");
+                return [];
+            }
+        }
+
+        function loadMatches() {
+            try {
+                const savedRounds = new Map(JSON.parse(localStorage.getItem('savedRounds') || '[]'));
+                const matches = [];
+                savedRounds.forEach((roundData, roundId) => {
+                    if (!roundData.matches) return;
+                    roundData.matches.forEach((match, index) => {
+                        if (!match.player1 || !match.player2 || !match.player3 || !match.player4 || !match.score) return;
+                        matches.push({
+                            round: roundId,
+                            players: [match.player1, match.player2, match.player3, match.player4],
+                            score: match.score,
+                            isFourPoint: match.isFourPoint || false,
+                            winnerPlayer1: match.score.split('-')[0] > match.score.split('-')[1] ? match.player1 : match.player3,
+                            winnerPlayer2: match.score.split('-')[0] > match.score.split('-')[1] ? match.player2 : match.player4,
+                            loserPlayer1: match.score.split('-')[0] > match.score.split('-')[1] ? match.player3 : match.player1,
+                            loserPlayer2: match.score.split('-')[0] > match.score.split('-')[1] ? match.player4 : match.player2
+                        });
+                    });
+                });
+                console.log("매치 데이터 로드 완료:", matches.length);
+                return matches;
+            } catch (e) {
+                console.error("매치 데이터 로드 실패:", e);
+                showToast("매치 데이터 로드 실패!");
+                return [];
+            }
         }
 
         async function filterMatches() {
@@ -509,7 +524,8 @@
                 return;
             }
 
-            const matches = await loadMatches();
+            const matches = loadMatches();
+            const players = loadPlayerNames();
             const filteredMatches = matches.filter(match => {
                 const normalizedPlayers = match.players.map(normalizeName);
                 const player1Index = normalizedPlayers.indexOf(player1);
@@ -537,7 +553,7 @@
                 return;
             }
 
-            let wins = 0, losses = 0, totalGameDiff = 0;
+            let wins = 0, losses = 0, totalGameDiff = 0, totalMMRChange = 0;
             filteredMatches.sort((a, b) => a.round - b.round);
             filteredMatches.forEach(match => {
                 const player1Index = match.players.findIndex(p => normalizeName(p) === player1);
@@ -575,6 +591,9 @@
                     totalGameDiff += gameDiff;
                 }
 
+                const { mmrChange, reason } = calculateMMRChange(match, player1Input, isTeam1, players);
+                totalMMRChange += mmrChange;
+
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${match.round}</td>
@@ -582,7 +601,9 @@
                     <td class="matchup">${matchup}</td>
                     <td>${match.score || '-'}</td>
                     <td class="score-diff ${gameDiff > 0 ? 'positive' : gameDiff < 0 ? 'negative' : ''}">${scoreDiffDisplay}</td>
+                    <td class="mmr-change ${mmrChange > 0 ? 'positive' : mmrChange < 0 ? 'negative' : ''}">${mmrChange !== 0 ? (mmrChange > 0 ? `+${mmrChange}` : mmrChange) : '-'}</td>
                 `;
+                row.title = `대진: ${matchup}\nMMR 변화 이유: ${reason}`;
                 tableBody.appendChild(row);
             });
 
@@ -595,6 +616,7 @@
                 <div class="stat-box"><h3>패</h3><p>${losses}</p></div>
                 <div class="stat-box"><h3>승률(%)</h3><p>${winRate}</p></div>
                 <div class="stat-box"><h3>평균 점수차</h3><p>${avgGameDiff > 0 ? '+' : ''}${avgGameDiff}</p></div>
+                <div class="stat-box"><h3>총 MMR 변화</h3><p>${totalMMRChange > 0 ? '+' : ''}${totalMMRChange}</p></div>
             `;
             showToast("파트너 전적 검색 완료!");
         }
@@ -632,7 +654,7 @@
                     applyTheme(localStorage.getItem('theme') || 'dark');
                     console.log("applyTheme 호출 성공");
                 } catch (e) {
-                    console.error("applyTheme 호출 실패:", e.message, e.stack);
+                    console.error("applyTheme 호출 실패:", e);
                     showToast("테마 적용 오류!");
                 }
                 loadPlayerNames();
@@ -653,7 +675,7 @@
                         try {
                             applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
                         } catch (e) {
-                            console.error("themeToggle applyTheme 호출 실패:", e.message, e.stack);
+                            console.error("themeToggle applyTheme 호출 실패:", e);
                             showToast("테마 전환 오류!");
                         }
                     });
