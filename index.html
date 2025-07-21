@@ -46,40 +46,39 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Poppins:wght@600;700&display=stylesheet" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Poppins:wght@600;700&family=Roboto+Condensed:wght@400;700&display=stylesheet" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #121212;
-            --surface-color: #1E1E1E;
-            --primary-color: #4CAF50;
-            --primary-variant-color: #81C784;
-            --secondary-color: #FFFFFF;
-            --text-color: #E0E0E0;
-            --text-secondary-color: #A0A0A0;
-            --accent-gold: #FFC107;
-            --border-color: #333333;
-            --shadow-color: rgba(0, 0, 0, 0.5);
+            --bg: #001F3F;
+            --surface: #003087;
+            --primary: #D32F2F;
+            --primary-variant: #F44336;
+            --text: #FFFFFF;
+            --text-sec: #CFD8DC;
+            --gold: #FFD700;
+            --border: #4682B4;
+            --shadow: rgba(0, 0, 0, 0.7);
             --spacing-sm: 8px;
             --spacing-md: 12px;
             --spacing-lg: 20px;
             --radius: 8px;
             --win-streak: #4CAF50;
-            --loss-streak: #F44336;
+            --loss-streak: #D32F2F;
         }
-        html[data-theme="light"] {
-            --bg-color: #F0F4F8;
-            --surface-color: #FFFFFF;
-            --primary-color: #1A3C34;
-            --primary-variant-color: #2A6B5B;
-            --text-color: #1F2937;
-            --text-secondary-color: #6B7280;
-            --border-color: #E5E7EB;
-            --shadow-color: rgba(0, 0, 0, 0.1);
+        [data-theme="light"] {
+            --bg: #F5F6F5;
+            --surface: #FFFFFF;
+            --primary: #003087;
+            --primary-variant: #4682B4;
+            --text: #001F3F;
+            --text-sec: #455A64;
+            --border: #B0C4DE;
+            --shadow: rgba(0, 0, 0, 0.2);
         }
         body {
-            font-family: 'Noto Sans KR', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            font-family: 'Roboto Condensed', 'Noto Sans KR', sans-serif;
+            background: var(--bg);
+            color: var(--text);
             margin: 0;
             padding: var(--spacing-md);
             transition: background-color 0.3s, color 0.3s;
@@ -93,95 +92,98 @@
             font-size: 2.8rem;
             font-weight: 900;
             text-align: center;
-            color: var(--secondary-color);
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-variant-color));
+            background: linear-gradient(135deg, var(--primary), var(--primary-variant));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
             padding-top: var(--spacing-lg);
             margin-bottom: 2rem;
             letter-spacing: -2px;
-            text-shadow: 2px 2px 10px var(--shadow-color);
+            text-shadow: 2px 2px 10px var(--shadow);
         }
         .section {
-            background: var(--surface-color);
-            padding: var(--spacing-lg);
+            background: var(--surface);
+            padding: 0;
             border-radius: var(--radius);
-            box-shadow: 0 10px 30px var(--shadow-color);
+            box-shadow: 0 10px 30px var(--shadow);
             margin-bottom: 2.5rem;
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border);
         }
         h2 {
             font-family: 'Poppins', sans-serif;
             font-size: 1.8rem;
             font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: var(--spacing-sm);
+            color: var(--primary);
+            margin: var(--spacing-md);
             padding-bottom: var(--spacing-sm);
-            border-bottom: 2px solid var(--border-color);
+            border-bottom: 3px solid var(--border);
         }
         details {
-            margin-bottom: 1rem;
+            margin: 0;
             border-radius: var(--radius);
             overflow: hidden;
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border);
+            width: 100%;
+            transition: all 0.3s ease;
         }
         details summary {
-            padding: var(--spacing-md) 15px;
+            padding: var(--spacing-md);
             cursor: pointer;
             font-size: 1.1rem;
             font-weight: 700;
             outline: none;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.15), var(--surface));
+            color: var(--text);
             transition: background 0.3s ease, color 0.3s ease;
-            background: linear-gradient(135deg, #2a2a2a, #222222);
-            color: var(--secondary-color);
         }
-        html[data-theme="light"] details summary {
-            background: linear-gradient(135deg, #f9f9f9, #f1f1f1);
-            color: var(--text-color);
+        [data-theme="light"] details summary {
+            background: linear-gradient(135deg, #F9FAFB, #FFFFFF);
+            color: var(--primary);
         }
         details[open] > summary {
-            background: var(--primary-color);
-            color: var(--bg-color);
-        }
-        html[data-theme="light"] details[open] > summary {
-            color: var(--secondary-color);
+            background: var(--primary);
+            color: var(--bg);
         }
         .round-group-content {
-            padding: 15px 10px 5px 10px;
-            background: rgba(0,0,0,0.1);
-            border-top: 1px solid var(--border-color);
+            padding: var(--spacing-md);
+            background: rgba(0, 0, 0, 0.05);
+            border-top: 2px solid var(--border);
+            width: 100%;
         }
-        html[data-theme="light"] .round-group-content {
-            background: rgba(0,0,0,0.02);
+        [data-theme="light"] .round-group-content {
+            background: rgba(0, 0, 0, 0.02);
         }
         .table-wrapper {
             overflow-x: auto;
             overflow-y: auto;
             max-height: 70vh;
             max-width: 100%;
-            -webkit-overflow-scrolling: touch;
+            margin: 0;
+            padding: 0 2px;
+            width: 100%;
+            box-sizing: border-box;
             scrollbar-width: thin;
-            scrollbar-color: var(--primary-color) var(--surface-color);
+            scrollbar-color: var(--primary) var(--surface);
+            -webkit-overflow-scrolling: touch;
         }
         .table-wrapper::-webkit-scrollbar {
             width: 6px;
             height: 6px;
         }
         .table-wrapper::-webkit-scrollbar-track {
-            background: var(--surface-color);
+            background: var(--surface);
             border-radius: var(--radius);
         }
         .table-wrapper::-webkit-scrollbar-thumb {
-            background: var(--primary-color);
+            background: var(--primary);
             border-radius: var(--radius);
         }
         .table-wrapper::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-variant-color);
+            background: var(--primary-variant);
         }
         table {
             width: 100%;
-            min-width: 100%;
+            min-width: 300px;
             border-collapse: collapse;
             table-layout: fixed;
         }
@@ -189,64 +191,28 @@
             min-width: 900px;
         }
         th, td {
-            padding: var(--spacing-md) 4px;
+            padding: var(--spacing-sm) 4px;
             text-align: center;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border);
             font-size: 0.9rem;
+            color: var(--text);
             white-space: nowrap;
         }
-        #ranking-table thead th {
+        #ranking-table th {
             position: sticky;
             top: 0;
-            background: var(--surface-color);
+            background: var(--surface);
             z-index: 10;
             cursor: pointer;
         }
-        #ranking-table thead th:hover {
-            background: var(--primary-color);
-            color: var(--bg-color);
-        }
-        th {
-            font-family: 'Poppins', sans-serif;
-            background-color: rgba(0, 0, 0, 0.2);
-            color: var(--primary-variant-color);
-            font-weight: 700;
-        }
-        html[data-theme="light"] th {
-            background-color: #F9FAFB;
-        }
-        .rank-cell {
-            font-weight: 900;
-            color: var(--accent-gold);
-            text-shadow: 0 0 5px var(--shadow-color);
-            position: relative;
-            line-height: 1.2;
-        }
-        .streak-cell {
-            font-size: 0.7rem;
-            white-space: nowrap;
-            margin-left: var(--spacing-sm);
-            display: inline-block;
-            padding: 2px 6px;
-            border-radius: 4px;
-        }
-        .streak-win {
-            background: var(--win-streak);
-            color: var(--bg-color);
-            font-weight: bold;
-        }
-        .streak-loss {
-            background: var(--loss-streak);
-            color: var(--bg-color);
-            font-weight: bold;
-        }
-        .streak-none {
-            color: var(--text-secondary-color);
+        #ranking-table th:hover {
+            background: var(--primary);
+            color: var(--bg);
         }
         #ranking-table th:nth-child(2), #ranking-table td:nth-child(2) {
             position: sticky;
             left: 0;
-            background: var(--surface-color);
+            background: var(--surface);
             z-index: 1;
         }
         #ranking-table th {
@@ -273,108 +239,190 @@
         #ranking-table th[data-sort="bestPartner"] {
             width: 15%;
         }
+        .rank-cell {
+            font-weight: 900;
+            color: var(--gold);
+            text-shadow: 0 0 5px var(--shadow);
+            position: relative;
+            line-height: 1.2;
+        }
+        .streak-cell {
+            font-size: 0.7rem;
+            white-space: nowrap;
+            margin-left: var(--spacing-sm);
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .streak-win {
+            background: var(--win-streak);
+            color: var(--bg);
+            font-weight: bold;
+        }
+        .streak-loss {
+            background: var(--loss-streak);
+            color: var(--bg);
+            font-weight: bold;
+        }
+        .streak-none {
+            color: var(--text-sec);
+        }
         input[type="text"] {
             width: 100%;
-            min-width: 70px;
-            max-width: 100px;
-            padding: var(--spacing-sm);
-            background-color: var(--surface-color);
-            border: 1px solid var(--border-color);
+            min-width: 60px;
+            max-width: 80px;
+            padding: 6px;
+            background: var(--surface);
+            border: 1px solid var(--border);
             border-radius: 6px;
             box-sizing: border-box;
-            color: var(--text-color);
-            font-family: 'Noto Sans KR', sans-serif;
+            color: var(--text);
+            font-family: 'Roboto Condensed', sans-serif;
             text-align: center;
+            transition: border-color 0.2s;
+        }
+        input[type="text"]:focus {
+            border-color: var(--primary);
+            outline: none;
         }
         input.ranking-player, input.mmr {
             min-width: 80px;
             max-width: 120px;
+            font-size: 0.975rem;
         }
         input.best-partner {
             min-width: 200px;
-            max-width: 300px;
+            max-width: 225px;
+            font-size: 0.7rem;
         }
         input.readonly {
-            background-color: #252525;
-            color: var(--text-secondary-color);
+            background: rgba(0, 0, 0, 0.2);
+            color: var(--text-sec);
             font-weight: bold;
         }
-        html[data-theme="light"] input.readonly {
-            background-color: #f0f0f0;
+        [data-theme="light"] input.readonly {
+            background: rgba(0, 0, 0, 0.05);
         }
         .schedule-table th, .schedule-table td {
-            padding: 4px 1px;
-            font-size: 0.9rem;
+            padding: 2px 0;
+            border: none;
+            font-size: 1.35rem;
         }
-        .schedule-table td input.player1,
-        .schedule-table td input.player2,
-        .schedule-table td input.player3,
-        .schedule-table td input.player4 {
-            min-width: 70px;
-            max-width: 100px;
+        .schedule-table th:nth-child(3), .schedule-table td:nth-child(3) {
+            padding: 0 !important;
         }
-        .schedule-table td input.score {
-            min-width: 50px;
-            max-width: 70px;
+        .schedule-table input[type="text"] {
+            min-width: 90px;
+            max-width: 120px;
+            padding: 2px;
+            font-size: 1.35rem;
         }
-        input[type="checkbox"] {
+        .schedule-table input.score {
+            min-width: 30px;
+            max-width: 45px;
+        }
+        .schedule-table input[type="checkbox"] {
+            width: 32px;
+            height: 32px;
             margin: 0 auto;
-            display: block;
+            transform: scale(1);
         }
-        .btn-group {
+        .input-group {
             display: flex;
-            flex-direction: column;
+            justify-content: flex-start;
             gap: 10px;
-            margin-top: var(--spacing-lg);
+            margin: var(--spacing-md);
         }
         .btn {
-            display: inline-block;
-            padding: var(--spacing-md) var(--spacing-lg);
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-variant-color));
-            color: #FFFFFF;
-            text-decoration: none;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-variant));
+            color: var(--bg);
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        .update-btn {
+            width: 70%;
+            max-width: 120px;
+            margin: var(--spacing-lg) auto;
+            padding: 8px;
+            background: linear-gradient(135deg, var(--gold), #F5B02E);
+            color: var(--bg);
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            font-weight: 900;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .save-all-btn {
+            width: 70%;
+            max-width: 120px;
+            margin: var(--spacing-lg) auto;
+            padding: 8px;
+            background: linear-gradient(135deg, #4CAF50, #66BB6A);
+            color: var(--bg);
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            font-weight: 900;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .update-btn:hover, .save-all-btn:hover {
+            transform: scale(1.05);
+        }
+        .toggle-btn {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-variant));
+            color: var(--bg);
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin: var(--spacing-md) auto;
+            display: block;
+        }
+        .toggle-btn:hover {
+            transform: scale(1.05);
+        }
+        .ranking-filter {
+            display: flex;
+            gap: 10px;
+            margin: var(--spacing-md);
+            justify-content: center;
+        }
+        .filter-btn {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.2), var(--surface));
+            color: var(--text);
+            border: 2px solid var(--border);
             border-radius: var(--radius);
             cursor: pointer;
             font-weight: 700;
-            font-size: 1rem;
-            border: none;
-            text-align: center;
+            transition: background 0.3s, color 0.3s, transform 0.2s;
         }
-        html[data-theme="dark"] .btn {
-            color: var(--bg-color);
+        .filter-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-variant));
+            color: var(--bg);
+            border-color: var(--primary);
         }
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .filter-btn:hover {
+            transform: scale(1.05);
         }
-        .update-btn {
-            width: 100%;
-            margin-top: var(--spacing-lg);
-            padding: 15px;
-            background: linear-gradient(135deg, var(--accent-gold), #F5B02E);
-            color: var(--bg-color);
-            border: none;
-            border-radius: var(--radius);
-            font-size: 1.2rem;
-            font-weight: 900;
-            cursor: pointer;
+        [data-theme="light"] .filter-btn {
+            background: linear-gradient(135deg, #F9FAFB, #FFFFFF);
+            color: var(--primary);
         }
-        .save-all-btn {
-            width: 100%;
-            margin-top: var(--spacing-lg);
-            padding: 15px;
-            background: linear-gradient(135deg, #4CAF50, #66BB6A);
-            color: var(--bg-color);
-            border: none;
-            border-radius: var(--radius);
-            font-size: 1.2rem;
-            font-weight: 900;
-            cursor: pointer;
-        }
-        .toggle-btn {
-            padding: var(--spacing-sm) var(--spacing-md);
-            margin: var(--spacing-sm) auto;
-            display: block;
+        [data-theme="light"] .filter-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-variant));
+            color: var(--bg);
         }
         .toast {
             position: fixed;
@@ -385,60 +433,42 @@
             color: #fff;
             padding: var(--spacing-md) 25px;
             border-radius: 50px;
-            box-shadow: 0 5px 15px var(--shadow-color);
+            box-shadow: 0 5px 15px var(--shadow);
             opacity: 0;
             transition: opacity 0.4s, transform 0.4s;
             font-weight: 700;
+            font-family: 'Roboto Condensed', sans-serif;
             z-index: 1000;
+        }
+        [data-theme="light"] .toast {
+            background: linear-gradient(135deg, #F9FAFB, #FFFFFF);
+            color: #001F3F;
         }
         .toast.show {
             opacity: 1;
         }
         .championship-star {
-            color: var(--accent-gold);
-            text-shadow: 0 0 5px var(--shadow-color);
+            color: var(--gold);
+            text-shadow: 0 0 5px var(--shadow);
             font-size: 1.1rem;
             font-weight: 900;
         }
         .ranking-player[value$="*"] {
-            color: var(--primary-variant-color);
-        }
-        .ranking-filter {
-            display: flex;
-            gap: var(--spacing-sm);
-            margin-bottom: var(--spacing-md);
-        }
-        .filter-btn {
-            padding: var(--spacing-sm) var(--spacing-md);
-            background: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            cursor: pointer;
-            color: var(--text-color);
-            font-weight: 700;
-        }
-        .filter-btn.active {
-            background: var(--primary-color);
-            color: var(--bg-color);
-        }
-        tr.lower-rank {
-            display: none;
-        }
-        tr.lower-rank.show {
-            display: table-row;
+            color: var(--primary-variant);
         }
         .saved-indicator {
-            color: var(--accent-gold);
-            margin-left: 5px;
-            font-size: 0.9rem;
+            margin-left: 8px;
+            color: var(--gold);
+            font-size: 1rem;
         }
         .saved-info {
-            color: var(--text-secondary-color);
-            margin-left: 5px;
             font-size: 0.8rem;
+            color: var(--text-sec);
+            margin-left: 5px;
+            white-space: nowrap;
         }
         .champion-name {
-            color: var(--accent-gold);
+            color: var(--gold);
             font-weight: bold;
         }
         .popup {
@@ -447,13 +477,13 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: var(--surface-color);
+            background: var(--surface);
             padding: var(--spacing-lg);
             border-radius: var(--radius);
-            box-shadow: 0 10px 30px var(--shadow-color);
+            box-shadow: 0 10px 30px var(--shadow);
             z-index: 2000;
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
+            color: var(--text);
+            border: 2px solid var(--border);
             max-width: 400px;
             text-align: center;
         }
@@ -466,9 +496,12 @@
             right: var(--spacing-sm);
             background: none;
             border: none;
-            color: var(--text-color);
-            font-size: 1.5rem;
+            color: var(--text);
+            font-size: 1.2rem;
             cursor: pointer;
+        }
+        .close-btn:hover {
+            color: var(--primary);
         }
         .overlay {
             display: none;
@@ -494,10 +527,13 @@
                 max-height: 50vh;
                 max-width: 100%;
                 overflow-x: auto;
+                padding: 0 2px;
+                box-sizing: border-box;
                 -webkit-overflow-scrolling: touch;
             }
             table {
-                min-width: 100%;
+                min-width: 300px;
+                width: 100%;
             }
             #ranking-table {
                 min-width: 900px;
@@ -527,46 +563,89 @@
             #ranking-table th[data-sort="bestPartner"] {
                 width: 15%;
             }
-            input[type="text"] {
-                min-width: 70px;
-                max-width: 100px;
+            #ranking-table input[type="text"] {
+                min-width: 80px;
+                max-width: 120px;
                 font-size: 0.7rem;
             }
-            input.ranking-player, input.mmr {
+            #ranking-table input.ranking-player, #ranking-table input.mmr {
                 min-width: 80px;
                 max-width: 120px;
                 font-size: 0.975rem;
             }
-            input.best-partner {
+            #ranking-table input.best-partner {
                 min-width: 200px;
                 max-width: 225px;
                 font-size: 0.7rem;
             }
+            .schedule-table {
+                table-layout: fixed;
+            }
             .schedule-table th, .schedule-table td {
-                padding: 4px 1px;
+                padding: 2px 0;
+                border: none;
                 font-size: 0.7rem;
-                border: 0.5px solid var(--border-color);
+                margin: 0;
+                box-sizing: border-box;
             }
-            .schedule-table td input.player1,
-            .schedule-table td input.player2,
-            .schedule-table td input.player3,
-            .schedule-table td input.player4 {
-                min-width: 60px;
-                max-width: 80px;
+            .schedule-table th:nth-child(1), .schedule-table td:nth-child(1),
+            .schedule-table th:nth-child(2), .schedule-table td:nth-child(2),
+            .schedule-table th:nth-child(4), .schedule-table td:nth-child(4),
+            .schedule-table th:nth-child(5), .schedule-table td:nth-child(5) {
+                width: 11%;
             }
-            .schedule-table td input.score {
-                min-width: 50px;
-                max-width: 60px;
+            .schedule-table th:nth-child(3), .schedule-table td:nth-child(3) {
+                width: 2%;
+                padding: 0 !important;
+                margin: 0;
+            }
+            .schedule-table th:nth-child(6), .schedule-table td:nth-child(6) {
+                width: 2.5%;
+                min-width: 10px;
+                padding: 0;
+            }
+            .schedule-table th:nth-child(7), .schedule-table td:nth-child(7) {
+                width: 4%;
+                min-width: 14px;
+                padding: 0;
+                text-align: left;
+            }
+            .schedule-table input[type="text"] {
+                min-width: 32px;
+                max-width: 42px;
+                height: 24px;
+                font-size: 0.7rem;
+                padding: 1px;
+                margin: 0;
+                border: none;
+                border-radius: 4px;
+                box-sizing: border-box;
+            }
+            .schedule-table input.score {
+                min-width: 18px;
+                max-width: 26px;
+                height: 24px;
+                font-size: 0.7rem;
+                padding: 1px;
+                margin: 0;
+                border: none;
+            }
+            .schedule-table input[type="checkbox"] {
+                width: 14px;
+                height: 14px;
+                margin: 0;
+                border: none;
+                transform: scale(1);
             }
             .btn {
-                padding: 8px 12px;
-                font-size: 0.9rem;
+                padding: 6px 12px;
+                font-size: 0.8rem;
             }
             .update-btn, .save-all-btn, .toggle-btn {
-                width: 80%;
-                max-width: 150px;
-                padding: 10px;
-                font-size: 0.9rem;
+                width: 60%;
+                max-width: 100px;
+                padding: 6px;
+                font-size: 0.8rem;
             }
             .ranking-filter {
                 flex-direction: row;
@@ -578,11 +657,15 @@
                 font-size: 0.75rem;
                 min-width: 80px;
             }
+            .input-group {
+                flex-direction: column;
+                align-items: center;
+            }
             .saved-info {
                 font-size: 0.65rem;
                 max-width: 120px;
-                overflow: hidden;
-                text-overflow: ellipsis;
+                overflow: visible;
+                text-overflow: clip;
                 display: inline-block;
                 vertical-align: middle;
             }
@@ -729,10 +812,10 @@
                 const endRound = Math.min((category + 1) * roundsPerCategory, totalRounds);
                 roundsHtml += `<details class="round-group"><summary>회차 ${startRound} ~ ${endRound}</summary><div class="round-group-content">`;
                 for (let i = startRound; i <= endRound; i++) {
-                    const roundData = savedRounds.get(i);
-                    const isSaved = !!roundData;
-                    const savedDate = roundData?.timestamp ? new Date(roundData.timestamp).toLocaleDateString('ko-KR') : '';
-                    const champions = roundData?.champions?.map(name => `<span class="champion-name">${name}</span>`).join(', ') || '없음';
+                    const roundData = savedRounds.get(i) || {};
+                    const isSaved = !!roundData.matches;
+                    const savedDate = roundData.timestamp ? new Date(roundData.timestamp).toLocaleDateString('ko-KR') : '';
+                    const champions = roundData.champions?.map(name => `<span class="champion-name">${name}</span>`).join(', ') || '없음';
                     roundsHtml += `
                     <details>
                         <summary>${i}회${isSaved ? `<span class="saved-indicator">💾</span><span class="saved-info">[${savedDate}, 우승: ${champions}]</span>` : ''}</summary>
@@ -751,6 +834,25 @@
                 roundsHtml += `</div></details>`;
             }
             container.innerHTML = roundsHtml;
+
+            // 저장된 데이터로 입력 필드 채우기
+            savedRounds.forEach((roundData, roundId) => {
+                const table = document.querySelector(`.schedule-table[data-round-id="${roundId}"]`);
+                if (table && roundData.matches) {
+                    const rows = table.querySelectorAll('tbody tr');
+                    roundData.matches.forEach((match, index) => {
+                        if (rows[index]) {
+                            rows[index].querySelector('.player1').value = match.player1 || '';
+                            rows[index].querySelector('.player2').value = match.player2 || '';
+                            rows[index].querySelector('.player3').value = match.player3 || '';
+                            rows[index].querySelector('.player4').value = match.player4 || '';
+                            rows[index].querySelector('.score').value = match.score || '';
+                            rows[index].querySelector('.is-four-point').checked = match.isFourPoint || false;
+                        }
+                    });
+                }
+            });
+
             console.log("회차 일정표 렌더링 완료!");
         }
 
@@ -1331,13 +1433,14 @@
                 try {
                     applyTheme(localStorage.getItem('theme') || 'dark');
                     console.log("applyTheme 호출 성공");
+                    const savedRounds = new Map(JSON.parse(localStorage.getItem('savedRounds') || '[]'));
+                    createRankingRows(savedRounds);
+                    createScheduleRounds(savedRounds);
+                    setupInputListeners();
                 } catch (e) {
-                    console.error("applyTheme 호출 실패:", e.message, e.stack);
-                    showToast("테마 적용 오류!");
+                    console.error("초기화 실패:", e.message, e.stack);
+                    showToast("페이지 초기화 오류!");
                 }
-                createRankingRows();
-                createScheduleRounds();
-                setupInputListeners();
                 const themeToggle = document.getElementById('theme-toggle');
                 if (themeToggle) {
                     themeToggle.addEventListener('click', () => {
