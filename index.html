@@ -38,7 +38,7 @@
         return gk_fileData[filename] || "";
         }
         </script><!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -46,39 +46,40 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Poppins:wght@600;700&family=Roboto+Condensed:wght@400;700&display=stylesheet" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Poppins:wght@600;700&display=stylesheet" rel="stylesheet">
     <style>
         :root {
-            --bg: #001F3F;
-            --surface: #003087;
-            --primary: #D32F2F;
-            --primary-variant: #F44336;
-            --text: #FFFFFF;
-            --text-sec: #CFD8DC;
-            --gold: #FFD700;
-            --border: #4682B4;
-            --shadow: rgba(0, 0, 0, 0.7);
+            --bg-color: #121212;
+            --surface-color: #1E1E1E;
+            --primary-color: #4CAF50;
+            --primary-variant-color: #81C784;
+            --secondary-color: #FFFFFF;
+            --text-color: #E0E0E0;
+            --text-secondary-color: #A0A0A0;
+            --accent-gold: #FFC107;
+            --border-color: #333333;
+            --shadow-color: rgba(0, 0, 0, 0.5);
             --spacing-sm: 8px;
             --spacing-md: 12px;
             --spacing-lg: 20px;
             --radius: 8px;
             --win-streak: #4CAF50;
-            --loss-streak: #D32F2F;
+            --loss-streak: #F44336;
         }
-        [data-theme="light"] {
-            --bg: #F5F6F5;
-            --surface: #FFFFFF;
-            --primary: #003087;
-            --primary-variant: #4682B4;
-            --text: #001F3F;
-            --text-sec: #455A64;
-            --border: #B0C4DE;
-            --shadow: rgba(0, 0, 0, 0.2);
+        html[data-theme="light"] {
+            --bg-color: #F0F4F8;
+            --surface-color: #FFFFFF;
+            --primary-color: #1A3C34;
+            --primary-variant-color: #2A6B5B;
+            --text-color: #1F2937;
+            --text-secondary-color: #6B7280;
+            --border-color: #E5E7EB;
+            --shadow-color: rgba(0, 0, 0, 0.1);
         }
         body {
-            font-family: 'Roboto Condensed', 'Noto Sans KR', sans-serif;
-            background: var(--bg);
-            color: var(--text);
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             margin: 0;
             padding: var(--spacing-md);
             transition: background-color 0.3s, color 0.3s;
@@ -92,98 +93,95 @@
             font-size: 2.8rem;
             font-weight: 900;
             text-align: center;
-            background: linear-gradient(135deg, var(--primary), var(--primary-variant));
+            color: var(--secondary-color);
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-variant-color));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
             padding-top: var(--spacing-lg);
             margin-bottom: 2rem;
             letter-spacing: -2px;
-            text-shadow: 2px 2px 10px var(--shadow);
+            text-shadow: 2px 2px 10px var(--shadow-color);
         }
         .section {
-            background: var(--surface);
-            padding: 0;
+            background: var(--surface-color);
+            padding: var(--spacing-lg);
             border-radius: var(--radius);
-            box-shadow: 0 10px 30px var(--shadow);
+            box-shadow: 0 10px 30px var(--shadow-color);
             margin-bottom: 2.5rem;
-            border: 2px solid var(--border);
+            border: 1px solid var(--border-color);
         }
         h2 {
             font-family: 'Poppins', sans-serif;
             font-size: 1.8rem;
             font-weight: 700;
-            color: var(--primary);
-            margin: var(--spacing-md);
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-sm);
             padding-bottom: var(--spacing-sm);
-            border-bottom: 3px solid var(--border);
+            border-bottom: 2px solid var(--border-color);
         }
         details {
-            margin: 0;
+            margin-bottom: 1rem;
             border-radius: var(--radius);
             overflow: hidden;
-            border: 2px solid var(--border);
-            width: 100%;
-            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
         }
         details summary {
-            padding: var(--spacing-md);
+            padding: var(--spacing-md) 15px;
             cursor: pointer;
             font-size: 1.1rem;
             font-weight: 700;
             outline: none;
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.15), var(--surface));
-            color: var(--text);
             transition: background 0.3s ease, color 0.3s ease;
+            background: linear-gradient(135deg, #2a2a2a, #222222);
+            color: var(--secondary-color);
         }
-        [data-theme="light"] details summary {
-            background: linear-gradient(135deg, #F9FAFB, #FFFFFF);
-            color: var(--primary);
+        html[data-theme="light"] details summary {
+            background: linear-gradient(135deg, #f9f9f9, #f1f1f1);
+            color: var(--text-color);
         }
         details[open] > summary {
-            background: var(--primary);
-            color: var(--bg);
+            background: var(--primary-color);
+            color: var(--bg-color);
+        }
+        html[data-theme="light"] details[open] > summary {
+            color: var(--secondary-color);
         }
         .round-group-content {
-            padding: var(--spacing-md);
-            background: rgba(0, 0, 0, 0.05);
-            border-top: 2px solid var(--border);
-            width: 100%;
+            padding: 15px 10px 5px 10px;
+            background: rgba(0,0,0,0.1);
+            border-top: 1px solid var(--border-color);
         }
-        [data-theme="light"] .round-group-content {
-            background: rgba(0, 0, 0, 0.02);
+        html[data-theme="light"] .round-group-content {
+            background: rgba(0,0,0,0.02);
         }
         .table-wrapper {
             overflow-x: auto;
             overflow-y: auto;
             max-height: 70vh;
             max-width: 100%;
-            margin: 0;
-            padding: 0 2px;
-            width: 100%;
-            box-sizing: border-box;
-            scrollbar-width: thin;
-            scrollbar-color: var(--primary) var(--surface);
             -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) var(--surface-color);
         }
         .table-wrapper::-webkit-scrollbar {
             width: 6px;
             height: 6px;
         }
         .table-wrapper::-webkit-scrollbar-track {
-            background: var(--surface);
+            background: var(--surface-color);
             border-radius: var(--radius);
         }
         .table-wrapper::-webkit-scrollbar-thumb {
-            background: var(--primary);
+            background: var(--primary-color);
             border-radius: var(--radius);
         }
         .table-wrapper::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-variant);
+            background: var(--primary-variant-color);
         }
         table {
             width: 100%;
-            min-width: 300px;
+            min-width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
         }
@@ -191,37 +189,79 @@
             min-width: 900px;
         }
         th, td {
-            padding: 14px 4px;
+            padding: var(--spacing-md) 4px;
             text-align: center;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid var(--border-color);
             font-size: 0.9rem;
-            color: var(--text);
             white-space: nowrap;
         }
-        th {
-            background: var(--surface);
-            font-weight: 700;
+        #ranking-table thead th {
+            position: sticky;
+            top: 0;
+            background: var(--surface-color);
+            z-index: 10;
             cursor: pointer;
         }
-        th.sort-asc::after {
-            content: ' ↑';
+        #ranking-table thead th:hover {
+            background: var(--primary-color);
+            color: var(--bg-color);
         }
-        th.sort-desc::after {
-            content: ' ↓';
+        th {
+            font-family: 'Poppins', sans-serif;
+            background-color: rgba(0, 0, 0, 0.2);
+            color: var(--primary-variant-color);
+            font-weight: 700;
+        }
+        html[data-theme="light"] th {
+            background-color: #F9FAFB;
+        }
+        .rank-cell {
+            font-weight: 900;
+            color: var(--accent-gold);
+            text-shadow: 0 0 5px var(--shadow-color);
+            position: relative;
+            line-height: 1.2;
+        }
+        .streak-cell {
+            font-size: 0.7rem;
+            white-space: nowrap;
+            margin-left: var(--spacing-sm);
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .streak-win {
+            background: var(--win-streak);
+            color: var(--bg-color);
+            font-weight: bold;
+        }
+        .streak-loss {
+            background: var(--loss-streak);
+            color: var(--bg-color);
+            font-weight: bold;
+        }
+        .streak-none {
+            color: var(--text-secondary-color);
+        }
+        #ranking-table th:nth-child(2), #ranking-table td:nth-child(2) {
+            position: sticky;
+            left: 0;
+            background: var(--surface-color);
+            z-index: 1;
         }
         #ranking-table th {
-            width: 7%;
+            width: 8%;
         }
         #ranking-table th[data-sort="player"] {
-            width: 12%;
-            font-size: 1.35rem;
+            width: 14%;
+            font-size: 1.1rem;
         }
         #ranking-table th[data-sort="mmr"] {
             width: 10%;
-            font-size: 1.35rem;
+            font-size: 1.1rem;
         }
         #ranking-table th[data-sort="rank"] {
-            font-size: 1.35rem;
+            font-size: 1.1rem;
         }
         #ranking-table th[data-sort="avgGameDiff"] {
             width: 12%;
@@ -233,192 +273,108 @@
         #ranking-table th[data-sort="bestPartner"] {
             width: 15%;
         }
-        input.best-partner {
-            min-width: 400px;
-            max-width: 500px;
-        }
-        .schedule-table th, .schedule-table td {
-            padding: 2px 0;
-            border: none;
-            font-size: 1.35rem;
-        }
-        .schedule-table th:nth-child(3), .schedule-table td:nth-child(3) {
-            padding: 0 !important;
-        }
         input[type="text"] {
             width: 100%;
-            min-width: 60px;
-            max-width: 80px;
-            padding: 6px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            box-sizing: border-box;
-            color: var(--text);
-            font-family: 'Roboto Condensed', sans-serif;
-            text-align: center;
-            transition: border-color 0.2s;
-        }
-        input[type="text"]:focus {
-            border-color: var(--primary);
-            outline: none;
-        }
-        .schedule-table input[type="text"] {
-            min-width: 90px;
-            max-width: 120px;
-            padding: 2px;
-            font-size: 1.35rem;
-        }
-        input.score {
-            min-width: 30px;
-            max-width: 45px;
-        }
-        input.ranking-player, input.mmr {
             min-width: 70px;
             max-width: 100px;
-            font-size: 1.35rem;
+            padding: var(--spacing-sm);
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-sizing: border-box;
+            color: var(--text-color);
+            font-family: 'Noto Sans KR', sans-serif;
+            text-align: center;
+        }
+        input.ranking-player, input.mmr {
+            min-width: 80px;
+            max-width: 120px;
+        }
+        input.best-partner {
+            min-width: 200px;
+            max-width: 300px;
         }
         input.readonly {
-            background: rgba(0, 0, 0, 0.2);
-            color: var(--text-sec);
+            background-color: #252525;
+            color: var(--text-secondary-color);
             font-weight: bold;
         }
-        [data-theme="light"] input.readonly {
-            background: rgba(0, 0, 0, 0.05);
+        html[data-theme="light"] input.readonly {
+            background-color: #f0f0f0;
         }
-        .schedule-table input[type="checkbox"] {
-            width: 32px;
-            height: 32px;
+        .schedule-table th, .schedule-table td {
+            padding: 4px 1px;
+            font-size: 0.9rem;
+        }
+        .schedule-table td input.player1,
+        .schedule-table td input.player2,
+        .schedule-table td input.player3,
+        .schedule-table td input.player4 {
+            min-width: 70px;
+            max-width: 100px;
+        }
+        .schedule-table td input.score {
+            min-width: 50px;
+            max-width: 70px;
+        }
+        input[type="checkbox"] {
             margin: 0 auto;
-            transform: scale(1);
-        }
-        .input-group {
-            display: flex;
-            justify-content: flex-start;
-            gap: 10px;
-            margin: var(--spacing-md);
-        }
-        .save-round-btn, .btn {
-            padding: 8px 16px;
-            font-size: 0.9rem;
-            background: linear-gradient(135deg, var(--primary), var(--primary-variant));
-            color: var(--bg);
-            border: none;
-            border-radius: var(--radius);
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .save-round-btn {
-            margin-top: 12px;
-        }
-        .save-round-btn:hover, .btn:hover {
-            transform: scale(1.05);
-        }
-        .update-btn, .save-all-btn {
-            width: 70%;
-            max-width: 120px;
-            margin: var(--spacing-lg) auto;
-            padding: 8px;
-            background: linear-gradient(135deg, var(--gold), #F5B02E);
-            color: var(--bg);
-            border: none;
-            border-radius: var(--radius);
-            font-size: 0.9rem;
-            font-weight: 900;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .save-all-btn {
-            background: linear-gradient(135deg, #4CAF50, #66BB6A);
-        }
-        .update-btn:hover, .save-all-btn:hover {
-            transform: scale(1.05);
-        }
-        .more-btn {
-            padding: 8px 16px;
-            font-size: 0.9rem;
-            background: linear-gradient(135deg, var(--primary), var(--primary-variant));
-            color: var(--bg);
-            border: none;
-            border-radius: var(--radius);
-            cursor: pointer;
-            transition: transform 0.2s;
-            margin: var(--spacing-md) auto;
             display: block;
-        }
-        .more-btn:hover {
-            transform: scale(1.05);
-        }
-        .ranking-filter {
-            display: flex;
-            gap: 10px;
-            margin: var(--spacing-md);
-            justify-content: center;
-        }
-        .filter-btn {
-            padding: var(--spacing-sm) var(--spacing-md);
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.2), var(--surface));
-            color: var(--text);
-            border: 2px solid var(--border);
-            border-radius: var(--radius);
-            cursor: pointer;
-            font-weight: 700;
-            transition: background 0.3s, color 0.3s, transform 0.2s;
-        }
-        .filter-btn.active {
-            background: linear-gradient(135deg, var(--primary), var(--primary-variant));
-            color: var(--bg);
-            border-color: var(--primary);
-        }
-        .filter-btn:hover {
-            transform: scale(1.05);
-        }
-        [data-theme="light"] .filter-btn {
-            background: linear-gradient(135deg, #F9FAFB, #FFFFFF);
-            color: var(--primary);
-        }
-        [data-theme="light"] .filter-btn.active {
-            background: linear-gradient(135deg, var(--primary), var(--primary-variant));
-            color: var(--bg);
         }
         .btn-group {
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: column;
             gap: 10px;
-            margin: var(--spacing-lg) var(--spacing-md);
-            justify-content: center;
+            margin-top: var(--spacing-lg);
         }
-        .saved-indicator {
-            margin-left: 8px;
-            color: var(--gold);
-            font-size: 1rem;
-        }
-        .saved-info {
-            font-size: 0.8rem;
-            color: var(--text-sec);
-            margin-left: 5px;
-            white-space: nowrap;
-        }
-        .theme-toggle {
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            background: var(--surface);
-            border: 2px solid var(--border);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            font-size: 1.5rem;
+        .btn {
+            display: inline-block;
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-variant-color));
+            color: #FFFFFF;
+            text-decoration: none;
+            border-radius: var(--radius);
             cursor: pointer;
-            color: var(--text);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            transition: transform 0.2s;
+            font-weight: 700;
+            font-size: 1rem;
+            border: none;
+            text-align: center;
         }
-        .theme-toggle:hover {
-            transform: rotate(360deg);
+        html[data-theme="dark"] .btn {
+            color: var(--bg-color);
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .update-btn {
+            width: 100%;
+            margin-top: var(--spacing-lg);
+            padding: 15px;
+            background: linear-gradient(135deg, var(--accent-gold), #F5B02E);
+            color: var(--bg-color);
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1.2rem;
+            font-weight: 900;
+            cursor: pointer;
+        }
+        .save-all-btn {
+            width: 100%;
+            margin-top: var(--spacing-lg);
+            padding: 15px;
+            background: linear-gradient(135deg, #4CAF50, #66BB6A);
+            color: var(--bg-color);
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1.2rem;
+            font-weight: 900;
+            cursor: pointer;
+        }
+        .toggle-btn {
+            padding: var(--spacing-sm) var(--spacing-md);
+            margin: var(--spacing-sm) auto;
+            display: block;
         }
         .toast {
             position: fixed;
@@ -429,21 +385,92 @@
             color: #fff;
             padding: var(--spacing-md) 25px;
             border-radius: 50px;
-            box-shadow: 0 5px 15px var(--shadow);
+            box-shadow: 0 5px 15px var(--shadow-color);
             opacity: 0;
             transition: opacity 0.4s, transform 0.4s;
             font-weight: 700;
-            font-family: 'Roboto Condensed', sans-serif;
             z-index: 1000;
-        }
-        [data-theme="light"] .toast {
-            background: linear-gradient(135deg, #F9FAFB, #FFFFFF);
-            color: #001F3F;
         }
         .toast.show {
             opacity: 1;
         }
-        .modal {
+        .championship-star {
+            color: var(--accent-gold);
+            text-shadow: 0 0 5px var(--shadow-color);
+            font-size: 1.1rem;
+            font-weight: 900;
+        }
+        .ranking-player[value$="*"] {
+            color: var(--primary-variant-color);
+        }
+        .ranking-filter {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+        }
+        .filter-btn {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            cursor: pointer;
+            color: var(--text-color);
+            font-weight: 700;
+        }
+        .filter-btn.active {
+            background: var(--primary-color);
+            color: var(--bg-color);
+        }
+        tr.lower-rank {
+            display: none;
+        }
+        tr.lower-rank.show {
+            display: table-row;
+        }
+        .saved-indicator {
+            color: var(--accent-gold);
+            margin-left: 5px;
+            font-size: 0.9rem;
+        }
+        .saved-info {
+            color: var(--text-secondary-color);
+            margin-left: 5px;
+            font-size: 0.8rem;
+        }
+        .champion-name {
+            color: var(--accent-gold);
+            font-weight: bold;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--surface-color);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius);
+            box-shadow: 0 10px 30px var(--shadow-color);
+            z-index: 2000;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            max-width: 400px;
+            text-align: center;
+        }
+        .popup.show {
+            display: block;
+        }
+        .close-btn {
+            position: absolute;
+            top: var(--spacing-sm);
+            right: var(--spacing-sm);
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .overlay {
             display: none;
             position: fixed;
             top: 0;
@@ -451,68 +478,10 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
+            z-index: 1000;
         }
-        .modal-content {
-            background: var(--surface);
-            padding: var(--spacing-lg);
-            border-radius: var(--radius);
-            max-width: 400px;
-            width: 90%;
-            position: relative;
-            box-shadow: 0 5px 15px var(--shadow);
-            color: var(--text);
-        }
-        [data-theme="light"] .modal-content {
-            background: #FFFFFF;
-            color: #001F3F;
-        }
-        .modal-content p {
-            font-size: 1rem;
-            line-height: 1.5;
-            margin: 0 0 var(--spacing-md) 0;
-        }
-        .modal-close {
-            position: absolute;
-            top: var(--spacing-sm);
-            right: var(--spacing-sm);
-            background: none;
-            border: none;
-            font-size: 1.2rem;
-            cursor: pointer;
-            color: var(--text);
-        }
-        .modal-close:hover {
-            color: var(--primary);
-        }
-        #ranking-table tr.hidden {
-            display: none;
-        }
-        .streak {
-            display: inline-block;
-            margin-left: 4px;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-        .win-streak {
-            background: var(--win-streak);
-            color: var(--bg);
-        }
-        .loss-streak {
-            background: var(--loss-streak);
-            color: var(--bg);
-        }
-        .player-link {
-            cursor: pointer;
-            text-decoration: underline;
-            color: var(--primary);
-        }
-        .player-link:hover {
-            color: var(--primary-variant);
+        .overlay.show {
+            display: block;
         }
         @media screen and (max-width: 600px) {
             h1 {
@@ -525,20 +494,17 @@
                 max-height: 50vh;
                 max-width: 100%;
                 overflow-x: auto;
-                padding: 0 2px;
-                box-sizing: border-box;
                 -webkit-overflow-scrolling: touch;
             }
             table {
-                min-width: 300px;
-                width: 100%;
+                min-width: 100%;
             }
             #ranking-table {
-                min-width: 300px;
+                min-width: 900px;
             }
             #ranking-table th, #ranking-table td {
-                padding: 3.4px 6px;
-                font-size: 0.65rem;
+                padding: 4px 6px;
+                font-size: 0.7rem;
             }
             #ranking-table th[data-sort="player"],
             #ranking-table th[data-sort="mmr"],
@@ -546,7 +512,7 @@
                 font-size: 0.975rem;
             }
             #ranking-table th[data-sort="player"] {
-                width: 12%;
+                width: 14%;
             }
             #ranking-table th[data-sort="mmr"] {
                 width: 10%;
@@ -561,101 +527,46 @@
             #ranking-table th[data-sort="bestPartner"] {
                 width: 15%;
             }
-            input.best-partner {
-                min-width: 240px;
-                max-width: 360px;
-                font-size: 0.65rem;
+            input[type="text"] {
+                min-width: 70px;
+                max-width: 100px;
+                font-size: 0.7rem;
             }
-            #ranking-table input[type="text"] {
-                min-width: 40px;
-                max-width: 60px;
-                font-size: 0.65rem;
-                padding: 2px;
-            }
-            #ranking-table input.ranking-player, #ranking-table input.mmr {
-                min-width: 60px;
-                max-width: 90px;
+            input.ranking-player, input.mmr {
+                min-width: 80px;
+                max-width: 120px;
                 font-size: 0.975rem;
             }
-            #ranking-table input.wins, 
-            #ranking-table input.losses, 
-            #ranking-table input.win-rate, 
-            #ranking-table input.avg-game-diff, 
-            #ranking-table input.close-rate, 
-            #ranking-table input.dominant-wins, 
-            #ranking-table input.dominant-losses {
-                min-width: 40px;
-                max-width: 60px;
-                font-size: 0.65rem;
-            }
-            .schedule-table {
-                table-layout: fixed;
+            input.best-partner {
+                min-width: 200px;
+                max-width: 225px;
+                font-size: 0.7rem;
             }
             .schedule-table th, .schedule-table td {
-                padding: 2px 0;
-                border: none;
+                padding: 4px 1px;
                 font-size: 0.7rem;
-                margin: 0;
-                box-sizing: border-box;
+                border: 0.5px solid var(--border-color);
             }
-            .schedule-table th:nth-child(1), .schedule-table td:nth-child(1),
-            .schedule-table th:nth-child(2), .schedule-table td:nth-child(2),
-            .schedule-table th:nth-child(4), .schedule-table td:nth-child(4),
-            .schedule-table th:nth-child(5), .schedule-table td:nth-child(5) {
-                width: 11%;
+            .schedule-table td input.player1,
+            .schedule-table td input.player2,
+            .schedule-table td input.player3,
+            .schedule-table td input.player4 {
+                min-width: 60px;
+                max-width: 80px;
             }
-            .schedule-table th:nth-child(3), .schedule-table td:nth-child(3) {
-                width: 2%;
-                padding: 0 !important;
-                margin: 0;
+            .schedule-table td input.score {
+                min-width: 50px;
+                max-width: 60px;
             }
-            .schedule-table th:nth-child(6), .schedule-table td:nth-child(6) {
-                width: 2.5%;
-                min-width: 10px;
-                padding: 0;
+            .btn {
+                padding: 8px 12px;
+                font-size: 0.9rem;
             }
-            .schedule-table th:nth-child(7), .schedule-table td:nth-child(7) {
-                width: 4%;
-                min-width: 14px;
-                padding: 0;
-                text-align: left;
-            }
-            .schedule-table input[type="text"] {
-                min-width: 32px;
-                max-width: 42px;
-                height: 24px;
-                font-size: 0.7rem;
-                padding: 1px;
-                margin: 0;
-                border: none;
-                border-radius: 4px;
-                box-sizing: border-box;
-            }
-            .schedule-table input.score {
-                min-width: 18px;
-                max-width: 26px;
-                height: 24px;
-                font-size: 0.7rem;
-                padding: 1px;
-                margin: 0;
-                border: none;
-            }
-            .schedule-table input[type="checkbox"] {
-                width: 14px;
-                height: 14px;
-                margin: 0;
-                border: none;
-                transform: scale(1);
-            }
-            .save-round-btn, .btn {
-                padding: 6px 12px;
-                font-size: 0.8rem;
-            }
-            .update-btn, .save-all-btn, .more-btn {
-                width: 60%;
-                max-width: 100px;
-                padding: 6px;
-                font-size: 0.8rem;
+            .update-btn, .save-all-btn, .toggle-btn {
+                width: 80%;
+                max-width: 150px;
+                padding: 10px;
+                font-size: 0.9rem;
             }
             .ranking-filter {
                 flex-direction: row;
@@ -667,34 +578,19 @@
                 font-size: 0.75rem;
                 min-width: 80px;
             }
-            .input-group {
-                flex-direction: column;
-                align-items: center;
-            }
-            .btn-group {
-                flex-direction: column;
-                align-items: center;
-            }
-            .btn-group .btn {
-                width: 100%;
-                max-width: 200px;
-            }
             .saved-info {
                 font-size: 0.65rem;
                 max-width: 120px;
-                overflow: visible;
-                text-overflow: clip;
+                overflow: hidden;
+                text-overflow: ellipsis;
                 display: inline-block;
                 vertical-align: middle;
             }
-            .modal-content {
-                width: 90%;
+            .popup {
+                max-width: 300px;
                 padding: var(--spacing-md);
             }
-            .modal-content p {
-                font-size: 0.9rem;
-            }
-            .streak {
+            .streak-cell {
                 font-size: 0.6rem;
                 padding: 1px 4px;
             }
@@ -711,7 +607,7 @@
                 <button id="how-to-use-btn" class="btn">이용방법</button>
             </div>
             <div id="schedule-container"></div>
-            <button id="save-all-data" class="btn save-all-btn">모든 데이터 저장</button>
+            <button id="save-all" class="btn save-all-btn">모든 데이터 저장</button>
             <button id="update-ranking" class="btn update-btn">순위 업데이트</button>
         </div>
         <div class="section">
@@ -742,22 +638,23 @@
                     <tbody></tbody>
                 </table>
             </div>
-            <button id="more-btn" class="more-btn">더보기</button>
-        </div>
-        <div class="btn-group">
-            <button class="btn" id="dashboard-btn">대시보드</button>
-            <button class="btn" id="export-csv-btn">CSV 저장</button>
-            <button class="btn" id="personal-stats-btn">개인전적&상대전적 보기</button>
-            <button class="btn" id="partner-stats-btn">파트너 전적 보기</button>
-        </div>
-    </div>
-    <div class="toast" id="toast"></div>
-    <div class="modal" id="how-to-use-modal">
-        <div class="modal-content">
-            <button class="modal-close" id="modal-close">✕</button>
-            <p>게임 끝나면 회차 눌러 빈 회차에 이름 작성 (6게임 또는 4게임만 가능, 4게임은 체크 필수). 여성은 이름 뒤에 * 붙이고, 스코어 입력 후 '저장' 버튼 누르면 끝!</p>
+            <button id="toggle-rankings" class="btn toggle-btn">더보기</button>
+            <div class="btn-group">
+                <a href="dash.html" class="btn" id="dashboard-link">통계 대시보드</a>
+                <button id="download-csv" class="btn">CSV 다운로드</button>
+                <button id="h2h-page-btn" class="btn">개인전적 & 상대전적 검색</button>
+                <button id="partner-page-btn" class="btn">파트너 전적 보기</button>
+            </div>
         </div>
     </div>
+    <div id="toast" class="toast"></div>
+    <div id="popup" class="popup">
+        <button class="close-btn" id="close-popup">×</button>
+        <h3>이용 방법</h3>
+        <p>게임 끝나면 회차 눌러 빈 회차에 이름 작성 (6게임 또는 4게임만 가능, 4게임은 체크 필수). 여성은 이름 뒤 * 붙이고, 스코어 입력 후 '모든 데이터 저장' 버튼 누르면 끝!</p>
+    </div>
+    <div id="overlay" class="overlay"></div>
+
     <script type="text/javascript">
         var gk_isXlsx = false;
         var gk_xlsxFileLookup = {};
@@ -779,329 +676,54 @@
                     if (headerRowIndex === -1 || headerRowIndex > 25) {
                         headerRowIndex = 0;
                     }
-                    var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
-                    csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                    var csv = XLSX.utils.sheet_to_csv(XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)), { header: 1 });
+                    console.log(`XLSX 파일 ${filename} 파싱 성공`);
                     return csv;
                 } catch (e) {
-                    console.error(e);
+                    console.error("XLSX 파싱 오류:", e.name, e.message, e.stack);
+                    showToast(`XLSX 파싱 실패: ${e.message || '알 수 없는 오류'}`);
                     return "";
                 }
             }
             return gk_fileData[filename] || "";
         }
+
+        function applyTheme(theme) {
+            const validTheme = theme === 'light' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', validTheme);
+            localStorage.setItem('theme', validTheme);
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) {
+                themeToggle.textContent = validTheme === 'dark' ? '☀️' : '🌙';
+            }
+            console.log(`테마 적용: ${validTheme}`);
+        }
+
+        let currentFilter = 'all';
+        let sortKey = 'mmr';
+        let sortOrder = 'desc';
+
         function showToast(message) {
             const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
-
-        function saveAllData() {
-            const savedRounds = new Map();
-            let savedCount = 0;
-            document.querySelectorAll('.schedule-table').forEach(table => {
-                const roundId = table.dataset.roundId;
-                const rows = table.querySelectorAll('tbody tr');
-                const matches = Array.from(rows).map(row => ({
-                    player1: row.querySelector('.player1').value.trim(),
-                    player2: row.querySelector('.player2').value.trim(),
-                    player3: row.querySelector('.player3').value.trim(),
-                    player4: row.querySelector('.player4').value.trim(),
-                    score: row.querySelector('.score').value.trim(),
-                    isFourPoint: row.querySelector('.is-four-point').checked
-                })).filter(match => 
-                    match.player1 && match.player2 && match.player3 && match.player4 && match.score
-                );
-                if (matches.length > 0) {
-                    savedRounds.set(parseInt(roundId), {
-                        timestamp: new Date().toISOString(),
-                        matches,
-                        champions: []
-                    });
-                    savedCount++;
-                }
-            });
-            localStorage.setItem('savedRounds', JSON.stringify([...savedRounds]));
-            console.log('Saved rounds:', savedRounds);
-            showToast(`${savedCount}개 회차 저장됨`);
-            return savedRounds;
-        }
-
-        function saveRoundData(roundId) {
-            let savedRounds = new Map(JSON.parse(localStorage.getItem('savedRounds') || '[]'));
-            const table = document.querySelector(`.schedule-table[data-round-id="${roundId}"]`);
-            const rows = table.querySelectorAll('tbody tr');
-            const matches = Array.from(rows).map(row => ({
-                player1: row.querySelector('.player1').value.trim(),
-                player2: row.querySelector('.player2').value.trim(),
-                player3: row.querySelector('.player3').value.trim(),
-                player4: row.querySelector('.player4').value.trim(),
-                score: row.querySelector('.score').value.trim(),
-                isFourPoint: row.querySelector('.is-four-point').checked
-            })).filter(match => 
-                match.player1 && match.player2 && match.player3 && match.player4 && match.score
-            );
-            if (matches.length > 0) {
-                savedRounds.set(parseInt(roundId), {
-                    timestamp: new Date().toISOString(),
-                    matches,
-                    champions: []
-                });
-                localStorage.setItem('savedRounds', JSON.stringify([...savedRounds]));
-                console.log(`Saved round ${roundId}:`, savedRounds.get(parseInt(roundId)));
-                showToast(`${roundId}회 저장됨`);
+            if (toast) {
+                toast.textContent = message;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3000);
             } else {
-                savedRounds.delete(parseInt(roundId));
-                localStorage.setItem('savedRounds', JSON.stringify([...savedRounds]));
-                showToast(`${roundId}회 데이터가 비어 있어 저장되지 않음`);
+                console.warn("Toast 요소 없음!");
             }
-            return savedRounds;
-        }
-
-        function calculateRankings(savedRounds) {
-            console.log('Calculating rankings with savedRounds:', savedRounds);
-            const playerStats = new Map();
-            const matchHistory = [];
-            
-            savedRounds.forEach((roundData, roundId) => {
-                roundData.matches.forEach(match => {
-                    if (!match.score || !match.player1 || !match.player2 || !match.player3 || !match.player4) return;
-                    const [score1, score2] = match.score.split('-').map(Number);
-                    if (isNaN(score1) || isNaN(score2)) return;
-                    const team1 = [match.player1, match.player2].filter(p => p);
-                    const team2 = [match.player3, match.player4].filter(p => p);
-                    matchHistory.push({ roundId, team1, team2, score1, score2 });
-                    team1.forEach(player => {
-                        if (!playerStats.has(player)) {
-                            playerStats.set(player, {
-                                mmr: 1500,
-                                wins: 0,
-                                losses: 0,
-                                gameDiff: 0,
-                                closeGames: 0,
-                                dominantWins: 0,
-                                dominantLosses: 0,
-                                partners: new Map(),
-                                partnerWins: new Map(),
-                                partnerLosses: new Map(),
-                                streak: { count: 0, isWin: false }
-                            });
-                        }
-                        const stats = playerStats.get(player);
-                        const diff = score1 - score2;
-                        stats.gameDiff += diff;
-                        if (score1 > score2) {
-                            stats.wins += 1;
-                            stats.mmr += 25;
-                            if (diff >= 4) stats.dominantWins += 1;
-                            else if (diff <= 2) stats.closeGames += 1;
-                            if (stats.streak.isWin) {
-                                stats.streak.count += 1;
-                            } else {
-                                stats.streak = { count: 1, isWin: true };
-                            }
-                            team1.forEach(partner => {
-                                if (partner !== player) {
-                                    stats.partners.set(partner, (stats.partners.get(partner) || 0) + 1);
-                                    stats.partnerWins.set(partner, (stats.partnerWins.get(partner) || 0) + 1);
-                                }
-                            });
-                        } else {
-                            stats.losses += 1;
-                            stats.mmr = Math.max(1000, stats.mmr - 25);
-                            if (diff <= -4) stats.dominantLosses += 1;
-                            else if (diff >= -2) stats.closeGames += 1;
-                            if (!stats.streak.isWin && stats.streak.count > 0) {
-                                stats.streak.count += 1;
-                            } else {
-                                stats.streak = { count: 1, isWin: false };
-                            }
-                            team1.forEach(partner => {
-                                if (partner !== player) {
-                                    stats.partners.set(partner, (stats.partners.get(partner) || 0) + 1);
-                                    stats.partnerLosses.set(partner, (stats.partnerLosses.get(partner) || 0) + 1);
-                                }
-                            });
-                        }
-                        team2.forEach(opponent => {
-                            stats.partners.set(opponent, (stats.partners.get(opponent) || 0) + 1);
-                        });
-                    });
-                    team2.forEach(player => {
-                        if (!playerStats.has(player)) {
-                            playerStats.set(player, {
-                                mmr: 1500,
-                                wins: 0,
-                                losses: 0,
-                                gameDiff: 0,
-                                closeGames: 0,
-                                dominantWins: 0,
-                                dominantLosses: 0,
-                                partners: new Map(),
-                                partnerWins: new Map(),
-                                partnerLosses: new Map(),
-                                streak: { count: 0, isWin: false }
-                            });
-                        }
-                        const stats = playerStats.get(player);
-                        const diff = score2 - score1;
-                        stats.gameDiff += diff;
-                        if (score2 > score1) {
-                            stats.wins += 1;
-                            stats.mmr += 25;
-                            if (diff >= 4) stats.dominantWins += 1;
-                            else if (diff <= 2) stats.closeGames += 1;
-                            if (stats.streak.isWin) {
-                                stats.streak.count += 1;
-                            } else {
-                                stats.streak = { count: 1, isWin: true };
-                            }
-                            team2.forEach(partner => {
-                                if (partner !== player) {
-                                    stats.partners.set(partner, (stats.partners.get(partner) || 0) + 1);
-                                    stats.partnerWins.set(partner, (stats.partnerWins.get(partner) || 0) + 1);
-                                }
-                            });
-                        } else {
-                            stats.losses += 1;
-                            stats.mmr = Math.max(1000, stats.mmr - 25);
-                            if (diff <= -4) stats.dominantLosses += 1;
-                            else if (diff >= -2) stats.closeGames += 1;
-                            if (!stats.streak.isWin && stats.streak.count > 0) {
-                                stats.streak.count += 1;
-                            } else {
-                                stats.streak = { count: 1, isWin: false };
-                            }
-                            team2.forEach(partner => {
-                                if (partner !== player) {
-                                    stats.partners.set(partner, (stats.partners.get(partner) || 0) + 1);
-                                    stats.partnerLosses.set(partner, (stats.partnerLosses.get(partner) || 0) + 1);
-                                }
-                            });
-                        }
-                        team1.forEach(partner => {
-                            stats.partners.set(partner, (stats.partners.get(partner) || 0) + 1);
-                        });
-                    });
-                });
-            });
-
-            const rankings = Array.from(playerStats.entries()).map(([player, stats]) => {
-                const totalGames = stats.wins + stats.losses;
-                const winRate = totalGames ? (stats.wins / totalGames * 100).toFixed(1) : 0;
-                const avgGameDiff = totalGames ? (stats.gameDiff / totalGames).toFixed(2) : 0;
-                const closeRate = totalGames ? (stats.closeGames / totalGames * 100).toFixed(1) : 0;
-                const dominantWinRate = totalGames ? (stats.dominantWins / totalGames * 100).toFixed(1) : 0;
-                const dominantLossRate = totalGames ? (stats.dominantLosses / totalGames * 100).toFixed(1) : 0;
-                const bestPartnerEntry = Array.from(stats.partners.entries()).sort((a, b) => b[1] - a[1])[0];
-                const bestPartner = bestPartnerEntry ? `${bestPartnerEntry[0]} (${stats.partnerWins.get(bestPartnerEntry[0]) || 0}승-${stats.partnerLosses.get(bestPartnerEntry[0]) || 0}패)` : '-';
-                return {
-                    player,
-                    mmr: stats.mmr,
-                    championships: 0,
-                    wins: stats.wins,
-                    losses: stats.losses,
-                    winRate,
-                    avgGameDiff,
-                    closeRate,
-                    dominantWinRate,
-                    dominantLossRate,
-                    bestPartner,
-                    streak: stats.streak
-                };
-            }).sort((a, b) => b.mmr - a.mmr);
-
-            if (rankings.length < 100) {
-                for (let i = rankings.length; i < 100; i++) {
-                    rankings.push({
-                        player: `선수 ${i + 1}`,
-                        mmr: 1500,
-                        championships: 0,
-                        wins: 0,
-                        losses: 0,
-                        winRate: 0,
-                        avgGameDiff: 0,
-                        closeRate: 0,
-                        dominantWinRate: 0,
-                        dominantLossRate: 0,
-                        bestPartner: '-',
-                        streak: { count: 0, isWin: false }
-                    });
-                }
-            }
-
-            console.log('Generated rankings:', rankings);
-            return rankings;
-        }
-
-        function exportToCSV() {
-            let savedRounds;
-            try {
-                savedRounds = new Map(JSON.parse(localStorage.getItem('savedRounds') || '[]'));
-            } catch (e) {
-                console.error('Failed to parse savedRounds for CSV export:', e);
-                savedRounds = new Map();
-            }
-
-            if (savedRounds.size === 0) {
-                showToast('저장된 데이터가 없습니다.');
-                return;
-            }
-
-            const roundData = [];
-            savedRounds.forEach((round, roundId) => {
-                round.matches.forEach(match => {
-                    roundData.push({
-                        '회차': roundId,
-                        'Player 1': match.player1,
-                        'Player 2': match.player2,
-                        'Player 3': match.player3,
-                        'Player 4': match.player4,
-                        '스코어': match.score,
-                        '4점제': match.isFourPoint ? '예' : '아니오',
-                        '저장 날짜': new Date(round.timestamp).toLocaleString('ko-KR')
-                    });
-                });
-            });
-
-            const rankings = calculateRankings(savedRounds);
-            const rankingData = rankings.map((rank, i) => ({
-                '순위': i + 1,
-                '선수': rank.player,
-                'MMR': rank.mmr,
-                '우승': rank.championships,
-                '승': rank.wins,
-                '패': rank.losses,
-                '승률(%)': rank.winRate,
-                '평균 게임 득실': rank.avgGameDiff,
-                '접전률(%)': rank.closeRate,
-                '압도승률(%)': rank.dominantWinRate,
-                '압도패률(%)': rank.dominantLossRate,
-                '최고 파트너': rank.bestPartner
-            }));
-
-            const wb = XLSX.utils.book_new();
-            const wsRounds = XLSX.utils.json_to_sheet(roundData);
-            const wsRankings = XLSX.utils.json_to_sheet(rankingData);
-            XLSX.utils.book_append_sheet(wb, wsRounds, '회차별 성적');
-            XLSX.utils.book_append_sheet(wb, wsRankings, '순위표');
-
-            const today = new Date();
-            const dateStr = today.getFullYear() + '' + 
-                           String(today.getMonth() + 1).padStart(2, '0') + 
-                           String(today.getDate()).padStart(2, '0');
-            const fileName = `TennisOpen_${dateStr}.csv`;
-
-            XLSX.write(wb, fileName, { bookType: 'csv', type: 'binary' });
-            showToast('CSV 파일 다운로드 완료');
         }
 
         function createScheduleRounds(savedRounds = new Map()) {
-            console.log('Creating schedule rounds with savedRounds:', savedRounds);
             const container = document.getElementById('schedule-container');
-            if (!container) return;
+            if (!container) {
+                console.error("schedule-container 요소 없음!");
+                showToast("스케줄 컨테이너 오류!");
+                return;
+            }
             let roundsHtml = '';
-            const roundsPerCategory = 30, totalRounds = 150;
+            const roundsPerCategory = 30;
+            const totalRounds = 150;
             for (let category = 0; category < Math.ceil(totalRounds / roundsPerCategory); category++) {
                 const startRound = category * roundsPerCategory + 1;
                 const endRound = Math.min((category + 1) * roundsPerCategory, totalRounds);
@@ -1116,209 +738,621 @@
                         <summary>${i}회${isSaved ? `<span class="saved-indicator">💾</span><span class="saved-info">[${savedDate}, 우승: ${champions}]</span>` : ''}</summary>
                         <div class="table-wrapper">
                             <table class="schedule-table" data-round-id="${i}">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 10%;">Player 1</th>
-                                        <th style="width: 10%;">Player 2</th>
-                                        <th style="width: 5%;">vs</th>
-                                        <th style="width: 10%;">Player 3</th>
-                                        <th style="width: 10%;">Player 4</th>
-                                        <th style="width: 8%; min-width: 30px;">Score</th>
-                                        <th style="width: 8%; min-width: 30px;">4점제</th>
-                                    </tr>
-                                </thead>
+                                <thead><tr><th>Player 1</th><th>Player 2</th><th>vs</th><th>Player 3</th><th>Player 4</th><th>Score</th><th>4점 선취</th></tr></thead>
                                 <tbody>
-                                    ${Array(3).fill().map((_, idx) => `
-                                    <tr>
-                                        <td><input type="text" placeholder="이름" class="player1" value="${roundData?.matches?.[idx]?.player1 || ''}"></td>
-                                        <td><input type="text" placeholder="이름" class="player2" value="${roundData?.matches?.[idx]?.player2 || ''}"></td>
-                                        <td>vs</td>
-                                        <td><input type="text" placeholder="이름" class="player3" value="${roundData?.matches?.[idx]?.player3 || ''}"></td>
-                                        <td><input type="text" placeholder="이름" class="player4" value="${roundData?.matches?.[idx]?.player4 || ''}"></td>
-                                        <td><input type="text" placeholder="6-4" class="score" value="${roundData?.matches?.[idx]?.score || ''}"></td>
-                                        <td><input type="checkbox" class="is-four-point" ${roundData?.matches?.[idx]?.isFourPoint ? 'checked' : ''}></td>
-                                    </tr>
-                                    `).join('')}
+                                    <tr><td><input type="text" placeholder="이름" class="player1"></td><td><input type="text" placeholder="이름" class="player2"></td><td>vs</td><td><input type="text" placeholder="이름" class="player3"></td><td><input type="text" placeholder="이름" class="player4"></td><td><input type="text" placeholder="6-4" class="score"></td><td><input type="checkbox" class="is-four-point"></td></tr>
+                                    <tr><td><input type="text" placeholder="이름" class="player1"></td><td><input type="text" placeholder="이름" class="player2"></td><td>vs</td><td><input type="text" placeholder="이름" class="player3"></td><td><input type="text" placeholder="이름" class="player4"></td><td><input type="text" placeholder="6-4" class="score"></td><td><input type="checkbox" class="is-four-point"></td></tr>
+                                    <tr><td><input type="text" placeholder="이름" class="player1"></td><td><input type="text" placeholder="이름" class="player2"></td><td>vs</td><td><input type="text" placeholder="이름" class="player3"></td><td><input type="text" placeholder="이름" class="player4"></td><td><input type="text" placeholder="6-4" class="score"></td><td><input type="checkbox" class="is-four-point"></td></tr>
                                 </tbody>
                             </table>
-                            <button class="save-round-btn" data-round-id="${i}">저장</button>
                         </div>
                     </details>`;
                 }
                 roundsHtml += `</div></details>`;
             }
             container.innerHTML = roundsHtml;
-
-            document.querySelectorAll('.save-round-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const roundId = btn.dataset.roundId;
-                    const savedRounds = saveRoundData(roundId);
-                    createScheduleRounds(savedRounds);
-                    createRankingRows(savedRounds);
-                });
-            });
+            console.log("회차 일정표 렌더링 완료!");
         }
 
         function createRankingRows(savedRounds = new Map()) {
-            console.log('Creating ranking rows with savedRounds:', savedRounds);
             const rankingBody = document.querySelector('#ranking-table tbody');
-            if (!rankingBody) return;
-            let rankings = calculateRankings(savedRounds);
-            
-            function renderRankings(sortedRankings) {
-                rankingBody.innerHTML = sortedRankings.map((rank, i) => {
-                    const streakDisplay = rank.streak.count >= 2 ? 
-                        `<span class="streak ${rank.streak.isWin ? 'win-streak' : 'loss-streak'}">${rank.streak.count}${rank.streak.isWin ? '연승' : '연패'}</span>` : '';
-                    return `
-                    <tr class="${i >= 20 ? 'hidden' : ''}">
-                        <td class="rank-cell">${i + 1}${streakDisplay}</td>
-                        <td><input type="text" class="ranking-player readonly player-link" readonly value="${rank.player || '선수 ' + (i + 1)}" onclick="window.location.href='h2h.html?player=${encodeURIComponent(rank.player || '선수 ' + (i + 1))}';"></td>
-                        <td><input type="text" class="mmr readonly" readonly value="${rank.mmr}"></td>
-                        <td><span class="championship-star">${rank.championships ? '★'.repeat(rank.championships) : ''}</span></td>
-                        <td><input type="text" class="wins readonly" readonly value="${rank.wins}"></td>
-                        <td><input type="text" class="losses readonly" readonly value="${rank.losses}"></td>
-                        <td><input type="text" class="win-rate readonly" readonly value="${rank.winRate}"></td>
-                        <td><input type="text" class="avg-game-diff readonly" readonly value="${rank.avgGameDiff}"></td>
-                        <td><input type="text" class="close-rate readonly" readonly value="${rank.closeRate}"></td>
-                        <td><input type="text" class="dominant-wins readonly" readonly value="${rank.dominantWinRate}"></td>
-                        <td><input type="text" class="dominant-losses readonly" readonly value="${rank.dominantLossRate}"></td>
-                        <td><input type="text" class="best-partner readonly" readonly value="${rank.bestPartner}"></td>
-                    </tr>`;
-                }).join('');
+            if (!rankingBody) {
+                console.error("ranking-table tbody 요소 없음!");
+                showToast("순위표 오류!");
+                return;
+            }
+            let rowsHtml = '';
+            for (let i = 1; i <= 100; i++) {
+                rowsHtml += `
+                <tr${i > 20 ? ' class="lower-rank"' : ''}>
+                    <td class="rank-cell">${i}<span class="streak-cell streak-none">–</span></td>
+                    <td><input type="text" placeholder="선수 ${i}" class="ranking-player readonly" readonly></td>
+                    <td><input type="text" class="mmr readonly" readonly value="1500"></td>
+                    <td><span class="championship-star"></span></td>
+                    <td><input type="text" class="wins readonly" readonly value="0"></td>
+                    <td><input type="text" class="losses readonly" readonly value="0"></td>
+                    <td><input type="text" class="win-rate readonly" readonly value="0"></td>
+                    <td><input type="text" class="avg-game-diff readonly" readonly value="0.00"></td>
+                    <td><input type="text" class="close-rate readonly" readonly value="0"></td>
+                    <td><input type="text" class="dominant-wins readonly" readonly value="0%"></td>
+                    <td><input type="text" class="dominant-losses readonly" readonly value="0%"></td>
+                    <td><input type="text" class="best-partner readonly" readonly value="-"></td>
+                </tr>`;
+            }
+            rankingBody.innerHTML = rowsHtml;
+            console.log("순위표 렌더링 완료!");
+        }
 
-                const moreBtn = document.getElementById('more-btn');
-                let isExpanded = false;
-                if (sortedRankings.length > 20) {
-                    moreBtn.style.display = 'block';
-                    moreBtn.textContent = '더보기';
-                    moreBtn.removeEventListener('click', toggleRows); // Remove previous listeners
-                    function toggleRows() {
-                        const rows = document.querySelectorAll('#ranking-table tbody tr');
-                        if (isExpanded) {
-                            rows.forEach((row, index) => {
-                                if (index >= 20) {
-                                    row.classList.add('hidden');
-                                }
-                            });
-                            moreBtn.textContent = '더보기';
-                        } else {
-                            rows.forEach(row => row.classList.remove('hidden'));
-                            moreBtn.textContent = '접기';
-                        }
-                        isExpanded = !isExpanded;
+        async function saveAllData() {
+            const saveAllBtn = document.getElementById('save-all');
+            saveAllBtn.disabled = true;
+            try {
+                const savedRounds = new Map();
+                document.querySelectorAll('.schedule-table').forEach(table => {
+                    const roundId = parseInt(table.getAttribute('data-round-id'));
+                    const rows = table.querySelectorAll('tbody tr');
+                    const matches = Array.from(rows).map(row => ({
+                        player1: row.querySelector('.player1').value.trim(),
+                        player2: row.querySelector('.player2').value.trim(),
+                        player3: row.querySelector('.player3').value.trim(),
+                        player4: row.querySelector('.player4').value.trim(),
+                        score: row.querySelector('.score').value.trim(),
+                        isFourPoint: row.querySelector('.is-four-point').checked
+                    })).filter(match => 
+                        match.player1 && match.player2 && match.player3 && match.player4 && match.score
+                    );
+                    if (matches.length > 0) {
+                        savedRounds.set(roundId, {
+                            timestamp: new Date().toISOString(),
+                            matches,
+                            champions: []
+                        });
                     }
-                    moreBtn.addEventListener('click', toggleRows);
+                });
+                localStorage.setItem('savedRounds', JSON.stringify([...savedRounds]));
+                console.log("통합 데이터 저장 성공!");
+                showToast("모든 데이터 저장 완료!");
+            } catch (e) {
+                console.error("데이터 저장 실패:", e);
+                showToast(`데이터 저장 실패: ${e.message || '알 수 없는 오류'}`);
+            } finally {
+                saveAllBtn.disabled = false;
+            }
+        }
+
+        async function updateRanking() {
+            const updateRankingBtn = document.getElementById('update-ranking');
+            updateRankingBtn.disabled = true;
+
+            const BASE_MMR = 1500;
+            const BASE_K = 45;
+            const WIN_BONUS = 1.1;
+            const LOSS_REDUCTION = 0.9;
+            const FOUR_POINT_MMR_MULTIPLIER = 0.6;
+            const MIXED_WIN_MULTIPLIER = 1.5;
+            const MIXED_MMR_MIN = 1400;
+            const MIXED_MMR_MAX = 1600;
+            const MIXED_LOSS_REDUCTION = 0.3;
+            const MALE_LOSS_MULTIPLIER = 1.5;
+            const MALE_WIN_REDUCTION = 0.3;
+            const HANDICAP_BASE_POINT = 1500;
+            const HANDICAP_ZERO_POINT = 1650;
+            const HANDICAP_MAX = 150;
+
+            const players = {};
+            const partnerStats = {};
+            const streaks = {};
+
+            document.querySelectorAll('#ranking-table tbody tr').forEach(row => {
+                const rawName = row.querySelector('.ranking-player').value.trim();
+                const name = rawName.replace(/\*/g, '');
+                if (name && !players[name]) {
+                    players[name] = {
+                        name,
+                        wins: 0,
+                        losses: 0,
+                        winRate: 0,
+                        gameDiff: 0,
+                        avgGameDiff: 0,
+                        mmr: BASE_MMR,
+                        championships: 0,
+                        closeWins: 0,
+                        closeSets: 0,
+                        closeLosses: 0,
+                        dominantWins: 0,
+                        dominantLosses: 0,
+                        totalSets: 0,
+                        isFemale: rawName.includes('*'),
+                        seasonMMRIncrease: 0,
+                        streakCount: 0,
+                        streakIsWin: false
+                    };
+                    partnerStats[name] = {};
+                    streaks[name] = { count: 0, isWin: false };
+                }
+            });
+
+            const scheduleTables = document.querySelectorAll('.schedule-table');
+            scheduleTables.forEach((table) => {
+                let roundHasMixedMatch = false;
+                const roundId = table.getAttribute('data-round-id');
+                const rows = table.querySelectorAll('tbody tr');
+                let roundWins = {};
+
+                rows.forEach(row => {
+                    const p1Raw = row.querySelector('.player1').value.trim();
+                    const p2Raw = row.querySelector('.player2').value.trim();
+                    const p3Raw = row.querySelector('.player3').value.trim();
+                    const p4Raw = row.querySelector('.player4').value.trim();
+                    const score = row.querySelector('.score').value.trim();
+                    const isFourPoint = row.querySelector('.is-four-point').checked;
+
+                    const p1 = p1Raw.replace(/\*/g, '');
+                    const p2 = p2Raw.replace(/\*/g, '');
+                    const p3 = p3Raw.replace(/\*/g, '');
+                    const p4 = p4Raw.replace(/\*/g, '');
+
+                    if (!p1 || !p2 || !p3 || !p4 || !/^\d+-\d+$/.test(score)) return;
+
+                    [p1, p2, p3, p4].forEach((name, idx) => {
+                        if (name && !players[name]) {
+                            players[name] = {
+                                name,
+                                wins: 0,
+                                losses: 0,
+                                winRate: 0,
+                                gameDiff: 0,
+                                avgGameDiff: 0,
+                                mmr: BASE_MMR,
+                                championships: 0,
+                                closeWins: 0,
+                                closeSets: 0,
+                                closeLosses: 0,
+                                dominantWins: 0,
+                                dominantLosses: 0,
+                                totalSets: 0,
+                                isFemale: [p1Raw, p2Raw, p3Raw, p4Raw][idx].includes('*'),
+                                seasonMMRIncrease: 0,
+                                streakCount: 0,
+                                streakIsWin: false
+                            };
+                            partnerStats[name] = {};
+                            streaks[name] = { count: 0, isWin: false };
+                        }
+                    });
+
+                    const team1IsMixed = p1Raw.includes('*') || p2Raw.includes('*');
+                    const team2IsMixed = p3Raw.includes('*') || p4Raw.includes('*');
+                    const team1IsMale = !team1IsMixed;
+                    const team2IsMale = !team2IsMixed;
+
+                    if (team1IsMixed || team2IsMixed) roundHasMixedMatch = true;
+
+                    const getDynamicHandicap = (mmr) => {
+                        if (isNaN(mmr) || mmr <= 0) mmr = BASE_MMR;
+                        if (mmr >= HANDICAP_ZERO_POINT) return 0;
+                        if (mmr <= HANDICAP_BASE_POINT) return HANDICAP_MAX;
+                        const progress = (mmr - HANDICAP_BASE_POINT) / (HANDICAP_ZERO_POINT - HANDICAP_BASE_POINT);
+                        return Math.max(0, HANDICAP_MAX * (1 - progress));
+                    };
+
+                    const getMixedWinMultiplier = (teamMMR) => {
+                        if (isNaN(teamMMR) || teamMMR <= 0) teamMMR = BASE_MMR;
+                        if (teamMMR >= MIXED_MMR_MIN && teamMMR <= MIXED_MMR_MAX) return MIXED_WIN_MULTIPLIER;
+                        return 1.0;
+                    };
+
+                    let team1MMR = ((players[p1]?.mmr || BASE_MMR) + (players[p2]?.mmr || BASE_MMR)) / 2;
+                    let team2MMR = ((players[p3]?.mmr || BASE_MMR) + (players[p4]?.mmr || BASE_MMR)) / 2;
+                    let effectiveTeam1MMR = team1MMR;
+                    let effectiveTeam2MMR = team2MMR;
+
+                    if (team1IsMixed) {
+                        let handicap = 0;
+                        if (p1Raw.includes('*')) handicap += getDynamicHandicap(players[p1]?.mmr || BASE_MMR);
+                        if (p2Raw.includes('*')) handicap += getDynamicHandicap(players[p2]?.mmr || BASE_MMR);
+                        effectiveTeam1MMR += handicap / (p1Raw.includes('*') && p2Raw.includes('*') ? 2 : 1);
+                        effectiveTeam1MMR *= 1.5;
+                    }
+                    if (team2IsMixed) {
+                        let handicap = 0;
+                        if (p3Raw.includes('*')) handicap += getDynamicHandicap(players[p3]?.mmr || BASE_MMR);
+                        if (p4Raw.includes('*')) handicap += getDynamicHandicap(players[p4]?.mmr || BASE_MMR);
+                        effectiveTeam2MMR += handicap / (p3Raw.includes('*') && p4Raw.includes('*') ? 2 : 1);
+                        effectiveTeam2MMR *= 1.5;
+                    }
+
+                    const expected1 = 1 / (1 + Math.pow(10, (effectiveTeam2MMR - effectiveTeam1MMR) / 400));
+                    const [score1, score2] = score.split('-').map(Number);
+                    const actual1 = score1 > score2 ? 1 : 0;
+                    const actual2 = score1 < score2 ? 1 : 0;
+                    const gameDiff = Math.abs(score1 - score2);
+                    const scoreWeight = isNaN(gameDiff) ? 1.0 : 0.8 + (gameDiff / 6) * 0.7;
+
+                    const updatePlayerMMR = (player, opponentTeamMMR, isWinner) => {
+                        if (!player) return 0;
+                        let K = BASE_K;
+                        let playerMMR = player.mmr || BASE_MMR;
+                        if (isNaN(playerMMR)) playerMMR = BASE_MMR;
+                        if (playerMMR > 1800) {
+                            K *= Math.max(0.3, 1 - (playerMMR - 1800) / 1000);
+                        }
+                        if (isNaN(opponentTeamMMR)) opponentTeamMMR = BASE_MMR;
+                        const expectedWinRate = 1 / (1 + Math.pow(10, (opponentTeamMMR - playerMMR) / 400));
+                        let opponentWeight = Math.min(1, opponentTeamMMR / playerMMR);
+                        if (playerMMR > 1800) {
+                            opponentWeight *= Math.max(0.5, 1 - (playerMMR - 1800) / 2000);
+                        }
+                        let mmrChange = K * ((isWinner ? 1 : 0) - expectedWinRate) * opponentWeight * scoreWeight;
+                        if (isFourPoint) {
+                            mmrChange *= FOUR_POINT_MMR_MULTIPLIER;
+                        }
+                        if (isWinner) {
+                            mmrChange *= WIN_BONUS;
+                        } else {
+                            mmrChange *= LOSS_REDUCTION;
+                        }
+                        const finalMMRChange = isNaN(mmrChange) ? 0 : Math.round(isWinner ? mmrChange : -Math.abs(mmrChange));
+                        return finalMMRChange;
+                    };
+
+                    let mmrChange1 = updatePlayerMMR(players[p1], team2MMR, actual1);
+                    let mmrChange2 = updatePlayerMMR(players[p2], team2MMR, actual1);
+                    let mmrChange3 = updatePlayerMMR(players[p3], team1MMR, actual2);
+                    let mmrChange4 = updatePlayerMMR(players[p4], team1MMR, actual2);
+
+                    if (team1IsMixed && team2IsMale) {
+                        const mixedWinMultiplier = getMixedWinMultiplier(team1MMR);
+                        if (actual1 === 1) {
+                            mmrChange1 *= mixedWinMultiplier;
+                            mmrChange2 *= mixedWinMultiplier;
+                            mmrChange3 *= MALE_LOSS_MULTIPLIER;
+                            mmrChange4 *= MALE_LOSS_MULTIPLIER;
+                        } else {
+                            mmrChange1 *= MIXED_LOSS_REDUCTION;
+                            mmrChange2 *= MIXED_LOSS_REDUCTION;
+                            mmrChange3 *= MALE_WIN_REDUCTION;
+                            mmrChange4 *= MALE_WIN_REDUCTION;
+                        }
+                    } else if (team2IsMixed && team1IsMale) {
+                        const mixedWinMultiplier = getMixedWinMultiplier(team2MMR);
+                        if (actual2 === 1) {
+                            mmrChange3 *= mixedWinMultiplier;
+                            mmrChange4 *= mixedWinMultiplier;
+                            mmrChange1 *= MALE_LOSS_MULTIPLIER;
+                            mmrChange2 *= MALE_LOSS_MULTIPLIER;
+                        } else {
+                            mmrChange3 *= MIXED_LOSS_REDUCTION;
+                            mmrChange4 *= MIXED_LOSS_REDUCTION;
+                            mmrChange1 *= MALE_WIN_REDUCTION;
+                            mmrChange2 *= MALE_WIN_REDUCTION;
+                        }
+                    }
+
+                    const isClose = score1 - score2 === 1 || score2 - score1 === 1 || score1 - score2 === 2 || score2 - score1 === 2;
+
+                    const updatePlayer = (name, isWinner, gameDiff, mmrChangeVal, isCloseGame, isDominantWin, isDominantLoss) => {
+                        if (!players[name]) return;
+                        players[name].totalSets++;
+                        players[name].gameDiff += isNaN(gameDiff) ? 0 : gameDiff;
+                        players[name].mmr += isNaN(mmrChangeVal) ? 0 : mmrChangeVal;
+                        players[name].seasonMMRIncrease += isNaN(mmrChangeVal) ? 0 : mmrChangeVal;
+                        if (isWinner) {
+                            players[name].wins++;
+                            if (!isFourPoint) {
+                                if (!roundWins[name]) roundWins[name] = 0;
+                                roundWins[name]++;
+                            }
+                            if (isCloseGame) players[name].closeWins++;
+                            if (streaks[name].isWin) {
+                                streaks[name].count++;
+                            } else {
+                                streaks[name].count = 1;
+                                streaks[name].isWin = true;
+                            }
+                            players[name].streakCount = streaks[name].count;
+                            players[name].streakIsWin = streaks[name].isWin;
+                        } else {
+                            players[name].losses++;
+                            if (isCloseGame) players[name].closeLosses++;
+                            if (!streaks[name].isWin && streaks[name].count > 0) {
+                                streaks[name].count++;
+                            } else {
+                                streaks[name].count = 1;
+                                streaks[name].isWin = false;
+                            }
+                            players[name].streakCount = streaks[name].count;
+                            players[name].streakIsWin = streaks[name].isWin;
+                        }
+                        if (isCloseGame) players[name].closeSets++;
+                        if (isDominantWin) players[name].dominantWins++;
+                        if (isDominantLoss) players[name].dominantLosses++;
+                    };
+
+                    updatePlayer(p1, actual1, score1 - score2, mmrChange1, isClose, actual1 === 1 && gameDiff >= 5, actual1 === 0 && gameDiff >= 5);
+                    updatePlayer(p2, actual1, score1 - score2, mmrChange2, isClose, actual1 === 1 && gameDiff >= 5, actual1 === 0 && gameDiff >= 5);
+                    updatePlayer(p3, actual2, score2 - score1, mmrChange3, isClose, actual2 === 1 && gameDiff >= 5, actual2 === 0 && gameDiff >= 5);
+                    updatePlayer(p4, actual2, score2 - score1, mmrChange4, isClose, actual2 === 1 && gameDiff >= 5, actual2 === 0 && gameDiff >= 5);
+
+                    const updatePartnerStats = (player, partner, isWin, gameDiff) => {
+                        if (!players[player] || !players[partner]) return;
+                        if (!partnerStats[player]) partnerStats[player] = {};
+                        if (!partnerStats[player][partner]) {
+                            partnerStats[player][partner] = { wins: 0, losses: 0, gameDiffSum: 0, matches: 0 };
+                        }
+                        const stats = partnerStats[player][partner];
+                        stats.matches++;
+                        stats.gameDiffSum += isNaN(gameDiff) ? 0 : gameDiff;
+                        if (isWin) stats.wins++; else stats.losses++;
+                    };
+
+                    if (actual1 > 0) {
+                        updatePartnerStats(p1, p2, true, score1 - score2);
+                        updatePartnerStats(p2, p1, true, score1 - score2);
+                        updatePartnerStats(p3, p4, false, score2 - score1);
+                        updatePartnerStats(p4, p3, false, score2 - score1);
+                    } else {
+                        updatePartnerStats(p1, p2, false, score1 - score2);
+                        updatePartnerStats(p2, p1, false, score1 - score2);
+                        updatePartnerStats(p3, p4, true, score2 - score1);
+                        updatePartnerStats(p4, p3, true, score2 - score1);
+                    }
+                });
+
+                Object.keys(roundWins).forEach(pName => {
+                    if (roundWins[pName] === 3 && players[pName]) {
+                        const isMalePlayer = !players[pName].isFemale;
+                        if (isMalePlayer && roundHasMixedMatch) {
+                        } else {
+                            players[pName].championships++;
+                        }
+                    }
+                });
+            });
+
+            let sortedPlayers = Object.values(players);
+            if (currentFilter === 'male') sortedPlayers = sortedPlayers.filter(p => !p.isFemale);
+            else if (currentFilter === 'female') sortedPlayers = sortedPlayers.filter(p => p.isFemale);
+
+            sortedPlayers.sort((a, b) => {
+                if (sortKey === 'rank') {
+                    return sortOrder === 'asc' ? a.rank - b.rank : b.rank - a.rank;
+                } else if (sortKey === 'player') {
+                    const nameA = a.name.toLowerCase();
+                    const nameB = b.name.toLowerCase();
+                    return sortOrder === 'asc' ? nameA.localeCompare(nameB, 'ko') : nameB.localeCompare(nameA, 'ko');
+                } else if (sortKey === 'mmr') {
+                    return sortOrder === 'asc' ? a.mmr - b.mmr : b.mmr - a.mmr;
+                } else if (sortKey === 'championships') {
+                    return sortOrder === 'asc' ? parseInt(a.championships) - parseInt(b.championships) : parseInt(b.championships) - parseInt(a.championships);
+                } else if (sortKey === 'wins') {
+                    return sortOrder === 'asc' ? parseInt(a.wins) - parseInt(b.wins) : parseInt(b.wins) - parseInt(a.wins);
+                } else if (sortKey === 'losses') {
+                    return sortOrder === 'asc' ? parseInt(a.losses) - parseInt(b.losses) : parseInt(b.losses) - parseInt(a.losses);
+                } else if (sortKey === 'winRate') {
+                    return sortOrder === 'asc' ? parseFloat(a.winRate) - parseFloat(b.winRate) : parseFloat(b.winRate) - parseFloat(a.winRate);
+                } else if (sortKey === 'avgGameDiff') {
+                    return sortOrder === 'asc' ? parseFloat(a.avgGameDiff) - parseFloat(b.avgGameDiff) : parseFloat(b.avgGameDiff) - parseFloat(a.avgGameDiff);
+                } else if (sortKey === 'closeRate') {
+                    return sortOrder === 'asc' ? parseFloat(a.closeRate) - parseFloat(b.closeRate) : parseFloat(b.closeRate) - parseFloat(a.closeRate);
+                } else if (sortKey === 'dominantWins') {
+                    return sortOrder === 'asc' ? parseInt(a.dominantWins) - parseInt(b.dominantWins) : parseInt(b.dominantWins) - parseInt(a.dominantWins);
+                } else if (sortKey === 'dominantLosses') {
+                    return sortOrder === 'asc' ? parseInt(a.dominantLosses) - parseInt(b.dominantLosses) : parseInt(b.dominantLosses) - parseInt(a.dominantLosses);
+                } else if (sortKey === 'bestPartner') {
+                    const winsA = parseInt(a.bestPartner.match(/(\d+)승/)?.[1] || 0);
+                    const winsB = parseInt(b.bestPartner.match(/(\d+)승/)?.[1] || 0);
+                    return sortOrder === 'asc' ? winsA - winsB : winsB - winsA;
+                }
+                return 0;
+            });
+
+            const rankingRows = document.querySelectorAll('#ranking-table tbody tr');
+            rankingRows.forEach((row, index) => {
+                const player = sortedPlayers[index];
+                if (player) {
+                    const totalGames = player.wins + player.losses;
+                    player.avgGameDiff = player.totalSets > 0 ? (player.gameDiff / player.totalSets).toFixed(2) : '0.00';
+                    player.winRate = totalGames > 0 ? Math.round((player.wins / totalGames) * 100) : 0;
+
+                    row.cells[0].innerHTML = `${index + 1}<span class="streak-cell ${player.streakCount > 0 ? (player.streakIsWin ? 'streak-win' : 'streak-loss') : 'streak-none'}">${player.streakCount > 0 ? (player.streakIsWin ? `W${player.streakCount}` : `L${player.streakCount}`) : '–'}</span>`;
+                    row.querySelector('.ranking-player').value = player.isFemale ? `${player.name}*` : player.name;
+                    row.querySelector('.mmr').value = isNaN(player.mmr) ? '1500' : Math.round(player.mmr);
+                    row.querySelector('.mmr').dataset.seasonMMRIncrease = isNaN(player.seasonMMRIncrease) ? '0.00' : player.seasonMMRIncrease.toFixed(2);
+                    const champStar = row.querySelector('.championship-star');
+                    champStar.dataset.count = player.championships;
+                    champStar.textContent = player.championships == 1 ? '⭐' : player.championships > 1 ? `⭐(${player.championships})` : '';
+                    row.querySelector('.wins').value = player.wins;
+                    row.querySelector('.losses').value = player.losses;
+                    row.querySelector('.win-rate').value = player.winRate;
+                    row.querySelector('.avg-game-diff').value = player.avgGameDiff;
+                    row.querySelector('.close-rate').value = player.totalSets >= 2 ? (player.closeSets === 0 ? '0' : Math.round(player.closeSets / player.totalSets * 100)) : '0';
+                    row.querySelector('.dominant-wins').value = player.totalSets > 0 ? `${Math.round((player.dominantWins / player.totalSets) * 100)}%(${player.dominantWins}승)` : '0%';
+                    row.querySelector('.dominant-losses').value = player.totalSets > 0 ? `${Math.round((player.dominantLosses / player.totalSets) * 100)}%(${player.dominantLosses}패)` : '0%';
+
+                    let bestPartner = { name: '-', wins: 0, losses: 0, score: -Infinity };
+                    if (partnerStats[player.name]) {
+                        for (const partnerName in partnerStats[player.name]) {
+                            const stats = partnerStats[player.name][partnerName];
+                            if (stats.matches > 0) {
+                                const winPriority = stats.wins;
+                                const diffPriority = stats.matches > 0 ? stats.gameDiffSum / stats.matches : 0;
+                                const partnerScore = (winPriority * 100) + (diffPriority * 10);
+                                if (partnerScore > bestPartner.score) {
+                                    bestPartner = { name: partnerName, wins: stats.wins, losses: stats.losses, score: partnerScore };
+                                }
+                            }
+                        }
+                    }
+                    row.querySelector('.best-partner').value = bestPartner.name === '-' ? '데이터 부족' : `${bestPartner.name.replace(/\*/g, '')} (${bestPartner.wins}승${bestPartner.losses}패)`;
                 } else {
-                    moreBtn.style.display = 'none';
+                    row.cells[0].innerHTML = `${index + 1}<span class="streak-cell streak-none">–</span>`;
+                    row.querySelectorAll('input:not([type=button])').forEach(input => input.value = '');
+                    row.querySelector('.championship-star').textContent = '';
+                }
+            });
+
+            await saveAllData();
+            showToast('순위 업데이트 완료!');
+            updateRankingBtn.disabled = false;
+        }
+
+        function downloadCSV() {
+            let rankingCSV = '\uFEFF순위,선수,MMR,우승,승,패,승률(%),평균 게임 득실,접전률(%),압도승률(%),압도패률(%),최고 파트너\n';
+            document.querySelectorAll('#ranking-table tbody tr').forEach(row => {
+                const rawName = row.querySelector('.ranking-player').value.trim();
+                const player = rawName.replace(/\*/g, '');
+                if (player) {
+                    const rank = row.cells[0].textContent.split(' ')[0];
+                    const mmr = row.querySelector('.mmr').value;
+                    const championships = row.querySelector('.championship-star')?.dataset.count || '0';
+                    const wins = row.querySelector('.wins').value;
+                    const losses = row.querySelector('.losses').value;
+                    const winRate = row.querySelector('.win-rate').value;
+                    const avgGameDiff = row.querySelector('.avg-game-diff').value;
+                    const closeRate = row.querySelector('.close-rate').value;
+                    const dominantWins = row.querySelector('.dominant-wins').value.replace('%', '').replace('승', '');
+                    const dominantLosses = row.querySelector('.dominant-losses').value.replace('%', '').replace('패', '');
+                    const bestPartner = row.querySelector('.best-partner').value;
+                    rankingCSV += `${rank},"${player}",${mmr},${championships},${wins},${losses},${winRate},${avgGameDiff},${closeRate},${dominantWins},${dominantLosses},"${bestPartner}"\n`;
+                }
+            });
+
+            const blob = new Blob([rankingCSV], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'techin_open_rankings.csv';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function waitForElements(selector, callback, retries = 20, delay = 200) {
+            let attempts = 0;
+            function check() {
+                const elements = document.querySelectorAll(selector);
+                const scheduleContainer = document.getElementById('schedule-container');
+                const rankingBody = document.querySelector('#ranking-table tbody');
+                console.log(`waitForElements 시도 ${attempts + 1}: 요소 상태 - schedule-container: ${!!scheduleContainer}, ranking-table tbody: ${!!rankingBody}, selector: ${elements.length}`);
+                if (elements.length > 0 && scheduleContainer && rankingBody) {
+                    console.log("DOM 요소 모두 준비됨!");
+                    callback();
+                } else if (attempts < retries) {
+                    attempts++;
+                    console.log(`DOM 요소 대기 중 (${attempts}/${retries})...`);
+                    setTimeout(check, delay);
+                } else {
+                    console.error("DOM 요소 로드 실패:", selector);
+                    showToast("페이지 로드 오류! 요소를 찾을 수 없습니다.");
                 }
             }
+            check();
+        }
 
-            renderRankings(rankings);
+        function setupInputListeners() {
+            const saveAllBtn = document.getElementById('save-all');
+            const updateRankingBtn = document.getElementById('update-ranking');
+            const toggleRankingsBtn = document.getElementById('toggle-rankings');
+            const h2hPageBtn = document.getElementById('h2h-page-btn');
+            const partnerPageBtn = document.getElementById('partner-page-btn');
+            const howToUseBtn = document.getElementById('how-to-use-btn');
 
-            document.querySelectorAll('#ranking-table th').forEach(th => {
+            console.log("setupInputListeners - 버튼 상태:");
+            console.log("save-all:", !!saveAllBtn);
+            console.log("update-ranking:", !!updateRankingBtn);
+            console.log("toggle-rankings:", !!toggleRankingsBtn);
+            console.log("h2h-page-btn:", !!h2hPageBtn);
+            console.log("partner-page-btn:", !!partnerPageBtn);
+            console.log("how-to-use-btn:", !!howToUseBtn);
+
+            saveAllBtn?.addEventListener('click', saveAllData);
+            updateRankingBtn?.addEventListener('click', updateRanking);
+            toggleRankingsBtn?.addEventListener('click', () => {
+                const lowerRanks = document.querySelectorAll('.lower-rank');
+                const isVisible = lowerRanks[0]?.classList.contains('show');
+                lowerRanks.forEach(row => row.classList.toggle('show'));
+                toggleRankingsBtn.textContent = isVisible ? '더보기' : '접기';
+            });
+            h2hPageBtn?.addEventListener('click', () => {
+                window.location.href = 'h2h.html';
+            });
+            partnerPageBtn?.addEventListener('click', () => {
+                window.location.href = 'partner.html';
+            });
+            howToUseBtn?.addEventListener('click', () => {
+                document.getElementById('popup').classList.add('show');
+                document.getElementById('overlay').classList.add('show');
+            });
+
+            document.getElementById('close-popup')?.addEventListener('click', () => {
+                document.getElementById('popup').classList.remove('show');
+                document.getElementById('overlay').classList.remove('show');
+            });
+
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFilter = btn.dataset.filter;
+                    const savedRounds = new Map(JSON.parse(localStorage.getItem('savedRounds') || '[]'));
+                    createRankingRows(savedRounds);
+                });
+            });
+
+            document.querySelectorAll('#ranking-table thead th[data-sort]').forEach(th => {
                 th.addEventListener('click', () => {
-                    const sortKey = th.dataset.sort;
-                    if (!sortKey) return;
+                    const newSortKey = th.dataset.sort;
+                    if (newSortKey === sortKey) {
+                        sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+                    } else {
+                        sortKey = newSortKey;
+                        sortOrder = 'desc';
+                    }
+                    const savedRounds = new Map(JSON.parse(localStorage.getItem('savedRounds') || '[]'));
+                    createRankingRows(savedRounds);
+                });
+            });
 
-                    const isAscending = th.classList.contains('sort-asc');
-                    document.querySelectorAll('#ranking-table th').forEach(header => {
-                        header.classList.remove('sort-asc', 'sort-desc');
-                    });
-                    th.classList.add(isAscending ? 'sort-desc' : 'sort-asc');
-
-                    rankings.sort((a, b) => {
-                        let valA = a[sortKey];
-                        let valB = b[sortKey];
-                        if (sortKey === 'player') {
-                            valA = valA.toLowerCase();
-                            valB = valB.toLowerCase();
-                            return isAscending ? valB.localeCompare(valA) : valA.localeCompare(valB);
-                        } else if (sortKey === 'rank') {
-                            valA = rankings.indexOf(a) + 1;
-                            valB = rankings.indexOf(b) + 1;
-                        } else {
-                            valA = Number(valA) || 0;
-                            valB = Number(valB) || 0;
-                        }
-                        return isAscending ? valB - valA : valA - valB;
-                    });
-
-                    renderRankings(rankings);
+            document.querySelectorAll('.ranking-player').forEach(input => {
+                input.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const playerName = encodeURIComponent(input.value.trim().replace(/\*/g, ''));
+                    if (playerName) {
+                        window.location.href = `h2h.html?player=${playerName}`;
+                    }
                 });
             });
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            let savedRounds;
-            try {
-                savedRounds = new Map(JSON.parse(localStorage.getItem('savedRounds') || '[]'));
-            } catch (e) {
-                console.error('Failed to parse savedRounds:', e);
-                savedRounds = new Map();
-            }
-            console.log('Initial savedRounds:', savedRounds);
-            createScheduleRounds(savedRounds);
-            createRankingRows(savedRounds);
-
-            const themeToggle = document.getElementById('theme-toggle');
-            themeToggle.addEventListener('click', () => {
-                const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                document.documentElement.setAttribute('data-theme', newTheme);
-                localStorage.setItem('theme', newTheme);
-                themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
-            });
-
-            const savedTheme = localStorage.getItem('theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
-
-            document.getElementById('save-all-data').addEventListener('click', () => {
-                const savedRounds = saveAllData();
-                createScheduleRounds(savedRounds);
-                createRankingRows(savedRounds);
-            });
-
-            document.getElementById('update-ranking').addEventListener('click', () => {
-                let savedRounds;
+            console.log("DOMContentLoaded 이벤트 시작");
+            waitForElements('#schedule-container, #ranking-table tbody', () => {
+                console.log("waitForElements 콜백 실행");
                 try {
-                    savedRounds = new Map(JSON.parse(localStorage.getItem('savedRounds') || '[]'));
+                    applyTheme(localStorage.getItem('theme') || 'dark');
+                    console.log("applyTheme 호출 성공");
                 } catch (e) {
-                    console.error('Failed to parse savedRounds for update:', e);
-                    savedRounds = new Map();
+                    console.error("applyTheme 호출 실패:", e.message, e.stack);
+                    showToast("테마 적용 오류!");
                 }
-                createRankingRows(savedRounds);
-                showToast('순위 갱신됨');
-            });
-
-            document.getElementById('dashboard-btn').addEventListener('click', () => {
-                window.location.href = 'dash.html';
-            });
-            document.getElementById('export-csv-btn').addEventListener('click', () => {
-                exportToCSV();
-            });
-            document.getElementById('personal-stats-btn').addEventListener('click', () => {
-                window.location.href = 'h2h.html';
-            });
-            document.getElementById('partner-stats-btn').addEventListener('click', () => {
-                window.location.href = 'partner.html';
-            });
-
-            const modal = document.getElementById('how-to-use-modal');
-            const modalBtn = document.getElementById('how-to-use-btn');
-            const modalClose = document.getElementById('modal-close');
-
-            modalBtn.addEventListener('click', () => {
-                modal.style.display = 'flex';
-            });
-
-            modalClose.addEventListener('click', () => {
-                modal.style.display = 'none';
-            });
-
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.style.display = 'none';
+                createRankingRows();
+                createScheduleRounds();
+                setupInputListeners();
+                const themeToggle = document.getElementById('theme-toggle');
+                if (themeToggle) {
+                    themeToggle.addEventListener('click', () => {
+                        console.log("themeToggle 클릭");
+                        try {
+                            applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+                        } catch (e) {
+                            console.error("themeToggle applyTheme 호출 실패:", e.message, e.stack);
+                            showToast("테마 전환 오류!");
+                        }
+                    });
+                }
+                const downloadCsvBtn = document.getElementById('download-csv');
+                if (downloadCsvBtn) {
+                    downloadCsvBtn.addEventListener('click', downloadCSV);
                 }
             });
         });
