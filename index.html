@@ -157,15 +157,16 @@
             max-height: 70vh;
             max-width: 100%;
             margin: 0;
-            padding: 0 var(--spacing-sm);
+            padding: 0 4px; /* Reduced padding for tighter fit */
             width: 100%;
+            box-sizing: border-box;
             scrollbar-width: thin;
             scrollbar-color: var(--primary) var(--surface);
             -webkit-overflow-scrolling: touch;
         }
         .table-wrapper::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
         }
         .table-wrapper::-webkit-scrollbar-track {
             background: var(--surface);
@@ -456,10 +457,12 @@
                 max-height: 50vh;
                 max-width: 100%;
                 overflow-x: auto;
+                padding: 0 2px; /* Further reduced padding */
+                box-sizing: border-box;
                 -webkit-overflow-scrolling: touch;
             }
             table {
-                min-width: 320px;
+                min-width: 300px;
                 width: 100%;
             }
             #ranking-table {
@@ -479,7 +482,7 @@
             .schedule-table th:nth-child(2), .schedule-table td:nth-child(2), /* Player 2 */
             .schedule-table th:nth-child(4), .schedule-table td:nth-child(4), /* Player 3 */
             .schedule-table th:nth-child(5), .schedule-table td:nth-child(5) { /* Player 4 */
-                width: 10%;
+                width: 9%; /* Reduced from 10% */
             }
             .schedule-table th:nth-child(3), .schedule-table td:nth-child(3) { /* vs */
                 width: 3%;
@@ -492,14 +495,14 @@
                 padding: 1px 0;
             }
             .schedule-table th:nth-child(7), .schedule-table td:nth-child(7) { /* 4점제 */
-                width: 5%;
-                min-width: 15px;
+                width: 4%;
+                min-width: 12px;
                 padding: 1px 0;
             }
             .schedule-table input[type="text"] {
-                min-width: 30px;
-                max-width: 40px;
-                font-size: 0.65rem;
+                min-width: 28px; /* Slightly reduced */
+                max-width: 38px; /* Slightly reduced */
+                font-size: 0.6rem; /* Slightly smaller font */
                 padding: 1px;
                 margin: 0;
                 border: none;
@@ -507,16 +510,16 @@
                 box-sizing: border-box;
             }
             .schedule-table input.score {
-                min-width: 18px;
-                max-width: 28px;
-                font-size: 0.65rem;
+                min-width: 16px;
+                max-width: 24px;
+                font-size: 0.6rem;
                 padding: 1px;
                 margin: 0;
                 border: none;
             }
             .schedule-table input[type="checkbox"] {
-                width: 14px;
-                height: 14px;
+                width: 12px;
+                height: 12px;
                 margin: 0;
                 border: none;
                 transform: scale(1);
