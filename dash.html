@@ -45,31 +45,31 @@
     <title>2025 테친 오픈 대시보드</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Poppins:wght@600;700&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #001F3F; /* US Open 다크 블루 */
-            --surface: #003087; /* 테니스 코트 느낌 */
-            --primary: #FF4136; /* US Open 레드 포인트 */
-            --primary-variant: #FF7256; /* 부드러운 레드 */
-            --text: #FFFFFF; /* 화이트 텍스트 */
-            --text-sec: #B0C4DE; /* 연한 블루-그레이 */
-            --gold: #FFD700; /* 어워드용 골드 */
-            --border: #4682B4; /* 테니스 코트 라인 느낌 */
-            --shadow: rgba(0, 0, 0, 0.7);
+            --bg: #121212;
+            --surface: #1E1E1E;
+            --primary: #4CAF50;
+            --primary-variant: #81C784;
+            --text: #E0E0E0;
+            --text-sec: #A0A0A0;
+            --gold: #FFD700;
+            --border: #333;
+            --shadow: rgba(0, 0, 0, 0.5);
         }
         [data-theme="light"] {
-            --bg: #F5F6F5; /* 밝은 그레이-화이트 */
-            --surface: #FFFFFF; /* 깨끗한 화이트 */
-            --primary: #003087; /* US Open 블루 */
-            --primary-variant: #4682B4; /* 라이트 블루 */
-            --text: #001F3F; /* 다크 블루 텍스트 */
-            --text-sec: #6B7280; /* 그레이 */
-            --border: #B0C4DE; /* 연한 블루 */
-            --shadow: rgba(0, 0, 0, 0.2);
+            --bg: #F0F4F8;
+            --surface: #FFF;
+            --primary: #1A3C34;
+            --primary-variant: #2A6B5B;
+            --text: #1F2937;
+            --text-sec: #6B7280;
+            --border: #E5E7EB;
+            --shadow: rgba(0, 0, 0, 0.1);
         }
         body {
-            font-family: 'Roboto Condensed', 'Noto Sans KR', sans-serif;
+            font-family: 'Noto Sans KR', sans-serif;
             background: var(--bg);
             color: var(--text);
             margin: 0;
@@ -81,30 +81,29 @@
         }
         h1 {
             font-family: 'Poppins', sans-serif;
-            font-size: 3rem;
+            font-size: 2.8rem;
             text-align: center;
-            color: var(--text);
+            color: transparent;
             background: linear-gradient(135deg, var(--primary), var(--primary-variant));
             -webkit-background-clip: text;
-            padding: 30px 0;
+            background-clip: text;
+            padding: 20px 0;
             margin-bottom: 3rem;
-            text-shadow: 0 2px 4px var(--shadow);
         }
         .section {
             background: var(--surface);
             padding: 30px;
             border-radius: 16px;
-            box-shadow: 0 12px 40px var(--shadow);
+            box-shadow: 0 10px 30px var(--shadow);
             margin-bottom: 3rem;
-            border: 2px solid var(--border);
+            border: 1px solid var(--border);
         }
         h2 {
             font-family: 'Poppins', sans-serif;
-            font-size: 2.4rem;
+            font-size: 2.2rem;
             color: var(--primary);
             margin-bottom: 20px;
-            border-bottom: 3px solid var(--border);
-            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
         }
         .charts-container {
             display: grid;
@@ -117,29 +116,25 @@
         .chart-control label {
             font-weight: 700;
             margin-right: 10px;
-            font-size: 1.1rem;
         }
         .chart-control select {
-            padding: 10px;
-            border-radius: 8px;
-            border: 2px solid var(--border);
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
             background: var(--surface);
             color: var(--text);
-            width: 220px;
-            font-family: 'Roboto Condensed', sans-serif;
+            width: 200px;
         }
         .chart-control button {
-            padding: 10px 20px;
-            border-radius: 8px;
-            border: 2px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
             background: linear-gradient(135deg, var(--primary), var(--primary-variant));
-            color: var(--text);
+            color: #FFF;
             cursor: pointer;
-            font-weight: 700;
-            transition: transform 0.2s;
         }
-        .chart-control button:hover {
-            transform: scale(1.05);
+        [data-theme="dark"] .chart-control button {
+            color: var(--bg);
         }
         .awards-grid {
             display: grid;
@@ -147,38 +142,33 @@
             gap: 20px;
         }
         .award-card {
-            background: linear-gradient(135deg, rgba(255,255,255,0.1), var(--surface));
-            border: 2px solid var(--border);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
             border-radius: 12px;
             padding: 20px;
             text-align: center;
-            transition: transform 0.2s;
-        }
-        .award-card:hover {
-            transform: translateY(-5px);
         }
         [data-theme="light"] .award-card {
-            background: linear-gradient(135deg, #F9FAFB, #FFFFFF);
+            background: #F9FAFB;
         }
         .award-icon {
-            font-size: 3.5rem;
+            font-size: 3rem;
             margin-bottom: 10px;
             color: var(--gold);
-            text-shadow: 0 2px 4px var(--shadow);
         }
         .award-title {
             font-family: 'Poppins', sans-serif;
-            font-size: 1.4rem;
-            color: var(--primary);
+            font-size: 1.3rem;
+            color: var(--primary-variant);
             margin-bottom: 5px;
         }
         .award-winner {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 700;
             color: var(--text);
         }
         .award-value {
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: var(--text-sec);
         }
         .award-runner-up {
@@ -191,15 +181,10 @@
             padding: 12px 28px;
             margin: 10px;
             background: linear-gradient(135deg, var(--primary), var(--primary-variant));
-            color: var(--text);
+            color: #FFF;
             text-decoration: none;
             border-radius: 8px;
             font-weight: 700;
-            font-family: 'Roboto Condensed', sans-serif;
-            transition: transform 0.2s;
-        }
-        .btn:hover {
-            transform: scale(1.05);
         }
         [data-theme="dark"] .btn {
             color: var(--bg);
@@ -209,7 +194,7 @@
             top: 20px;
             right: 20px;
             background: var(--surface);
-            border: 2px solid var(--border);
+            border: 1px solid var(--border);
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -219,10 +204,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: transform 0.2s;
-        }
-        .theme-toggle:hover {
-            transform: rotate(360deg);
         }
         .toast {
             position: fixed;
@@ -237,11 +218,10 @@
             opacity: 0;
             transition: opacity 0.4s;
             font-weight: 700;
-            font-family: 'Roboto Condensed', sans-serif;
         }
         [data-theme="light"] .toast {
             background: linear-gradient(135deg, #f9f9f9, #f1f1f1);
-            color: #001F3F;
+            color: #333;
         }
         .toast.show {
             opacity: 1;
@@ -335,7 +315,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, collection, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, getDocs, writeBatch, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCj33GM2pM2-Vz1Fmh6eyMwQkWjByA7xdw",
@@ -343,10 +323,15 @@
             projectId: "tetus-c91f0",
             storageBucket: "tetus-c91f0.firebasestorage.app",
             messagingSenderId: "877913022272",
-            appId: "1:877913022272:web:ec685d63235c87c3c1e4a5",
-            measurementId: "G-7FJY9EKPV5"
+            appId: "1:877913022272:web:ec685d63235c87c3c1e4a5"
         };
-        const db = getFirestore(initializeApp(firebaseConfig));
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        enableIndexedDbPersistence(db).catch(err => {
+            console.error("Firestore 오프라인 지속성 활성화 실패:", err);
+            showToast("오프라인 모드 설정 실패! 네트워크 확인 후 다시 시도하세요.");
+        });
 
         let mmrChart, allPlayersData = [], fullMmrHistory = [], matchesData = [], awardsData = {};
 
@@ -384,13 +369,34 @@
             console.log(`디버깅 [${player.name}] - ${award}: ${score},`, ...metrics);
         };
 
+        const loadFromCacheOrDefault = (key, defaultValue) => {
+            try {
+                const cached = localStorage.getItem(key);
+                if (cached && cached !== '[]' && cached !== '{}') {
+                    const { data, timestamp } = JSON.parse(cached);
+                    const cacheAge = (Date.now() - timestamp) / (1000 * 60 * 60);
+                    if (cacheAge < 24) {
+                        console.log(`${key} 캐시 로드, 나이: ${cacheAge.toFixed(2)}시간`);
+                        return data;
+                    } else {
+                        console.log(`${key} 캐시 오래됨, 삭제`);
+                        localStorage.removeItem(key);
+                    }
+                }
+            } catch (e) {
+                console.error(`캐시 파싱 오류 (${key}):`, e);
+            }
+            return defaultValue;
+        };
+
         const setupMmrPlayerSelector = () => {
             const select = document.getElementById('mmr-player-select');
             if (!select) {
                 console.error("MMR 선수 선택 셀렉터 없음");
-                return showToast("MMR 선수 선택 오류!");
+                showToast("MMR 선수 선택 오류!");
+                return;
             }
-            select.innerHTML = allPlayersData.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
+            select.innerHTML = allPlayersData.map(p => `<option value="${p.name}">${p.name}${p.isFemale ? '*' : ''}</option>`).join('');
             select.addEventListener('change', e => {
                 const selectedPlayers = Array.from(e.target.selectedOptions).map(opt => opt.value);
                 console.log("선택된 플레이어:", selectedPlayers);
@@ -400,7 +406,8 @@
             const resetButton = document.getElementById('reset-mmr-chart');
             if (!resetButton) {
                 console.error("MMR 차트 초기화 버튼 없음");
-                return showToast("MMR 차트 초기화 버튼 오류!");
+                showToast("MMR 차트 초기화 버튼 오류!");
+                return;
             }
             resetButton.addEventListener('click', () => {
                 select.selectedIndex = -1;
@@ -418,19 +425,21 @@
             const ctx = document.getElementById('mmr-chart')?.getContext('2d');
             if (!ctx) {
                 console.error("MMR 차트 캔버스 없음");
-                return showToast("그래프 렌더링 오류!");
+                showToast("그래프 오류!");
+                return;
             }
             if (!selectedPlayers.length) {
                 console.error("선택된 플레이어 없음:", selectedPlayers);
-                return showToast("플레이어를 선택해주세요!");
+                showToast("플레이어 선택 필요!");
+                return;
             }
 
             const endDate = new Date().getTime();
-            const startDate = endDate - 30 * 24 * 60 * 60 * 1000; // 30일 전
-            const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+            const startDate = endDate - 60 * 24 * 60 * 60 * 1000; // 60일 전
+            const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 
             let intervalDates = [];
-            for (let t = startDate; t <= endDate; t += THREE_DAYS_MS) {
+            for (let t = startDate; t <= endDate; t += SEVEN_DAYS_MS) {
                 intervalDates.push(t);
             }
 
@@ -484,7 +493,7 @@
 
             console.log("표시할 히스토리:", displayHistory.length, "스냅샷");
 
-            const colors = ['#FF4136', '#FFFFFF', '#FFD700', '#4682B4', '#FF7256', '#00CED1', '#FF69B4', '#32CD32', '#FFA500', '#6A5ACD'];
+            const colors = ['#FF0000', '#0000FF', '#FFFF00', '#008000', '#800080', '#FF00FF', '#00FFFF', '#FFA500', '#FFC0CB', '#A52A2A'];
             const datasets = selectedPlayers.map((name, i) => {
                 const cleanName = normalizePlayerName(name).replace(/\./g, '_');
                 return {
@@ -521,11 +530,11 @@
                     data: { labels, datasets },
                     options: {
                         scales: {
-                            x: { ticks: { color: 'var(--text-sec)', font: { size: 12, family: 'Roboto Condensed' }, maxRotation: 45, minRotation: 45 }, grid: { color: 'var(--border)' } },
-                            y: { ticks: { color: 'var(--text-sec)', font: { size: 12, family: 'Roboto Condensed' }, stepSize: 50 }, grid: { color: 'var(--border)' }, min: minMMR, max: maxMMR, title: { display: true, text: 'MMR', color: 'var(--text)', font: { size: 14, family: 'Roboto Condensed' } } }
+                            x: { ticks: { color: 'var(--text-sec)', font: { size: 12 }, maxRotation: 45, minRotation: 45 }, grid: { color: 'var(--border)' } },
+                            y: { ticks: { color: 'var(--text-sec)', font: { size: 12 }, stepSize: 50 }, grid: { color: 'var(--border)' }, min: minMMR, max: maxMMR, title: { display: true, text: 'MMR', color: 'var(--text)', font: { size: 14 } } }
                         },
                         plugins: {
-                            legend: { labels: { color: 'var(--text)', font: { size: 14, family: 'Roboto Condensed' }, boxWidth: 20, boxHeight: 2, padding: 15 }, position: 'top' },
+                            legend: { labels: { color: 'var(--text)', font: { size: 14 }, boxWidth: 20, boxHeight: 2, padding: 15 }, position: 'top' },
                             tooltip: { enabled: true, backgroundColor: 'rgba(0,0,0,0.8)', titleColor: '#fff', bodyColor: '#fff', padding: 10, cornerRadius: 6, callbacks: { label: c => `${c.dataset.label}: ${c.parsed.y}` } }
                         },
                         interaction: { mode: 'nearest', intersect: false },
@@ -539,11 +548,17 @@
             }
         };
 
-        const showToast = msg => {
+        const showToast = (msg, duration = 3000) => {
+            console.log(`showToast 호출: ${msg}, DOM 로드 여부: ${document.readyState}`);
             const toast = document.getElementById('toast');
+            if (!toast) {
+                console.error('Toast 요소 없음');
+                return;
+            }
+            if (toast.classList.contains('show')) return;
             toast.textContent = msg;
             toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
+            setTimeout(() => toast.classList.remove('show'), duration);
         };
 
         const applyTheme = theme => {
@@ -557,13 +572,11 @@
         };
 
         const cleanInvalidMatches = async () => {
-            const matchesSnap = await getDocs(collection(db, 'league', 'matches', 'data')).catch(e => {
+            const matchesSnap = await getDocs(collection(db, 'techeon', 'matches', 'data')).catch(e => {
                 console.error(`매치 데이터 조회 실패: ${e.message}`);
                 if (e.name === "BloomFilterError") {
                     console.error("BloomFilterError 발생, 인덱스 재설정 필요");
-                    showToast("Firestore 인덱스 오류! Google Cloud Console에서 인덱스 설정을 확인하세요.");
-                } else {
-                    showToast("매치 데이터 로드 실패!");
+                    showToast("Firestore BloomFilter 오류! Google Cloud Console에서 인덱스 확인하세요.");
                 }
                 return { docs: [] };
             });
@@ -572,18 +585,19 @@
             matchesSnap.forEach(doc => {
                 const data = doc.data();
                 const createdAt = new Date(data.createdAt || '1970-01-01');
-                if (!data.player1 || !data.player2 || !data.winner || !data.loserPlayer1 || !data.loserPlayer2 || createdAt < new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000)) {
+                if ((!data.player1 || !data.player2 || !data.winner || !data.loserPlayer1 || !data.loserPlayer2) || createdAt < new Date(new Date().getTime() - 60 * 24 * 60 * 60 * 1000)) {
                     batch.delete(doc.ref);
                     invalidCount++;
+                    console.log(`불완전한 매치 삭제 예정: ${doc.id}`, data);
                 }
             });
             if (invalidCount > 0) {
                 await batch.commit().catch(e => {
                     console.error(`불완전한 매치 삭제 실패: ${e.message}`);
-                    showToast("매치 데이터 정리 실패!");
+                    showToast("매치 데이터 삭제 실패!");
                 });
                 console.log(`불완전한 매치 ${invalidCount}개 삭제 완료`);
-                showToast(`불완전한 매치 ${invalidCount}개 정리 완료!`);
+                showToast(`불완전한 매치 ${invalidCount}개 삭제 완료!`);
             } else {
                 console.log("불완전한 매치 없음");
             }
@@ -593,88 +607,88 @@
         const loadDashboard = async () => {
             try {
                 console.log("loadDashboard 시작");
+                if (!navigator.onLine) {
+                    console.warn("클라이언트 오프라인 상태, 캐시 데이터 사용");
+                    showToast("오프라인 모드: 캐시 데이터 사용");
+                }
+
                 await cleanInvalidMatches();
 
-                const rankingPromise = getDoc(doc(db, 'league', 'data', 'rankings', 'v1')).catch(e => {
+                const rankingPromise = getDoc(doc(db, 'techeon', 'data', 'rankings', 'v1')).catch(e => {
                     console.error(`랭킹 로드 실패: ${e.message}`);
-                    showToast("랭킹 데이터를 불러오지 못했습니다! Firestore 설정과 할당량을 확인하세요.");
-                    return null;
+                    showToast("랭킹 데이터 로드 실패! 네트워크 또는 Firestore 설정 확인하세요.");
+                    return { exists: () => false, data: () => ({ players: loadFromCacheOrDefault('rankingCache', []) }) };
                 });
-                const historyPromise = getDoc(doc(db, 'league', 'data', 'mmrHistory', 'v1')).catch(e => {
+                const historyPromise = getDoc(doc(db, 'techeon', 'data', 'mmrHistory', 'v1')).catch(e => {
                     console.error(`MMR 히스토리 로드 실패: ${e.message}`);
-                    showToast("MMR 히스토리 데이터를 불러오지 못했습니다! Firestore mmrHistory/v1을 확인하세요.");
-                    return null;
+                    showToast("MMR 히스토리 로드 실패! 캐시 사용");
+                    return { exists: () => false, data: () => ({ snapshots: loadFromCacheOrDefault('mmrHistoryCache', []) }) };
                 });
-                const matchesPromise = getDocs(collection(db, 'league', 'matches', 'data')).catch(e => {
+                const matchesPromise = getDocs(collection(db, 'techeon', 'matches', 'data')).catch(e => {
                     console.error(`매치 데이터 로드 실패: ${e.message}`);
                     if (e.name === "BloomFilterError") {
                         console.error("BloomFilterError 발생, 인덱스 재설정 필요");
-                        showToast("Firestore 인덱스 오류! Google Cloud Console에서 인덱스 설정을 확인하세요.");
-                    } else {
-                        showToast("매치 데이터를 불러오지 못했습니다!");
+                        showToast("Firestore BloomFilter 오류! Google Cloud Console에서 인덱스 확인하세요.");
                     }
-                    return { docs: [] };
+                    return { docs: loadFromCacheOrDefault('matchesDataCache', []).map(d => ({ data: () => d, id: d.id })) };
                 });
-                const awardsPromise = getDoc(doc(db, 'league', 'data', 'awards', 'v1')).catch(e => {
+                const awardsPromise = getDoc(doc(db, 'techeon', 'data', 'awards', 'v1')).catch(e => {
                     console.error(`어워드 로드 실패: ${e.message}`);
-                    showToast("어워드 데이터를 불러오지 못했습니다! Firestore 설정을 확인하세요.");
-                    return null;
-                });
-                const schedulePromise = getDoc(doc(db, 'league', 'data', 'schedule', 'v1')).catch(e => {
-                    console.error(`스케줄 데이터 로드 실패: ${e.message}`);
-                    showToast("스케줄 데이터를 불러오지 못했습니다!");
-                    return null;
+                    showToast("어워드 로드 실패! 캐시 사용");
+                    return { exists: () => false, data: () => loadFromCacheOrDefault('awardsCache', {}) };
                 });
 
-                const [rankingSnap, historySnap, matchesSnap, awardsSnap, scheduleSnap] = await Promise.all([
+                const [rankingSnap, historySnap, matchesSnap, awardsSnap] = await Promise.all([
                     rankingPromise,
                     historyPromise,
                     matchesPromise,
-                    awardsPromise,
-                    schedulePromise
+                    awardsPromise
                 ]);
 
-                if (!rankingSnap || !rankingSnap.exists() || typeof rankingSnap.data() !== 'object' || !Array.isArray(rankingSnap.data().players)) {
-                    console.error("랭킹 데이터 유효하지 않음:", {
-                        exists: rankingSnap?.exists(),
-                        data: rankingSnap?.data()
-                    });
-                    showToast("랭킹 데이터가 없습니다! Firestore league/data/rankings/v1을 확인하세요.");
-                    allPlayersData = [];
-                    return;
+                if (rankingSnap.exists() && Array.isArray(rankingSnap.data()?.players)) {
+                    allPlayersData = rankingSnap.data().players.map(p => ({
+                        ...p,
+                        gender: femalePlayersList.includes(normalizePlayerName(p.name)) || p.isFemale ? 'F' : 'M'
+                    }));
+                    localStorage.setItem('rankingCache', JSON.stringify({ data: allPlayersData, timestamp: Date.now() }));
+                    console.log("랭킹 데이터:", allPlayersData.length, "명");
+                } else {
+                    allPlayersData = loadFromCacheOrDefault('rankingCache', []);
+                    if (allPlayersData.length === 0) {
+                        console.warn("랭킹 데이터 및 캐시 없음, 기본 선수 추가");
+                        allPlayersData = [{ name: "기본 선수", mmr: 1500, mmrHistory: [{ round: 0, mmr: 1500, createdAt: new Date().toISOString() }], wins: 0, losses: 0, gameDiff: 0, totalSets: 0, isFemale: false, gender: 'M' }];
+                    }
                 }
-                allPlayersData = rankingSnap.data().players || [];
-                console.log("랭킹 데이터:", allPlayersData.length, "명");
 
-                fullMmrHistory = historySnap && historySnap.exists() && Array.isArray(historySnap.data()?.snapshots) ? historySnap.data().snapshots : [];
+                fullMmrHistory = historySnap.exists() && Array.isArray(historySnap.data()?.snapshots) ? historySnap.data().snapshots : loadFromCacheOrDefault('mmrHistoryCache', []);
+                localStorage.setItem('mmrHistoryCache', JSON.stringify({ data: fullMmrHistory, timestamp: Date.now() }));
                 console.log("MMR 히스토리:", fullMmrHistory.length, "스냅샷");
 
-                const endDate = new Date().getTime();
-                const startDate = endDate - 30 * 24 * 60 * 60 * 1000; // 30일 전
-                let roundTimestamps = [];
-                if (scheduleSnap && scheduleSnap.exists() && Array.isArray(scheduleSnap.data().matches)) {
-                    roundTimestamps = scheduleSnap.data().matches
-                        .filter(match => match.timestamp && new Date(match.timestamp).getTime() >= startDate && new Date(match.timestamp).getTime() <= endDate)
-                        .map(match => ({
-                            round: match.round,
-                            timestamp: new Date(match.timestamp).getTime()
-                        }))
-                        .sort((a, b) => a.timestamp - b.timestamp)
-                        .filter((v, i, arr) => i === 0 || v.timestamp !== arr[i - 1].timestamp);
-                    console.log("스케줄 타임스탬프:", roundTimestamps);
-                } else {
-                    console.warn("스케줄 데이터 없음, 3일 간격 기본 스냅샷 사용");
-                    showToast("스케줄 데이터가 없습니다. 3일 간격으로 기본 스냅샷을 사용합니다.");
-                }
+                matchesData = matchesSnap && matchesSnap.docs ? matchesSnap.docs.map(doc => {
+                    const data = doc.data();
+                    if (!data.player1 || !data.player2 || !data.winner || !data.loserPlayer1 || !data.loserPlayer2) {
+                        console.warn(`불완전한 매치 데이터 감지: ${doc.id}`, data);
+                        return null;
+                    }
+                    return { ...data, id: doc.id };
+                }).filter(match => match !== null) : loadFromCacheOrDefault('matchesDataCache', []);
+                localStorage.setItem('matchesDataCache', JSON.stringify({ data: matchesData, timestamp: Date.now() }));
+                console.log("매치 데이터:", matchesData.length, "경기");
 
+                awardsData = awardsSnap.exists() && typeof awardsSnap.data() === 'object' ? awardsSnap.data() : loadFromCacheOrDefault('awardsCache', {});
+                localStorage.setItem('awardsCache', JSON.stringify({ data: awardsData, timestamp: Date.now() }));
+                console.log("어워드 데이터:", Object.keys(awardsData).length, "개");
+
+                const endDate = new Date().getTime();
+                const startDate = endDate - 60 * 24 * 60 * 60 * 1000; // 60일 전
                 fullMmrHistory = fullMmrHistory.filter(h => {
                     const createdAt = new Date(h.createdAt).getTime();
                     return createdAt >= startDate && createdAt <= endDate;
                 });
 
-                const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+                const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
                 let intervalDates = [];
-                for (let t = startDate; t <= endDate; t += THREE_DAYS_MS) {
+                for (let t = startDate; t <= endDate; t += SEVEN_DAYS_MS) {
                     intervalDates.push(t);
                 }
 
@@ -696,274 +710,252 @@
                     return { ...nearestSnapshot, createdAt: new Date(targetDate).toISOString() };
                 });
 
-                matchesData = matchesSnap && matchesSnap.docs ? matchesSnap.docs.map(doc => {
-                    const data = doc.data();
-                    if (!data.player1 || !data.player2 || !data.winner || !data.loserPlayer1 || !data.loserPlayer2) {
-                        console.warn(`불완전한 매치 데이터 감지: ${doc.id}`, data);
-                        return null;
-                    }
-                    return { ...data, id: doc.id };
-                }).filter(match => match !== null) : [];
-                console.log("매치 데이터:", matchesData.length, "경기");
-
-                awardsData = awardsSnap && awardsSnap.exists() && typeof awardsSnap.data() === 'object' ? awardsSnap.data() : {};
-                console.log("어워드 데이터:", Object.keys(awardsData).length, "개");
-
-                allPlayersData = allPlayersData.map(player => ({
-                    ...player,
-                    gender: femalePlayersList.includes(normalizePlayerName(player.name)) || player.isFemale ? 'F' : 'M'
-                }));
-
-                const mixedMatches = matchesData.filter(match => isMixedTeam(match.winnerPlayer1, match.winnerPlayer2, allPlayersData) || isMixedTeam(match.loserPlayer1, match.loserPlayer2, allPlayersData));
-                console.log("혼성 팀 매치:", mixedMatches.length, "경기");
-
-                const playedPlayers = allPlayersData.filter(p => totalGames(p) >= 0);
-                if (playedPlayers.length) {
-                    const getRank = (p, stat) => [...playedPlayers].sort((a, b) => (b[stat] || 0) - (a[stat] || 0)).findIndex(pl => pl.name === p.name) + 1;
-                    const getPercentileScore = rank => playedPlayers.length <= 1 ? 100 : Math.pow((playedPlayers.length - rank) / (playedPlayers.length - 1), 0.7) * 100;
-
-                    let mvpMalePlayer = null, maxMvpMaleScore = -Infinity, mvpMaleRunnerUp = null, secondMvpMaleScore = -Infinity;
-                    let mvpFemalePlayer = null, maxMvpFemaleScore = -Infinity, mvpFemaleRunnerUp = null, secondMvpFemaleScore = -Infinity;
-                    let mostImprovedPlayer = null, maxImprovedScore = -Infinity, improvedRunnerUp = null, secondImprovedScore = -Infinity;
-                    let dominantForcePlayer = null, maxDominantForceScore = -Infinity, dominantForceRunnerUp = null, secondDominantForceScore = -Infinity;
-                    let winKingPlayer = null, maxWinDiff = -Infinity, winKingRunnerUp = null, secondWinDiff = -Infinity;
-                    let playerOfMonthPlayer = null, maxPlayerOfMonthScore = -Infinity, playerOfMonthRunnerUp = null, secondPlayerOfMonthScore = -Infinity;
-                    let peakMmrPlayer = null, maxPeakMmr = -Infinity, peakMmrRunnerUp = null, secondPeakMmr = -Infinity;
-
-                    const FOUR_WEEKS_MS = 4 * 7 * 24 * 60 * 60 * 1000;
-                    const now = new Date().getTime();
-
-                    playedPlayers.forEach(player => {
-                        const totalGamesPlayed = totalGames(player);
-                        const totalSets = parseInt(player.totalSets || totalGamesPlayed);
-                        const gameCountBonus = Math.min(1.05, 1 + totalGamesPlayed * 0.002);
-
-                        player.mmr = parseInt(player.mmr) || 1500;
-                        player.wins = parseInt(player.wins) || 0;
-                        player.losses = parseInt(player.losses) || 0;
-
-                        const mmrRank = getRank(player, 'mmr');
-                        const mmrScore = getPercentileScore(mmrRank) / 10;
-                        player.winRate = totalGamesPlayed > 0 ? player.wins / totalGamesPlayed : 0;
-                        const winRateRank = getRank(player, 'winRate');
-                        const winRateScore = getPercentileScore(winRateRank) / 10;
-                        player.normChampionships = parseInt(player.championships || 0);
-                        const champRank = getRank(player, 'normChampionships');
-                        const champScore = getPercentileScore(champRank) / 10;
-                        player.dominantRate = parseFloat(player.dominantWins || 0);
-                        const dominantRank = getRank(player, 'dominantRate');
-                        const dominantRadarScore = getPercentileScore(dominantRank) / 10;
-                        player.gameDiffRate = totalGamesPlayed > 0 ? (player.gameDiff || 0) / totalGamesPlayed : 0;
-                        const gameDiffRank = getRank(player, 'gameDiffRate');
-                        const gameDiffScore = getPercentileScore(gameDiffRank) / 10;
-
-                        let mvpScore = (mmrScore + winRateScore + champScore + dominantRadarScore + 0.5 * gameDiffScore) / 4.5 * gameCountBonus;
-                        mvpScore = mvpScore.toFixed(1);
-                        if (player.gender === 'M') {
-                            if (parseFloat(mvpScore) > maxMvpMaleScore) {
-                                secondMvpMaleScore = maxMvpMaleScore; mvpMaleRunnerUp = mvpMalePlayer;
-                                maxMvpMaleScore = parseFloat(mvpScore); mvpMalePlayer = { name: player.name, value: mvpScore };
-                            } else if (parseFloat(mvpScore) > secondMvpMaleScore && parseFloat(mvpScore) < maxMvpMaleScore) {
-                                secondMvpMaleScore = parseFloat(mvpScore); mvpMaleRunnerUp = { name: player.name, value: mvpScore };
-                            }
-                        } else if (player.gender === 'F') {
-                            if (parseFloat(mvpScore) > maxMvpFemaleScore) {
-                                secondMvpFemaleScore = maxMvpFemaleScore; mvpFemaleRunnerUp = mvpFemalePlayer;
-                                maxMvpFemaleScore = parseFloat(mvpScore); mvpFemalePlayer = { name: player.name, value: mvpScore };
-                            } else if (parseFloat(mvpScore) > secondMvpFemaleScore && parseFloat(mvpScore) < maxMvpFemaleScore) {
-                                secondMvpFemaleScore = parseFloat(mvpScore); mvpFemaleRunnerUp = { name: player.name, value: mvpScore };
-                            }
-                        }
-
-                        const playerHistory = fullMmrHistory.map(h => h[normalizePlayerName(player.name).replace(/\./g, '_')]).filter(mmr => mmr !== undefined);
-                        const initialMMR = playerHistory.length > 0 ? playerHistory[0] : 1500;
-                        player.mmrGrowthRate = initialMMR > 0 ? ((player.mmr - initialMMR) / initialMMR * 100) : 0;
-                        const mmrGrowthRank = getRank(player, 'mmrGrowthRate');
-                        const mmrGrowthScore = getPercentileScore(mmrGrowthRank) / 10;
-
-                        const earlyGames = playerHistory.slice(0, 3);
-                        const lateGames = playerHistory.slice(-3);
-                        const earlyWins = earlyGames.filter((_, i) => i % 2 === 0 && earlyGames[i + 1] > earlyGames[i]).length;
-                        const lateWins = lateGames.filter((_, i) => i % 2 === 0 && lateGames[i + 1] > earlyGames[i]).length;
-                        const earlyLosses = earlyGames.filter((_, i) => i % 2 === 0 && earlyGames[i + 1] < earlyGames[i]).length;
-                        const lateLosses = lateGames.filter((_, i) => i % 2 === 0 && lateGames[i + 1] < earlyGames[i]).length;
-                        const earlyWinRate = (earlyWins + earlyLosses) > 0 ? earlyWins / (earlyWins + earlyLosses) : 0;
-                        const lateWinRate = (lateWins + lateLosses) > 0 ? lateWins / (lateWins + lateLosses) : 0;
-                        player.winRateImprovement = lateWinRate - earlyWinRate;
-                        const winRateImproveRank = getRank(player, 'winRateImprovement');
-                        const winRateImproveScore = getPercentileScore(winRateImproveRank) / 10;
-
-                        let improvedScore = (mmrGrowthScore * 0.3) + (winRateImproveScore * 0.3) + (winRateImproveScore * 0.4) * gameCountBonus;
-                        improvedScore = improvedScore.toFixed(1);
-                        debugLog(player, '발전상 점수', improvedScore, { mmrGrowthScore, winRateImproveScore });
-                        if (parseFloat(improvedScore) > maxImprovedScore) {
-                            secondImprovedScore = maxImprovedScore; improvedRunnerUp = mostImprovedPlayer;
-                            maxImprovedScore = parseFloat(improvedScore); mostImprovedPlayer = { name: player.name, value: improvedScore };
-                        } else if (parseFloat(improvedScore) > secondImprovedScore && parseFloat(improvedScore) < maxImprovedScore) {
-                            secondImprovedScore = parseFloat(improvedScore); improvedRunnerUp = { name: player.name, value: improvedScore };
-                        }
-
-                        const dominantWins = parseInt(player.dominantWins || 0);
-                        const dominantWinRate = totalGamesPlayed > 0 ? dominantWins / totalGamesPlayed * 100 : 0;
-                        let dominantForceScore = (dominantWins * 0.6 + dominantWinRate * 0.4) * gameCountBonus;
-                        debugLog(player, '압도적 포스 점수', dominantForceScore.toFixed(2), { '압도 승리': dominantWins, '압도 승률': dominantWinRate.toFixed(2) });
-                        if (totalGamesPlayed >= 1 && dominantWins >= 1) {
-                            if (dominantForceScore > maxDominantForceScore) {
-                                secondDominantForceScore = maxDominantForceScore; dominantForceRunnerUp = dominantForcePlayer;
-                                maxDominantForceScore = dominantForceScore; dominantForcePlayer = { name: player.name, value: dominantForceScore.toFixed(2) };
-                            } else if (dominantForceScore > secondDominantForceScore && dominantForceScore < maxDominantForceScore) {
-                                secondDominantForceScore = dominantForceScore; dominantForceRunnerUp = { name: player.name, value: dominantForceScore.toFixed(2) };
-                            }
-                        }
-
-                        const winDiff = player.wins - player.losses;
-                        if (totalGamesPlayed >= 1) {
-                            const adjustedWinDiff = winDiff * gameCountBonus;
-                            if (adjustedWinDiff > maxWinDiff) {
-                                secondWinDiff = maxWinDiff; winKingRunnerUp = winKingPlayer;
-                                maxWinDiff = adjustedWinDiff; winKingPlayer = { name: player.name, value: adjustedWinDiff.toFixed(1) };
-                            } else if (adjustedWinDiff > secondWinDiff && adjustedWinDiff < maxWinDiff) {
-                                secondWinDiff = adjustedWinDiff; winKingRunnerUp = { name: player.name, value: adjustedWinDiff.toFixed(1) };
-                            }
-                        }
-
-                        const recentMatches = matchesData.filter(match => (normalizePlayerName(match.player1) === normalizePlayerName(player.name) || normalizePlayerName(match.player2) === normalizePlayerName(player.name)) && (now - new Date(match.createdAt || now).getTime() <= FOUR_WEEKS_MS));
-                        const recentWins = recentMatches.filter(match => normalizePlayerName(match.winnerPlayer1) === normalizePlayerName(player.name) || normalizePlayerName(match.winnerPlayer2) === normalizePlayerName(player.name)).length;
-                        const recentWinRate = recentMatches.length > 0 ? recentWins / recentMatches.length : 0;
-                        const recentGameDiff = recentMatches.reduce((sum, match) => (normalizePlayerName(match.winnerPlayer1) === normalizePlayerName(player.name) || normalizePlayerName(match.winnerPlayer2) === normalizePlayerName(player.name)) ? sum + parseFloat(match.gameDiff || 0) : sum - parseFloat(match.gameDiff || 0), 0);
-                        const recentPlayerHistory = fullMmrHistory.filter(h => now - new Date(h.createdAt || now).getTime() <= FOUR_WEEKS_MS).map(h => h[normalizePlayerName(player.name).replace(/\./g, '_')]).filter(mmr => mmr !== undefined);
-                        const mmrIncrease = recentPlayerHistory.length > 1 ? (recentPlayerHistory[recentPlayerHistory.length - 1] - recentPlayerHistory[0]) : 0;
-                        let playerOfMonthScore = (recentWinRate * 50 + mmrIncrease * 0.5 + recentGameDiff * 2) * gameCountBonus;
-                        debugLog(player, '이달의 선수 점수', playerOfMonthScore.toFixed(2), { '최근 승률': recentWinRate.toFixed(2), 'MMR 상승': mmrIncrease, '게임 득실': recentGameDiff, '경기 수': recentMatches.length });
-                        if (totalGamesPlayed >= 1 && playerOfMonthScore > 0) {
-                            if (playerOfMonthScore > maxPlayerOfMonthScore) {
-                                secondPlayerOfMonthScore = maxPlayerOfMonthScore; playerOfMonthRunnerUp = playerOfMonthPlayer;
-                                maxPlayerOfMonthScore = playerOfMonthScore; playerOfMonthPlayer = { name: player.name, value: playerOfMonthScore.toFixed(2) };
-                            } else if (playerOfMonthScore > secondPlayerOfMonthScore && playerOfMonthScore < maxPlayerOfMonthScore) {
-                                secondPlayerOfMonthScore = playerOfMonthScore; playerOfMonthRunnerUp = { name: player.name, value: playerOfMonthScore.toFixed(2) };
-                            }
-                        }
-
-                        const peakMmr = playerHistory.length > 0 ? Math.max(...playerHistory) : player.mmr || 1500;
-                        debugLog(player, '최고점 MMR', peakMmr, { playerHistoryLength: playerHistory.length, fallbackMmr: player.mmr || 1500, historySample: playerHistory.slice(0, 5) });
-                        if (totalGamesPlayed >= 1) {
-                            if (peakMmr > maxPeakMmr) {
-                                secondPeakMmr = maxPeakMmr; peakMmrRunnerUp = peakMmrPlayer;
-                                maxPeakMmr = peakMmr; peakMmrPlayer = { name: player.name, value: peakMmr };
-                            } else if (peakMmr > secondPeakMmr && peakMmr < maxPeakMmr) {
-                                secondPeakMmr = peakMmr; peakMmrRunnerUp = { name: player.name, value: peakMmr };
-                            }
-                        }
-                    });
-
-                    await setDoc(doc(db, 'league', 'data', 'awards', 'v1'), {
-                        mvpMale: { winner: mvpMalePlayer || { name: '-', value: '-' }, runnerUp: mvpMaleRunnerUp || { name: '-', value: '-' } },
-                        mvpFemale: { winner: mvpFemalePlayer || { name: '-', value: '-' }, runnerUp: mvpFemaleRunnerUp || { name: '-', value: '-' } },
-                        mostImproved: { winner: mostImprovedPlayer || { name: '-', value: '-' }, runnerUp: improvedRunnerUp || { name: '-', value: '-' } },
-                        dominantForce: { winner: dominantForcePlayer || { name: '-', value: '-' }, runnerUp: dominantForceRunnerUp || { name: '-', value: '-' } },
-                        winKing: { winner: winKingPlayer || { name: '-', value: '-' }, runnerUp: winKingRunnerUp || { name: '-', value: '-' } },
-                        playerOfMonth: { winner: playerOfMonthPlayer || { name: '-', value: '-' }, runnerUp: playerOfMonthRunnerUp || { name: '-', value: '-' } },
-                        peakMmr: { winner: peakMmrPlayer || { name: '-', value: '-' }, runnerUp: peakMmrRunnerUp || { name: '-', value: '-' } }
-                    }, { merge: true }).catch(e => {
-                        console.error("어워드 저장 실패:", e.message);
-                        showToast("어워드 저장 실패! Firestore 할당량 초과 가능성 있음.");
-                    });
-
-                    const awardDetails = {
-                        mvpMale: { title: "시즌 MVP (남)", icon: "👑" },
-                        mvpFemale: { title: "시즌 MVP (여)", icon: "👑" },
-                        mostImproved: { title: "시즌 발전상", icon: "🚀" },
-                        dominantForce: { title: "시즌 압도적 포스", icon: "💣" },
-                        winKing: { title: "시즌 다승왕", icon: "🏆" },
-                        playerOfMonth: { title: "이달의 선수상", icon: "🌟" },
-                        peakMmr: { title: "시즌 최고점", icon: "🌟" }
-                    };
-
-                    const grid = document.querySelector('.awards-grid');
-                    if (!grid) {
-                        console.error("어워드 그리드 요소 없음");
-                        return showToast("어워드 그리드 오류!");
-                    }
-                    grid.innerHTML = '';
-                    for (const key in awardDetails) {
-                        const awardInfo = awardDetails[key];
-                        const data = awardsData[key] || { winner: { name: '-', value: '-' }, runnerUp: { name: '-', value: '-' } };
-                        console.log(`어워드 렌더링: ${key}, 데이터:`, data);
-                        const winner = data.winner?.name || data.name || '-';
-                        const winnerValue = data.winner?.value || data.value || '-';
-                        const runnerUp = data.runnerUp?.name || '-';
-                        const runnerUpValue = data.runnerUp?.value || data.value || '-';
-                        const card = document.createElement('div');
-                        card.className = 'award-card';
-                        card.innerHTML = `
-                            <div class="award-icon">${awardInfo.icon}</div>
-                            <div class="award-title">${awardInfo.title}</div>
-                            <div class="award-winner">${winner}</div>
-                            <div class="award-value">${key === 'dominantForce' ? '압도 점수' : key === 'winKing' ? '승차' : key === 'playerOfMonth' ? '월간 점수' : key === 'mostImproved' ? '개선 점수' : key === 'mvpMale' || key === 'mvpFemale' ? 'MVP 점수' : key === 'peakMmr' ? '최고 MMR' : '점수'}: ${winnerValue}</div>
-                            <div class="award-runner-up">2위: ${runnerUp} (${key === 'dominantForce' ? '압도 점수' : key === 'winKing' ? '승차' : key === 'playerOfMonth' ? '월간 점수' : key === 'mostImproved' ? '개선 점수' : key === 'mvpMale' || key === 'mvpFemale' ? 'MVP 점수' : key === 'peakMmr' ? '최고 MMR' : '점수'}: ${runnerUpValue})</div>
-                        `;
-                        grid.appendChild(card);
-                    }
-                }
-
                 if (allPlayersData.length) {
+                    const playedPlayers = allPlayersData.filter(p => totalGames(p) >= 0);
+                    if (playedPlayers.length) {
+                        const getRank = (p, stat) => [...playedPlayers].sort((a, b) => (b[stat] || 0) - (a[stat] || 0)).findIndex(pl => pl.name === p.name) + 1;
+                        const getPercentileScore = rank => playedPlayers.length <= 1 ? 100 : Math.pow((playedPlayers.length - rank) / (playedPlayers.length - 1), 0.7) * 100;
+
+                        let mvpMalePlayer = null, maxMvpMaleScore = -Infinity, mvpMaleRunnerUp = null, secondMvpMaleScore = -Infinity;
+                        let mvpFemalePlayer = null, maxMvpFemaleScore = -Infinity, mvpFemaleRunnerUp = null, secondMvpFemaleScore = -Infinity;
+                        let mostImprovedPlayer = null, maxImprovedScore = -Infinity, improvedRunnerUp = null, secondImprovedScore = -Infinity;
+                        let dominantForcePlayer = null, maxDominantForceScore = -Infinity, dominantForceRunnerUp = null, secondDominantForceScore = -Infinity;
+                        let winKingPlayer = null, maxWinDiff = -Infinity, winKingRunnerUp = null, secondWinDiff = -Infinity;
+                        let playerOfMonthPlayer = null, maxPlayerOfMonthScore = -Infinity, playerOfMonthRunnerUp = null, secondPlayerOfMonthScore = -Infinity;
+                        let peakMmrPlayer = null, maxPeakMmr = -Infinity, peakMmrRunnerUp = null, secondPeakMmr = -Infinity;
+
+                        const FOUR_WEEKS_MS = 4 * 7 * 24 * 60 * 60 * 1000;
+                        const now = new Date().getTime();
+
+                        playedPlayers.forEach(player => {
+                            const totalGamesPlayed = totalGames(player);
+                            const totalSets = parseInt(player.totalSets || totalGamesPlayed);
+                            const gameCountBonus = Math.min(1.05, 1 + totalGamesPlayed * 0.002);
+
+                            player.mmr = parseInt(player.mmr) || 1500;
+                            player.wins = parseInt(player.wins) || 0;
+                            player.losses = parseInt(player.losses) || 0;
+
+                            const mmrRank = getRank(player, 'mmr');
+                            const mmrScore = getPercentileScore(mmrRank) / 10;
+                            player.winRate = totalGamesPlayed > 0 ? player.wins / totalGamesPlayed : 0;
+                            const winRateRank = getRank(player, 'winRate');
+                            const winRateScore = getPercentileScore(winRateRank) / 10;
+                            player.normChampionships = parseInt(player.championships || 0);
+                            const champRank = getRank(player, 'normChampionships');
+                            const champScore = getPercentileScore(champRank) / 10;
+                            player.dominantRate = parseFloat(player.dominantWins || 0);
+                            const dominantRank = getRank(player, 'dominantRate');
+                            const dominantRadarScore = getPercentileScore(dominantRank) / 10;
+                            player.gameDiffRate = totalGamesPlayed > 0 ? (player.gameDiff || 0) / totalGamesPlayed : 0;
+                            const gameDiffRank = getRank(player, 'gameDiffRate');
+                            const gameDiffScore = getPercentileScore(gameDiffRank) / 10;
+
+                            let mvpScore = (mmrScore + winRateScore + champScore + dominantRadarScore + 0.5 * gameDiffScore) / 4.5 * gameCountBonus;
+                            mvpScore = mvpScore.toFixed(1);
+                            if (player.gender === 'M') {
+                                if (parseFloat(mvpScore) > maxMvpMaleScore) {
+                                    secondMvpMaleScore = maxMvpMaleScore; mvpMaleRunnerUp = mvpMalePlayer;
+                                    maxMvpMaleScore = parseFloat(mvpScore); mvpMalePlayer = { name: player.name, value: mvpScore };
+                                } else if (parseFloat(mvpScore) > secondMvpMaleScore && parseFloat(mvpScore) < maxMvpMaleScore) {
+                                    secondMvpMaleScore = parseFloat(mvpScore); mvpMaleRunnerUp = { name: player.name, value: mvpScore };
+                                }
+                            } else if (player.gender === 'F') {
+                                if (parseFloat(mvpScore) > maxMvpFemaleScore) {
+                                    secondMvpFemaleScore = maxMvpFemaleScore; mvpFemaleRunnerUp = mvpFemalePlayer;
+                                    maxMvpFemaleScore = parseFloat(mvpScore); mvpFemalePlayer = { name: player.name, value: mvpScore };
+                                } else if (parseFloat(mvpScore) > secondMvpFemaleScore && parseFloat(mvpScore) < maxMvpFemaleScore) {
+                                    secondMvpFemaleScore = parseFloat(mvpScore); mvpFemaleRunnerUp = { name: player.name, value: mvpScore };
+                                }
+                            }
+
+                            const playerHistory = fullMmrHistory
+                                .map(h => h[normalizePlayerName(player.name).replace(/\./g, '_')])
+                                .filter(mmr => mmr !== undefined);
+                            console.log(`플레이어 ${player.name} 히스토리:`, playerHistory.length, "레코드", playerHistory.slice(0, 5));
+
+                            const initialMMR = playerHistory.length > 0 ? playerHistory[0] : 1500;
+                            player.mmrGrowthRate = initialMMR > 0 ? ((player.mmr - initialMMR) / initialMMR * 100) : 0;
+                            const mmrGrowthRank = getRank(player, 'mmrGrowthRate');
+                            const mmrGrowthScore = getPercentileScore(mmrGrowthRank) / 10;
+
+                            const earlyGames = playerHistory.slice(0, 3);
+                            const lateGames = playerHistory.slice(-3);
+                            const earlyWins = earlyGames.filter((_, i) => i % 2 === 0 && earlyGames[i + 1] > earlyGames[i]).length;
+                            const lateWins = lateGames.filter((_, i) => i % 2 === 0 && lateGames[i + 1] > earlyGames[i]).length;
+                            const earlyLosses = earlyGames.filter((_, i) => i % 2 === 0 && earlyGames[i + 1] < earlyGames[i]).length;
+                            const lateLosses = lateGames.filter((_, i) => i % 2 === 0 && lateGames[i + 1] < earlyGames[i]).length;
+                            const earlyWinRate = (earlyWins + earlyLosses) > 0 ? earlyWins / (earlyWins + earlyLosses) : 0;
+                            const lateWinRate = (lateWins + lateLosses) > 0 ? lateWins / (lateWins + lateLosses) : 0;
+                            player.winRateImprovement = lateWinRate - earlyWinRate;
+                            const winRateImproveRank = getRank(player, 'winRateImprovement');
+                            const winRateImproveScore = getPercentileScore(winRateImproveRank) / 10;
+
+                            let improvedScore = (mmrGrowthScore * 0.3 + winRateImproveScore * 0.3 + winRateImproveScore * 0.4) * gameCountBonus;
+                            improvedScore = improvedScore.toFixed(1);
+                            debugLog(player, '발전상 점수', improvedScore, { mmrGrowthScore, winRateImproveScore });
+                            if (parseFloat(improvedScore) > maxImprovedScore) {
+                                secondImprovedScore = maxImprovedScore; improvedRunnerUp = mostImprovedPlayer;
+                                maxImprovedScore = parseFloat(improvedScore); mostImprovedPlayer = { name: player.name, value: improvedScore };
+                            } else if (parseFloat(improvedScore) > secondImprovedScore && parseFloat(improvedScore) < maxImprovedScore) {
+                                secondImprovedScore = parseFloat(improvedScore); improvedRunnerUp = { name: player.name, value: improvedScore };
+                            }
+
+                            const dominantWins = parseInt(player.dominantWins || 0);
+                            const dominantWinRate = totalGamesPlayed > 0 ? dominantWins / totalGamesPlayed * 100 : 0;
+                            let dominantForceScore = (dominantWins * 0.6 + dominantWinRate * 0.4) * gameCountBonus;
+                            debugLog(player, '압도적 포스 점수', dominantForceScore.toFixed(2), { '압도 승리': dominantWins, '압도 승률': dominantWinRate.toFixed(2) });
+                            if (totalGamesPlayed >= 1 && dominantWins >= 1) {
+                                if (dominantForceScore > maxDominantForceScore) {
+                                    secondDominantForceScore = maxDominantForceScore; dominantForceRunnerUp = dominantForcePlayer;
+                                    maxDominantForceScore = dominantForceScore; dominantForcePlayer = { name: player.name, value: dominantForceScore.toFixed(2) };
+                                } else if (dominantForceScore > secondDominantForceScore && dominantForceScore < maxDominantForceScore) {
+                                    secondDominantForceScore = dominantForceScore; dominantForceRunnerUp = { name: player.name, value: dominantForceScore.toFixed(2) };
+                                }
+                            }
+
+                            const winDiff = player.wins - player.losses;
+                            if (totalGamesPlayed >= 1) {
+                                const adjustedWinDiff = winDiff * gameCountBonus;
+                                if (adjustedWinDiff > maxWinDiff) {
+                                    secondWinDiff = maxWinDiff; winKingRunnerUp = winKingPlayer;
+                                    maxWinDiff = adjustedWinDiff; winKingPlayer = { name: player.name, value: adjustedWinDiff.toFixed(1) };
+                                } else if (adjustedWinDiff > secondWinDiff && adjustedWinDiff < maxWinDiff) {
+                                    secondWinDiff = adjustedWinDiff; winKingRunnerUp = { name: player.name, value: adjustedWinDiff.toFixed(1) };
+                                }
+                            }
+
+                            const recentMatches = matchesData.filter(match => (normalizePlayerName(match.player1) === normalizePlayerName(player.name) || normalizePlayerName(match.player2) === normalizePlayerName(player.name)) && (now - new Date(match.createdAt || now).getTime() <= FOUR_WEEKS_MS));
+                            const recentWins = recentMatches.filter(match => normalizePlayerName(match.winnerPlayer1) === normalizePlayerName(player.name) || normalizePlayerName(match.winnerPlayer2) === normalizePlayerName(player.name)).length;
+                            const recentWinRate = recentMatches.length > 0 ? recentWins / recentMatches.length : 0;
+                            const recentGameDiff = recentMatches.reduce((sum, match) => (normalizePlayerName(match.winnerPlayer1) === normalizePlayerName(player.name) || normalizePlayerName(match.winnerPlayer2) === normalizePlayerName(player.name)) ? sum + parseFloat(match.gameDiff || 0) : sum - parseFloat(match.gameDiff || 0), 0);
+                            const recentPlayerHistory = fullMmrHistory.filter(h => now - new Date(h.createdAt || now).getTime() <= FOUR_WEEKS_MS).map(h => h[normalizePlayerName(player.name).replace(/\./g, '_')]).filter(mmr => mmr !== undefined);
+                            const mmrIncrease = recentPlayerHistory.length > 1 ? (recentPlayerHistory[recentPlayerHistory.length - 1] - recentPlayerHistory[0]) : 0;
+                            let playerOfMonthScore = (recentWinRate * 50 + mmrIncrease * 0.5 + recentGameDiff * 2) * gameCountBonus;
+                            debugLog(player, '이달의 선수 점수', playerOfMonthScore.toFixed(2), { '최근 승률': recentWinRate.toFixed(2), 'MMR 상승': mmrIncrease, '게임 득실': recentGameDiff, '경기 수': recentMatches.length });
+                            if (totalGamesPlayed >= 1 && playerOfMonthScore > 0) {
+                                if (playerOfMonthScore > maxPlayerOfMonthScore) {
+                                    secondPlayerOfMonthScore = maxPlayerOfMonthScore; playerOfMonthRunnerUp = playerOfMonthPlayer;
+                                    maxPlayerOfMonthScore = playerOfMonthScore; playerOfMonthPlayer = { name: player.name, value: playerOfMonthScore.toFixed(2) };
+                                } else if (playerOfMonthScore > secondPlayerOfMonthScore && playerOfMonthScore < maxPlayerOfMonthScore) {
+                                    secondPlayerOfMonthScore = playerOfMonthScore; playerOfMonthRunnerUp = { name: player.name, value: playerOfMonthScore.toFixed(2) };
+                                }
+                            }
+
+                            const peakMmr = playerHistory.length > 0 ? Math.max(...playerHistory) : player.mmr || 1500;
+                            debugLog(player, '최고점 MMR', peakMmr, { playerHistoryLength: playerHistory.length, fallbackMmr: player.mmr || 1500, historySample: playerHistory.slice(0, 5) });
+                            if (totalGamesPlayed >= 1) {
+                                if (peakMmr > maxPeakMmr) {
+                                    secondPeakMmr = maxPeakMmr; peakMmrRunnerUp = peakMmrPlayer;
+                                    maxPeakMmr = peakMmr; peakMmrPlayer = { name: player.name, value: peakMmr };
+                                } else if (peakMmr > secondPeakMmr && peakMmr < maxPeakMmr) {
+                                    secondPeakMmr = peakMmr; peakMmrRunnerUp = { name: player.name, value: peakMmr };
+                                }
+                            }
+                        });
+
+                        await setDoc(doc(db, 'techeon', 'data', 'awards', 'v1'), {
+                            mvpMale: { winner: mvpMalePlayer || { name: '-', value: '-' }, runnerUp: mvpMaleRunnerUp || { name: '-', value: '-' } },
+                            mvpFemale: { winner: mvpFemalePlayer || { name: '-', value: '-' }, runnerUp: mvpFemaleRunnerUp || { name: '-', value: '-' } },
+                            mostImproved: { winner: mostImprovedPlayer || { name: '-', value: '-' }, runnerUp: improvedRunnerUp || { name: '-', value: '-' } },
+                            dominantForce: { winner: dominantForcePlayer || { name: '-', value: '-' }, runnerUp: dominantForceRunnerUp || { name: '-', value: '-' } },
+                            winKing: { winner: winKingPlayer || { name: '-', value: '-' }, runnerUp: winKingRunnerUp || { name: '-', value: '-' } },
+                            playerOfMonth: { winner: playerOfMonthPlayer || { name: '-', value: '-' }, runnerUp: playerOfMonthRunnerUp || { name: '-', value: '-' } },
+                            peakMmr: { winner: peakMmrPlayer || { name: '-', value: '-' }, runnerUp: peakMmrRunnerUp || { name: '-', value: '-' } }
+                        }, { merge: true }).catch(e => {
+                            console.error("어워드 저장 실패:", e.message);
+                            showToast("어워드 저장 실패! Firestore 할당량 확인하세요.");
+                        });
+
+                        const awardDetails = {
+                            mvpMale: { title: "시즌 MVP (남)", icon: "👑" },
+                            mvpFemale: { title: "시즌 MVP (여)", icon: "👑" },
+                            mostImproved: { title: "시즌 발전상", icon: "🚀" },
+                            dominantForce: { title: "시즌 압도적 포스", icon: "💣" },
+                            winKing: { title: "시즌 다승왕", icon: "🏆" },
+                            playerOfMonth: { title: "이달의 선수상", icon: "🌟" },
+                            peakMmr: { title: "시즌 최고점", icon: "🌟" }
+                        };
+
+                        const grid = document.querySelector('.awards-grid');
+                        if (!grid) {
+                            console.error("어워드 그리드 요소 없음");
+                            showToast("어워드 그리드 오류!");
+                            return;
+                        }
+                        grid.innerHTML = '';
+                        for (const key in awardDetails) {
+                            const awardInfo = awardDetails[key];
+                            const data = awardsData[key] || { winner: { name: '-', value: '-' }, runnerUp: { name: '-', value: '-' } };
+                            console.log(`어워드 렌더링: ${key}, 데이터:`, data);
+                            const winner = data.winner?.name || data.name || '-';
+                            const winnerValue = data.winner?.value || data.value || '-';
+                            const runnerUp = data.runnerUp?.name || '-';
+                            const runnerUpValue = data.runnerUp?.value || data.value || '-';
+                            const card = document.createElement('div');
+                            card.className = 'award-card';
+                            console.log(`award-card HTML 생성: ${key}`);
+                            card.innerHTML = `
+                                <div class="award-icon">${awardInfo.icon}</div>
+                                <div class="award-title">${awardInfo.title}</div>
+                                <div class="award-winner">${winner}${winner !== '-' ? (allPlayersData.find(p => p.name === winner)?.isFemale ? '*' : '') : ''}</div>
+                                <div class="award-value">${key === 'dominantForce' ? '압도 점수' : key === 'winKing' ? '승차' : key === 'playerOfMonth' ? '월간 점수' : key === 'mostImproved' ? '개선 점수' : key === 'mvpMale' || key === 'mvpFemale' ? 'MVP 점수' : key === 'peakMmr' ? '최고 MMR' : '점수'}: ${winnerValue}</div>
+                                <div class="award-runner-up">2위: ${runnerUp}${runnerUp !== '-' ? (allPlayersData.find(p => p.name === runnerUp)?.isFemale ? '*' : '') : ''} (${key === 'dominantForce' ? '압도 점수' : key === 'winKing' ? '승차' : key === 'playerOfMonth' ? '월간 점수' : key === 'mostImproved' ? '개선 점수' : key === 'mvpMale' || key === 'mvpFemale' ? 'MVP 점수' : key === 'peakMmr' ? '최고 MMR' : '점수'}: ${runnerUpValue})</div>
+                            `;
+                            grid.appendChild(card);
+                        }
+                    }
+
                     setupMmrPlayerSelector();
                     if (fullMmrHistory.length) {
                         renderMmrChart(fullMmrHistory, allPlayersData.slice(0, 1).map(p => p.name));
                     } else {
-                        showToast("MMR 히스토리 데이터가 없습니다!");
+                        console.warn("MMR 히스토리 데이터 없음, 기본 차트 렌더링");
+                        fullMmrHistory = [{ createdAt: new Date().toISOString(), [normalizePlayerName(allPlayersData[0]?.name || "기본 선수").replace(/\./g, '_')]: 1500 }];
+                        renderMmrChart(fullMmrHistory, [allPlayersData[0]?.name || "기본 선수"]);
                     }
                 } else {
-                    console.warn("플레이어 데이터가 없습니다!");
-                    showToast("플레이어 데이터를 불러오지 못했습니다! Firestore에서 데이터를 확인하세요.");
+                    console.warn("allPlayersData 없음, 기본 선수로 초기화");
+                    allPlayersData = [{ name: "기본 선수", mmr: 1500, mmrHistory: [{ round: 0, mmr: 1500, createdAt: new Date().toISOString() }], wins: 0, losses: 0, gameDiff: 0, totalSets: 0, isFemale: false, gender: 'M' }];
+                    fullMmrHistory = [{ createdAt: new Date().toISOString(), [normalizePlayerName("기본 선수").replace(/\./g, '_')]: 1500 }];
+                    setupMmrPlayerSelector();
+                    renderMmrChart(fullMmrHistory, ["기본 선수"]);
                 }
                 console.log("loadDashboard 완료");
             } catch (e) {
                 console.error("loadDashboard 전체 실패:", e.message);
                 if (e.name === "BloomFilterError") {
-                    console.error("BloomFilterError 발생, 인덱스 재설정 필요");
-                    showToast("Firestore 인덱스 오류! Google Cloud Console에서 인덱스 설정을 확인하세요.");
+                    showToast("Firestore BloomFilter 오류! Google Cloud Console에서 인덱스 확인하세요.");
                 } else if (e.message.includes("Quota exceeded")) {
-                    showToast("Firestore 할당량 초과! Google Cloud Console에서 사용량과 인덱스 설정을 확인하세요.");
+                    showToast("Firestore 할당량 초과! Google Cloud Console에서 사용량 확인하세요.");
                 } else {
-                    showToast("데이터 로드 실패! Firestore에서 league/data 및 matches/data를 확인하세요.");
+                    showToast("데이터 로드 실패! 네트워크 및 Firestore 설정 확인하세요.");
                 }
             }
         };
 
         document.addEventListener('DOMContentLoaded', () => {
+            console.log("DOMContentLoaded 이벤트 발생, DOM 로드 완료");
             const savedTheme = localStorage.getItem('theme') || 'dark';
             applyTheme(savedTheme);
-            const cachedMatches = localStorage.getItem('matchesDataCache');
-            const cachedHistory = localStorage.getItem('mmrHistoryCache');
-            if (cachedMatches && cachedMatches !== '[]') {
-                const { data, timestamp } = JSON.parse(cachedMatches);
-                const cacheAge = (Date.now() - timestamp) / (1000 * 60 * 60);
-                if (cacheAge < 24) {
-                    matchesData = data.filter(match => match && match.player1 && match.player2 && match.winner && match.loserPlayer1 && match.loserPlayer2 && new Date(match.createdAt || '1970-01-01') >= new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000));
-                    console.log("로컬 캐시에서 매치 데이터 로드:", matchesData.length, "경기, 캐시 나이:", cacheAge.toFixed(2), "시간");
-                } else {
-                    console.log("매치 데이터 캐시 오래됨, Firestore에서 로드 시도");
-                    localStorage.removeItem('matchesDataCache');
+            const caches = ['rankingCache', 'mmrHistoryCache', 'matchesDataCache', 'awardsCache'];
+            caches.forEach(key => {
+                const cached = localStorage.getItem(key);
+                if (cached && cached !== '[]' && cached !== '{}') {
+                    const { data, timestamp } = JSON.parse(cached);
+                    const cacheAge = (Date.now() - timestamp) / (1000 * 60 * 60);
+                    if (cacheAge < 24) {
+                        console.log(`${key} 캐시 로드, 나이: ${cacheAge.toFixed(2)}시간`);
+                        if (key === 'rankingCache') allPlayersData = data;
+                        if (key === 'mmrHistoryCache') fullMmrHistory = data;
+                        if (key === 'matchesDataCache') matchesData = data.filter(match => match && match.player1 && match.player2 && match.winner && match.loserPlayer1 && match.loserPlayer2 && new Date(match.createdAt || '1970-01-01') >= new Date(new Date().getTime() - 60 * 24 * 60 * 60 * 1000));
+                        if (key === 'awardsCache') awardsData = data;
+                    } else {
+                        console.log(`${key} 캐시 오래됨, 삭제`);
+                        localStorage.removeItem(key);
+                    }
                 }
-            } else {
-                console.log("매치 데이터 캐시 비었음, Firestore에서 로드 시도");
-                localStorage.removeItem('matchesDataCache');
-            }
-            if (cachedHistory && cachedHistory !== '[]') {
-                const { data, timestamp } = JSON.parse(cachedHistory);
-                const cacheAge = (Date.now() - timestamp) / (1000 * 60 * 60);
-                if (cacheAge < 24) {
-                    fullMmrHistory = data;
-                    console.log("로컬 캐시에서 MMR 히스토리 로드:", fullMmrHistory.length, "스냅샷, 캐시 나이:", cacheAge.toFixed(2), "시간");
-                } else {
-                    console.log("MMR 히스토리 캐시 오래됨, Firestore에서 로드 시도");
-                    localStorage.removeItem('mmrHistoryCache');
-                }
-            } else {
-                console.log("MMR 히스토리 캐시 비었음, Firestore에서 로드 시도");
-                localStorage.removeItem('mmrHistoryCache');
-            }
+            });
             loadDashboard();
             document.getElementById('theme-toggle').addEventListener('click', () => applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
         });
