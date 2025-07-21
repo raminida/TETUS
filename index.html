@@ -516,6 +516,12 @@
         .overlay.show {
             display: block;
         }
+        .lower-rank {
+            display: none;
+        }
+        .lower-rank.show {
+            display: table-row;
+        }
         @media screen and (max-width: 600px) {
             h1 {
                 font-size: 2rem;
@@ -539,7 +545,7 @@
                 min-width: 900px;
             }
             #ranking-table th, #ranking-table td {
-                padding: 4px 10px; /* 간격 벌리기 위해 padding 증가 */
+                padding: 4px 10px;
                 font-size: 0.7rem;
             }
             #ranking-table th[data-sort="player"],
@@ -548,28 +554,28 @@
                 font-size: 0.975rem;
             }
             #ranking-table th[data-sort="player"] {
-                width: 18%; /* 선수 열 더 넓게 */
+                width: 18%;
             }
             #ranking-table th[data-sort="mmr"] {
-                width: 12%; /* MMR 열 약간 더 넓게 */
+                width: 12%;
             }
             #ranking-table th[data-sort="wins"],
             #ranking-table th[data-sort="losses"],
             #ranking-table th[data-sort="winRate"] {
-                width: 10%; /* 승, 패, 승률 열 넓이 증가 */
+                width: 10%;
             }
             #ranking-table th[data-sort="avgGameDiff"] {
-                width: 14%; /* 평균 게임 득실 넓이 증가 */
+                width: 14%;
             }
             #ranking-table th[data-sort="closeRate"] {
-                width: 12%; /* 접전률 넓이 증가 */
+                width: 12%;
             }
             #ranking-table th[data-sort="dominantWins"],
             #ranking-table th[data-sort="dominantLosses"] {
-                width: 14%; /* 압도승률, 압도패률 넓이 증가 */
+                width: 14%;
             }
             #ranking-table th[data-sort="bestPartner"] {
-                width: 20%; /* 최고 파트너 열 더 넓게 */
+                width: 20%;
             }
             #ranking-table input[type="text"] {
                 min-width: 60px;
@@ -612,7 +618,8 @@
             .schedule-table th:nth-child(2), .schedule-table td:nth-child(2),
             .schedule-table th:nth-child(4), .schedule-table td:nth-child(4),
             .schedule-table th:nth-child(5), .schedule-table td:nth-child(5) {
-                width: 22%;
+                width: 20%;
+                padding: 2px 2px; /* Player1,2,3,4 간격 좁히기 */
             }
             .schedule-table th:nth-child(3), .schedule-table td:nth-child(3) {
                 width: 10%;
@@ -620,19 +627,19 @@
                 margin: 0;
             }
             .schedule-table th:nth-child(6), .schedule-table td:nth-child(6) {
-                width: 12%;
+                width: 15%;
                 min-width: 30px;
                 padding: 0;
             }
             .schedule-table th:nth-child(7), .schedule-table td:nth-child(7) {
-                width: 12%;
+                width: 15%;
                 min-width: 30px;
                 padding: 0;
                 text-align: left;
             }
             .schedule-table input[type="text"] {
                 min-width: 50px;
-                max-width: 70px;
+                max-width: 60px; /* Player 입력 폭 줄이기 */
                 height: 24px;
                 font-size: 0.7rem;
                 padding: 2px;
@@ -841,7 +848,7 @@
                         <summary>${i}회${isSaved ? `<span class="saved-indicator">💾</span><span class="saved-info">[${savedDate}, 우승: ${champions}]</span>` : ''}</summary>
                         <div class="table-wrapper">
                             <table class="schedule-table" data-round-id="${i}">
-                                <thead><tr><th>Player 1</th><th>Player 2</th><th>vs</th><th>Player 3</th><th>Player 4</th><th>Score</th><th>4점 선취</th></tr></thead>
+                                <thead><tr><th>Player 1</th><th>Player 2</th><th>vs</th><th>Player 3</th><th>Player 4</th><th>Score</th><th>4점제</th></tr></thead>
                                 <tbody>
                                     <tr><td><input type="text" placeholder="이름" class="player1"></td><td><input type="text" placeholder="이름" class="player2"></td><td>vs</td><td><input type="text" placeholder="이름" class="player3"></td><td><input type="text" placeholder="이름" class="player4"></td><td><input type="text" placeholder="6-4" class="score"></td><td><input type="checkbox" class="is-four-point"></td></tr>
                                     <tr><td><input type="text" placeholder="이름" class="player1"></td><td><input type="text" placeholder="이름" class="player2"></td><td>vs</td><td><input type="text" placeholder="이름" class="player3"></td><td><input type="text" placeholder="이름" class="player4"></td><td><input type="text" placeholder="6-4" class="score"></td><td><input type="checkbox" class="is-four-point"></td></tr>
@@ -855,7 +862,6 @@
             }
             container.innerHTML = roundsHtml;
 
-            // 저장된 데이터로 입력 필드 채우기
             savedRounds.forEach((roundData, roundId) => {
                 const table = document.querySelector(`.schedule-table[data-round-id="${roundId}"]`);
                 if (table && roundData.matches) {
@@ -902,7 +908,18 @@
                 </tr>`;
             }
             rankingBody.innerHTML = rowsHtml;
+            updateRankingVisibility();
             console.log("순위표 렌더링 완료!");
+        }
+
+        function updateRankingVisibility() {
+            const lowerRanks = document.querySelectorAll('#ranking-table .lower-rank');
+            const toggleButton = document.getElementById('toggle-rankings');
+            const isVisible = lowerRanks[0]?.classList.contains('show');
+            lowerRanks.forEach(row => {
+                row.style.display = isVisible ? 'table-row' : 'none';
+            });
+            toggleButton.textContent = isVisible ? '접기' : '더보기';
         }
 
         async function saveAllData() {
@@ -1314,6 +1331,7 @@
                 }
             });
 
+            updateRankingVisibility();
             await saveAllData();
             showToast('순위 업데이트 완료!');
             updateRankingBtn.disabled = false;
@@ -1390,10 +1408,10 @@
             saveAllBtn?.addEventListener('click', saveAllData);
             updateRankingBtn?.addEventListener('click', updateRanking);
             toggleRankingsBtn?.addEventListener('click', () => {
-                const lowerRanks = document.querySelectorAll('.lower-rank');
+                const lowerRanks = document.querySelectorAll('#ranking-table .lower-rank');
                 const isVisible = lowerRanks[0]?.classList.contains('show');
                 lowerRanks.forEach(row => row.classList.toggle('show'));
-                toggleRankingsBtn.textContent = isVisible ? '더보기' : '접기';
+                updateRankingVisibility();
             });
             h2hPageBtn?.addEventListener('click', () => {
                 window.location.href = 'h2h.html';
