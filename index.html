@@ -46,664 +46,84 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Poppins:wght@600;700&family=Roboto+Condensed:wght@400;700&display=stylesheet" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Poppins:wght@600;700&display=stylesheet" rel="stylesheet">
     <style>
         :root {
-            --bg: #001F3F;
-            --surface: #003087;
-            --primary: #D32F2F;
-            --primary-variant: #F44336;
-            --text: #FFFFFF;
-            --text-sec: #CFD8DC;
-            --gold: #FFD700;
-            --border: #4682B4;
-            --shadow: rgba(0, 0, 0, 0.7);
-            --spacing-sm: 8px;
-            --spacing-md: 12px;
-            --spacing-lg: 20px;
-            --radius: 8px;
-            --win-streak: #4CAF50;
-            --loss-streak: #D32F2F;
-        }
-        [data-theme="light"] {
-            --bg: #F5F6F5;
-            --surface: #FFFFFF;
-            --primary: #003087;
-            --primary-variant: #4682B4;
-            --text: #001F3F;
-            --text-sec: #455A64;
-            --border: #B0C4DE;
-            --shadow: rgba(0, 0, 0, 0.2);
-        }
-        body {
-            font-family: 'Roboto Condensed', 'Noto Sans KR', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: var(--spacing-md);
-            transition: background-color 0.3s, color 0.3s;
-        }
-        .container {
-            max-width: 1700px;
-            margin: 0 auto;
-        }
-        h1 {
-            font-family: 'Poppins', sans-serif;
-            font-size: 2.8rem;
-            font-weight: 900;
-            text-align: center;
-            background: linear-gradient(135deg, var(--primary), var(--primary-variant));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            padding-top: var(--spacing-lg);
-            margin-bottom: 2rem;
-            letter-spacing: -2px;
-            text-shadow: 2px 2px 10px var(--shadow);
-        }
-        .section {
-            background: var(--surface);
-            padding: 0;
-            border-radius: var(--radius);
-            box-shadow: 0 10px 30px var(--shadow);
-            margin-bottom: 2.5rem;
-            border: 2px solid var(--border);
-        }
-        h2 {
-            font-family: 'Poppins', sans-serif;
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin: var(--spacing-md);
-            padding-bottom: var(--spacing-sm);
-            border-bottom: 3px solid var(--border);
-        }
-        details {
-            margin: 0;
-            border-radius: var(--radius);
-            overflow: hidden;
-            border: 2px solid var(--border);
-            width: 100%;
-            transition: all 0.3s ease;
-        }
-        details summary {
-            padding: var(--spacing-md);
-            cursor: pointer;
-            font-size: 1.1rem;
-            font-weight: 700;
-            outline: none;
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.15), var(--surface));
-            color: var(--text);
-            transition: background 0.3s ease, color 0.3s ease;
-        }
-        [data-theme="light"] details summary {
-            background: linear-gradient(135deg, #F9FAFB, #FFFFFF);
-            color: var(--primary);
-        }
-        details[open] > summary {
-            background: var(--primary);
-            color: var(--bg);
-        }
-        .round-group-content {
-            padding: var(--spacing-md);
-            background: rgba(0, 0, 0, 0.05);
-            border-top: 2px solid var(--border);
-            width: 100%;
-        }
-        [data-theme="light"] .round-group-content {
-            background: rgba(0, 0, 0, 0.02);
-        }
-        .table-wrapper {
-            overflow-x: auto;
-            overflow-y: auto;
-            max-height: 70vh;
-            max-width: 100%;
-            margin: 0;
-            padding: 0 2px;
-            width: 100%;
-            box-sizing: border-box;
-            scrollbar-width: thin;
-            scrollbar-color: var(--primary) var(--surface);
-            -webkit-overflow-scrolling: touch;
-        }
-        .table-wrapper::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        .table-wrapper::-webkit-scrollbar-track {
-            background: var(--surface);
-            border-radius: var(--radius);
-        }
-        .table-wrapper::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: var(--radius);
-        }
-        .table-wrapper::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-variant);
-        }
-        table {
-            width: 100%;
-            min-width: 300px;
-            border-collapse: collapse;
-            table-layout: fixed;
-        }
-        #ranking-table {
-            min-width: 900px;
-        }
-        th, td {
-            padding: var(--spacing-sm) 4px;
-            text-align: center;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.9rem;
-            color: var(--text);
-            white-space: nowrap;
-        }
-        #ranking-table th {
-            position: sticky;
-            top: 0;
-            background: var(--surface);
-            z-index: 10;
-            cursor: pointer;
-        }
-        #ranking-table th:hover {
-            background: var(--primary);
-            color: var(--bg);
-        }
-        #ranking-table th:nth-child(2), #ranking-table td:nth-child(2) {
-            position: sticky;
-            left: 0;
-            background: var(--surface);
-            z-index: 1;
-        }
-        #ranking-table th {
-            width: 8%;
-        }
-        #ranking-table th[data-sort="player"] {
-            width: 9.8%;
-            font-size: 1.1rem;
-        }
-        #ranking-table th[data-sort="mmr"] {
-            width: 7%;
-            font-size: 1.1rem;
-        }
-        #ranking-table th[data-sort="rank"] {
-            font-size: 1.1rem;
-        }
-        #ranking-table th[data-sort="avgGameDiff"] {
-            width: 12%;
-        }
-        #ranking-table th[data-sort="dominantWins"],
-        #ranking-table th[data-sort="dominantLosses"] {
-            width: 10%;
-        }
-        #ranking-table th[data-sort="bestPartner"] {
-            width: 15%;
-        }
-        .rank-cell {
-            font-weight: 900;
-            color: var(--gold);
-            text-shadow: 0 0 5px var(--shadow);
-            position: relative;
-            line-height: 1.2;
-        }
-        .streak-cell {
-            font-size: 0.7rem;
-            white-space: nowrap;
-            margin-left: var(--spacing-sm);
-            display: inline-block;
-            padding: 2px 6px;
-            border-radius: 4px;
-        }
-        .streak-win {
-            background: var(--win-streak);
-            color: var(--bg);
-            font-weight: bold;
-        }
-        .streak-loss {
-            background: var(--loss-streak);
-            color: var(--bg);
-            font-weight: bold;
-        }
-        .streak-none {
-            color: var(--text-sec);
-        }
-        input[type="text"] {
-            width: 100%;
-            min-width: 60px;
-            max-width: 80px;
-            padding: 6px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            box-sizing: border-box;
-            color: var(--text);
-            font-family: 'Roboto Condensed', sans-serif;
-            text-align: center;
-            transition: border-color 0.2s;
-        }
-        input[type="text"]:focus {
-            border-color: var(--primary);
-            outline: none;
-        }
-        input.ranking-player, input.mmr {
-            min-width: 80px;
-            max-width: 120px;
-            font-size: 0.975rem;
-        }
-        input.best-partner {
-            min-width: 200px;
-            max-width: 225px;
-            font-size: 0.7rem;
-        }
-        input.readonly {
-            background: rgba(0, 0, 0, 0.2);
-            color: var(--text-sec);
-            font-weight: bold;
-        }
-        [data-theme="light"] input.readonly {
-            background: rgba(0, 0, 0, 0.05);
-        }
-        .schedule-table th, .schedule-table td {
-            padding: 2px 0;
-            border: none;
-            font-size: 1.35rem;
-        }
-        .schedule-table th:nth-child(3), .schedule-table td:nth-child(3) {
-            padding: 0 !important;
-        }
-        .schedule-table input[type="text"] {
-            min-width: 90px;
-            max-width: 120px;
-            padding: 2px;
-            font-size: 1.35rem;
-        }
-        .schedule-table input.score {
-            min-width: 30px;
-            max-width: 45px;
-        }
-        .schedule-table input[type="checkbox"] {
-            width: 32px;
-            height: 32px;
-            margin: 0 auto;
-            transform: scale(1);
-        }
-        .input-group {
-            display: flex;
-            justify-content: flex-start;
-            gap: 10px;
-            margin: var(--spacing-md);
-        }
-        .btn {
-            padding: 8px 16px;
-            font-size: 0.9rem;
-            background: linear-gradient(135deg, var(--primary), var(--primary-variant));
-            color: var(--bg);
-            border: none;
-            border-radius: var(--radius);
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .btn:hover {
-            transform: scale(1.05);
-        }
-        .update-btn {
-            width: 70%;
-            max-width: 120px;
-            margin: var(--spacing-lg) auto;
-            padding: 8px;
-            background: linear-gradient(135deg, var(--gold), #F5B02E);
-            color: var(--bg);
-            border: none;
-            border-radius: var(--radius);
-            font-size: 0.9rem;
-            font-weight: 900;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .save-all-btn {
-            width: 70%;
-            max-width: 120px;
-            margin: var(--spacing-lg) auto;
-            padding: 8px;
-            background: linear-gradient(135deg, #4CAF50, #66BB6A);
-            color: var(--bg);
-            border: none;
-            border-radius: var(--radius);
-            font-size: 0.9rem;
-            font-weight: 900;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .update-btn:hover, .save-all-btn:hover {
-            transform: scale(1.05);
-        }
-        .toggle-btn {
-            padding: 8px 16px;
-            font-size: 0.9rem;
-            background: linear-gradient(135deg, var(--primary), var(--primary-variant));
-            color: var(--bg);
-            border: none;
-            border-radius: var(--radius);
-            cursor: pointer;
-            transition: transform 0.2s;
-            margin: var(--spacing-md) auto;
-            display: block;
-        }
-        .toggle-btn:hover {
-            transform: scale(1.05);
-        }
-        .ranking-filter {
-            display: flex;
-            gap: 10px;
-            margin: var(--spacing-md);
-            justify-content: center;
-        }
-        .filter-btn {
-            padding: var(--spacing-sm) var(--spacing-md);
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.2), var(--surface));
-            color: var(--text);
-            border: 2px solid var(--border);
-            border-radius: var(--radius);
-            cursor: pointer;
-            font-weight: 700;
-            transition: background 0.3s, color 0.3s, transform 0.2s;
-        }
-        .filter-btn.active {
-            background: linear-gradient(135deg, var(--primary), var(--primary-variant));
-            color: var(--bg);
-            border-color: var(--primary);
-        }
-        .filter-btn:hover {
-            transform: scale(1.05);
-        }
-        [data-theme="light"] .filter-btn {
-            background: linear-gradient(135deg, #F9FAFB, #FFFFFF);
-            color: var(--primary);
-        }
-        [data-theme="light"] .filter-btn.active {
-            background: linear-gradient(135deg, var(--primary), var(--primary-variant));
-            color: var(--bg);
-        }
-        .toast {
-            position: fixed;
-            bottom: var(--spacing-lg);
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(135deg, #333, #111);
-            color: #fff;
-            padding: var(--spacing-md) 25px;
-            border-radius: 50px;
-            box-shadow: 0 5px 15px var(--shadow);
-            opacity: 0;
-            transition: opacity 0.4s, transform 0.4s;
-            font-weight: 700;
-            font-family: 'Roboto Condensed', sans-serif;
-            z-index: 1000;
-        }
-        [data-theme="light"] .toast {
-            background: linear-gradient(135deg, #F9FAFB, #FFFFFF);
-            color: #001F3F;
-        }
-        .toast.show {
-            opacity: 1;
-        }
-        .championship-star {
-            color: var(--gold);
-            text-shadow: 0 0 5px var(--shadow);
-            font-size: 1.1rem;
-            font-weight: 900;
-        }
-        .ranking-player[value$="*"] {
-            color: var(--primary-variant);
-        }
-        .saved-indicator {
-            margin-left: 8px;
-            color: var(--gold);
-            font-size: 1rem;
-        }
-        .saved-info {
-            font-size: 0.8rem;
-            color: var(--text-sec);
-            margin-left: 5px;
-            white-space: nowrap;
-        }
-        .champion-name {
-            color: var(--gold);
-            font-weight: bold;
-        }
-        .popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: var(--surface);
-            padding: var(--spacing-lg);
-            border-radius: var(--radius);
-            box-shadow: 0 10px 30px var(--shadow);
-            z-index: 2000;
-            color: var(--text);
-            border: 2px solid var(--border);
-            max-width: 400px;
-            text-align: center;
-        }
-        .popup.show {
-            display: block;
-        }
-        .close-btn {
-            position: absolute;
-            top: var(--spacing-sm);
-            right: var(--spacing-sm);
-            background: none;
-            border: none;
-            color: var(--text);
-            font-size: 1.2rem;
-            cursor: pointer;
-        }
-        .close-btn:hover {
-            color: var(--primary);
-        }
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-        }
-        .overlay.show {
-            display: block;
-        }
-        .lower-rank {
-            display: none;
-        }
-        .lower-rank.show {
-            display: table-row;
-        }
+            --bg-color: #121212; --surface-color: #1E1E1E; --primary-color: #0288D1; --primary-variant-color: #4FC3F7; --secondary-color: #FFFFFF; --text-color: #E0E0E0; --text-secondary-color: #A0A0A0; --accent-gold: #FFCA28; --border-color: #333333; --shadow-color: rgba(0, 0, 0, 0.5);
+            --spacing-sm: 8px; --spacing-md: 12px; --spacing-lg: 20px; --radius: 8px;
+        }
+        html[data-theme="light"] {
+            --bg-color: #E3F2FD; --surface-color: #FFFFFF; --primary-color: #01579B; --primary-variant-color: #0288D1; --text-color: #1F2937; --text-secondary-color: #6B7280; --border-color: #E5E7EB; --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: var(--spacing-md); transition: background-color 0.3s, color 0.3s; }
+        .container { max-width: 1700px; margin: 0 auto; }
+        h1 { font-family: 'Poppins', sans-serif; font-size: 2.8rem; font-weight: 900; text-align: center; color: var(--secondary-color); background: linear-gradient(135deg, var(--primary-color), var(--primary-variant-color)); -webkit-background-clip: text; background-clip: text; color: transparent; padding-top: var(--spacing-lg); margin-bottom: 2rem; letter-spacing: -2px; text-shadow: 2px 2px 10px var(--shadow-color); }
+        .section { background: var(--surface-color); padding: var(--spacing-lg); border-radius: var(--radius); box-shadow: 0 10px 30px var(--shadow-color); margin-bottom: 2.5rem; border: 1px solid var(--border-color); }
+        h2 { font-family: 'Poppins', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--primary-color); margin-bottom: var(--spacing-sm); padding-bottom: var(--spacing-sm); border-bottom: 2px solid var(--border-color); }
+        details { margin-bottom: 1rem; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border-color); }
+        details summary { padding: var(--spacing-md) 15px; cursor: pointer; font-size: 1.1rem; font-weight: 700; outline: none; transition: background 0.3s ease, color 0.3s ease; background: linear-gradient(135deg, #2a2a2a, #222222); color: var(--secondary-color); }
+        html[data-theme="light"] details summary { background: linear-gradient(135deg, #f9f9f9, #f1f1f1); color: var(--text-color); }
+        details[open] > summary { background: var(--primary-color); color: var(--bg-color); }
+        html[data-theme="light"] details[open] > summary { color: var(--secondary-color); }
+        .round-group-content { padding: 15px 10px 5px 10px; background: rgba(0,0,0,0.1); border-top: 1px solid var(--border-color); }
+        html[data-theme="light"] .round-group-content { background: rgba(0,0,0,0.02); }
+        .table-wrapper { overflow-x: auto; overflow-y: auto; max-height: 70vh; max-width: 100%; -webkit-overflow-scrolling: touch; }
+        table { width: 100%; min-width: 100%; border-collapse: collapse; }
+        th, td { padding: var(--spacing-md) 4px; text-align: center; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; white-space: nowrap; }
+        #ranking-table thead th { position: sticky; top: 0; background: var(--surface-color); z-index: 10; cursor: pointer; }
+        #ranking-table thead th:hover { background: var(--primary-color); color: var(--bg-color); }
+        th { font-family: 'Poppins', sans-serif; background-color: rgba(0, 0, 0, 0.2); color: var(--primary-variant-color); font-weight: 700; }
+        html[data-theme="light"] th { background-color: #F9FAFB; }
+        .rank-cell { font-weight: 900; color: var(--accent-gold); text-shadow: 0 0 5px var(--shadow-color); position: relative; line-height: 1.2; }
+        .streak-cell { font-size: 0.7rem; white-space: nowrap; margin-left: var(--spacing-sm); }
+        .streak-win { color: #4CAF50; font-weight: bold; }
+        .streak-loss { color: #F44336; font-weight: bold; }
+        .streak-none { color: var(--text-secondary-color); }
+        #ranking-table th:nth-child(2), #ranking-table td:nth-child(2) { position: sticky; left: 0; background: var(--surface-color); z-index: 1; }
+        input[type="text"] { width: 100%; min-width: 80px; max-width: 120px; padding: var(--spacing-sm); background-color: var(--surface-color); border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; color: var(--text-color); font-family: 'Noto Sans KR', sans-serif; text-align: center; }
+        input.ranking-player, input.mmr { min-width: 90px; max-width: 140px; }
+        input.readonly { background-color: #252525; color: var(--text-secondary-color); font-weight: bold; }
+        html[data-theme="light"] input.readonly { background-color: #f0f0f0; }
+        .btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: var(--spacing-lg); }
+        .btn { display: inline-block; padding: var(--spacing-md) var(--spacing-lg); background: linear-gradient(135deg, var(--primary-color), var(--primary-variant-color)); color: #FFFFFF; text-decoration: none; border-radius: var(--radius); cursor: pointer; font-weight: 700; font-size: 1rem; border: none; text-align: center; }
+        html[data-theme="dark"] .btn { color: var(--bg-color); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .update-btn { width: 100%; margin-top: var(--spacing-lg); padding: 15px; background: linear-gradient(135deg, var(--accent-gold), #F5B02E); color: var(--bg-color); border: none; border-radius: var(--radius); font-size: 1.2rem; font-weight: 900; cursor: pointer; }
+        .toast { position: fixed; bottom: var(--spacing-lg); left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #333, #111); color: #fff; padding: var(--spacing-md) 25px; border-radius: 50px; box-shadow: 0 5px 15px var(--shadow-color); opacity: 0; transition: opacity 0.4s, transform 0.4s; font-weight: 700; z-index: 1000; }
+        .toast.show { opacity: 1; }
+        .championship-star { color: var(--accent-gold); text-shadow: 0 0 5px var(--shadow-color); font-size: 1.1rem; font-weight: 900; }
+        .theme-toggle { position: fixed; top: 15px; right: 15px; background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; font-size: 1.5rem; cursor: pointer; color: var(--text-color); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .ranking-player[value$="*"] { color: var(--primary-variant-color); }
+        .ranking-filter { display: flex; gap: var(--spacing-sm); margin-bottom: var(--spacing-md); }
+        .filter-btn { padding: var(--spacing-sm) var(--spacing-md); background: var(--surface-color); border: 1px solid var(--border-color); border-radius: var(--radius); cursor: pointer; color: var(--text-color); font-weight: 700; }
+        .filter-btn.active { background: var(--primary-color); color: var(--bg-color); }
+        .toggle-btn { padding: var(--spacing-sm) var(--spacing-md); margin: var(--spacing-sm) auto; display: block; }
+        tr.lower-rank { display: none; }
+        tr.lower-rank.show { display: table-row; }
+        .saved-indicator { color: var(--accent-gold); margin-left: 5px; font-size: 0.9rem; }
+        .saved-info { color: var(--text-secondary-color); margin-left: 5px; font-size: 0.8rem; }
+        .champion-name { color: var(--accent-gold); font-weight: bold; }
+        input[type="checkbox"] { margin: 0 auto; display: block; }
+        .popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--surface-color); padding: var(--spacing-lg); border-radius: var(--radius); box-shadow: 0 10px 30px var(--shadow-color); z-index: 2000; color: var(--text-color); border: 1px solid var(--border-color); max-width: 400px; text-align: center; }
+        .popup.show { display: block; }
+        .close-btn { position: absolute; top: var(--spacing-sm); right: var(--spacing-sm); background: none; border: none; color: var(--text-color); font-size: 1.5rem; cursor: pointer; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; }
+        .overlay.show { display: block; }
         @media screen and (max-width: 600px) {
-            h1 {
-                font-size: 2rem;
-            }
-            h2 {
-                font-size: 1.5rem;
-            }
-            .table-wrapper {
-                max-height: 50vh;
-                max-width: 100%;
-                overflow-x: auto;
-                padding: 0 2px;
-                box-sizing: border-box;
-                -webkit-overflow-scrolling: touch;
-            }
-            table {
-                min-width: 300px;
-                width: 100%;
-            }
-            #ranking-table {
-                min-width: 900px;
-            }
-            #ranking-table th, #ranking-table td {
-                padding: 4px 10px;
-                font-size: 0.7rem;
-            }
-            #ranking-table th[data-sort="player"],
-            #ranking-table th[data-sort="mmr"],
-            #ranking-table th[data-sort="rank"] {
-                font-size: 0.975rem;
-            }
-            #ranking-table th[data-sort="player"] {
-                width: 12.6%;
-            }
-            #ranking-table th[data-sort="mmr"] {
-                width: 8.4%;
-            }
-            #ranking-table th[data-sort="wins"],
-            #ranking-table th[data-sort="losses"],
-            #ranking-table th[data-sort="winRate"] {
-                width: 10%;
-            }
-            #ranking-table th[data-sort="avgGameDiff"] {
-                width: 14%;
-            }
-            #ranking-table th[data-sort="closeRate"] {
-                width: 12%;
-            }
-            #ranking-table th[data-sort="dominantWins"],
-            #ranking-table th[data-sort="dominantLosses"] {
-                width: 14%;
-            }
-            #ranking-table th[data-sort="bestPartner"] {
-                width: 20%;
-            }
-            #ranking-table input[type="text"] {
-                min-width: 60px;
-                max-width: 80px;
-                font-size: 0.7rem;
-                padding: 4px;
-            }
-            #ranking-table input.ranking-player, #ranking-table input.mmr {
-                min-width: 60px;
-                max-width: 80px;
-                font-size: 0.9rem;
-            }
-            #ranking-table input.wins, 
-            #ranking-table input.losses, 
-            #ranking-table input.win-rate, 
-            #ranking-table input.avg-game-diff, 
-            #ranking-table input.close-rate, 
-            #ranking-table input.dominant-wins, 
-            #ranking-table input.dominant-losses {
-                min-width: 60px;
-                max-width: 80px;
-                font-size: 0.7rem;
-            }
-            #ranking-table input.best-partner {
-                min-width: 240px;
-                max-width: 280px;
-                font-size: 0.7rem;
-            }
-            .schedule-table {
-                table-layout: fixed;
-            }
-            .schedule-table th, .schedule-table td {
-                padding: 2px 0;
-                border: none;
-                font-size: 0.7rem;
-                margin: 0;
-                box-sizing: border-box;
-            }
-            .schedule-table th:nth-child(1), .schedule-table td:nth-child(1),
-            .schedule-table th:nth-child(2), .schedule-table td:nth-child(2),
-            .schedule-table th:nth-child(4), .schedule-table td:nth-child(4),
-            .schedule-table th:nth-child(5), .schedule-table td:nth-child(5) {
-                width: 20%;
-                padding: 2px 2px;
-            }
-            .schedule-table th:nth-child(3), .schedule-table td:nth-child(3) {
-                width: 10%;
-                padding: 0 !important;
-                margin: 0;
-            }
-            .schedule-table th:nth-child(6), .schedule-table td:nth-child(6) {
-                width: 15%;
-                min-width: 30px;
-                padding: 0;
-            }
-            .schedule-table th:nth-child(7), .schedule-table td:nth-child(7) {
-                width: 15%;
-                min-width: 30px;
-                padding: 0;
-                text-align: left;
-            }
-            .schedule-table input[type="text"] {
-                min-width: 50px;
-                max-width: 60px;
-                height: 24px;
-                font-size: 0.7rem;
-                padding: 2px;
-                margin: 0;
-                border: none;
-                border-radius: 4px;
-                box-sizing: border-box;
-            }
-            .schedule-table input.score {
-                min-width: 30px;
-                max-width: 40px;
-                height: 24px;
-                font-size: 0.7rem;
-                padding: 2px;
-                margin: 0;
-                border: none;
-            }
-            .schedule-table input[type="checkbox"] {
-                width: 16px;
-                height: 16px;
-                margin: 0;
-                border: none;
-                transform: scale(1);
-            }
-            .btn {
-                padding: 6px 12px;
-                font-size: 0.8rem;
-            }
-            .update-btn, .save-all-btn, .toggle-btn {
-                width: 60%;
-                max-width: 100px;
-                padding: 6px;
-                font-size: 0.8rem;
-            }
-            .ranking-filter {
-                flex-direction: row;
-                flex-wrap: nowrap;
-                gap: 5px;
-            }
-            .filter-btn {
-                padding: 6px 10px;
-                font-size: 0.75rem;
-                min-width: 80px;
-            }
-            .input-group {
-                flex-direction: column;
-                align-items: center;
-            }
-            .saved-info {
-                font-size: 0.65rem;
-                max-width: 120px;
-                overflow: visible;
-                text-overflow: clip;
-                display: inline-block;
-                vertical-align: middle;
-            }
-            .popup {
-                max-width: 300px;
-                padding: var(--spacing-md);
-            }
-            .streak-cell {
-                font-size: 0.6rem;
-                padding: 1px 4px;
-            }
+            th, td { padding: 6px 3px; font-size: 0.8rem; }
+            input[type="text"] { min-width: 60px; max-width: 80px; font-size: 0.8rem; padding: 6px; }
+            input.ranking-player, input.mmr { min-width: 70px; max-width: 100px; }
+            input.best-partner { min-width: 180px; max-width: 200px; }
+            .schedule-table td input.player1, .schedule-table td input.player2,
+            .schedule-table td input.player3, .schedule-table td input.player4 { min-width: 60px; max-width: 80px; }
+            .schedule-table td input.score { min-width: 50px; max-width: 70px; }
+            .schedule-table th, .schedule-table td { padding: 6px 2px; }
+            .schedule-table td { border: 0.5px solid var(--border-color); }
+            .btn { padding: 10px 16px; font-size: 1rem; min-width: 120px; }
+            h1 { font-size: 2.2rem; }
+            h2 { font-size: 1.6rem; }
+            .saved-info { font-size: 0.7rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; display: inline-block; vertical-align: middle; }
+            .popup { max-width: 320px; padding: var(--spacing-md); }
         }
     </style>
 </head>
@@ -717,7 +137,7 @@
                 <button id="how-to-use-btn" class="btn">이용방법</button>
             </div>
             <div id="schedule-container"></div>
-            <button id="save-all" class="btn save-all-btn">모든 데이터 저장</button>
+            <button id="save-all" class="btn">모든 데이터 저장</button>
             <button id="update-ranking" class="btn update-btn">순위 업데이트</button>
         </div>
         <div class="section">
@@ -766,38 +186,6 @@
     <div id="overlay" class="overlay"></div>
 
     <script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-            return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-            if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-                try {
-                    var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                    var firstSheetName = workbook.SheetNames[0];
-                    var worksheet = workbook.Sheets[firstSheetName];
-                    var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                    var filteredData = jsonData.filter(row => row.some(filledCell));
-                    var headerRowIndex = filteredData.findIndex((row, index) =>
-                        row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                    );
-                    if (headerRowIndex === -1 || headerRowIndex > 25) {
-                        headerRowIndex = 0;
-                    }
-                    var csv = XLSX.utils.sheet_to_csv(XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)), { header: 1 });
-                    console.log(`XLSX 파일 ${filename} 파싱 성공`);
-                    return csv;
-                } catch (e) {
-                    console.error("XLSX 파싱 오류:", e.name, e.message, e.stack);
-                    showToast(`XLSX 파싱 실패: ${e.message || '알 수 없는 오류'}`);
-                    return "";
-                }
-            }
-            return gk_fileData[filename] || "";
-        }
-
         function applyTheme(theme) {
             const validTheme = theme === 'light' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', validTheme);
@@ -808,10 +196,6 @@
             }
             console.log(`테마 적용: ${validTheme}`);
         }
-
-        let currentFilter = 'all';
-        let sortKey = 'mmr';
-        let sortOrder = 'desc';
 
         function showToast(message) {
             const toast = document.getElementById('toast');
@@ -839,16 +223,16 @@
                 const endRound = Math.min((category + 1) * roundsPerCategory, totalRounds);
                 roundsHtml += `<details class="round-group"><summary>회차 ${startRound} ~ ${endRound}</summary><div class="round-group-content">`;
                 for (let i = startRound; i <= endRound; i++) {
-                    const roundData = savedRounds.get(i) || {};
-                    const isSaved = !!roundData.matches;
-                    const savedDate = roundData.timestamp ? new Date(roundData.timestamp).toLocaleDateString('ko-KR') : '';
-                    const champions = roundData.champions?.map(name => `<span class="champion-name">${name}</span>`).join(', ') || '없음';
+                    const roundData = savedRounds.get(i);
+                    const isSaved = !!roundData;
+                    const savedDate = roundData?.timestamp ? new Date(roundData.timestamp).toLocaleDateString('ko-KR') : '';
+                    const champions = roundData?.champions?.map(name => `<span class="champion-name">${name}</span>`).join(', ') || '없음';
                     roundsHtml += `
                     <details>
                         <summary>${i}회${isSaved ? `<span class="saved-indicator">💾</span><span class="saved-info">[${savedDate}, 우승: ${champions}]</span>` : ''}</summary>
                         <div class="table-wrapper">
                             <table class="schedule-table" data-round-id="${i}">
-                                <thead><tr><th>Player 1</th><th>Player 2</th><th>vs</th><th>Player 3</th><th>Player 4</th><th>Score</th><th>4점제</th></tr></thead>
+                                <thead><tr><th>Player 1</th><th>Player 2</th><th>vs</th><th>Player 3</th><th>Player 4</th><th>Score</th><th>4점 선취</th></tr></thead>
                                 <tbody>
                                     <tr><td><input type="text" placeholder="이름" class="player1"></td><td><input type="text" placeholder="이름" class="player2"></td><td>vs</td><td><input type="text" placeholder="이름" class="player3"></td><td><input type="text" placeholder="이름" class="player4"></td><td><input type="text" placeholder="6-4" class="score"></td><td><input type="checkbox" class="is-four-point"></td></tr>
                                     <tr><td><input type="text" placeholder="이름" class="player1"></td><td><input type="text" placeholder="이름" class="player2"></td><td>vs</td><td><input type="text" placeholder="이름" class="player3"></td><td><input type="text" placeholder="이름" class="player4"></td><td><input type="text" placeholder="6-4" class="score"></td><td><input type="checkbox" class="is-four-point"></td></tr>
@@ -861,28 +245,10 @@
                 roundsHtml += `</div></details>`;
             }
             container.innerHTML = roundsHtml;
-
-            savedRounds.forEach((roundData, roundId) => {
-                const table = document.querySelector(`.schedule-table[data-round-id="${roundId}"]`);
-                if (table && roundData.matches) {
-                    const rows = table.querySelectorAll('tbody tr');
-                    roundData.matches.forEach((match, index) => {
-                        if (rows[index]) {
-                            rows[index].querySelector('.player1').value = match.player1 || '';
-                            rows[index].querySelector('.player2').value = match.player2 || '';
-                            rows[index].querySelector('.player3').value = match.player3 || '';
-                            rows[index].querySelector('.player4').value = match.player4 || '';
-                            rows[index].querySelector('.score').value = match.score || '';
-                            rows[index].querySelector('.is-four-point').checked = match.isFourPoint || false;
-                        }
-                    });
-                }
-            });
-
             console.log("회차 일정표 렌더링 완료!");
         }
 
-        function createRankingRows(savedRounds = new Map()) {
+        function createRankingRows() {
             const rankingBody = document.querySelector('#ranking-table tbody');
             if (!rankingBody) {
                 console.error("ranking-table tbody 요소 없음!");
@@ -893,71 +259,290 @@
             for (let i = 1; i <= 100; i++) {
                 rowsHtml += `
                 <tr${i > 20 ? ' class="lower-rank"' : ''}>
-                    <td class="rank-cell">${i}<span class="streak-cell streak-none">–</span></td>
-                    <td><input type="text" placeholder="선수 ${i}" class="ranking-player readonly" readonly></td>
-                    <td><input type="text" class="mmr readonly" readonly value="1500"></td>
+                    <td class="rank-cell">${i}</td>
+                    <td><input type="text" placeholder="선수 ${i}" class="ranking-player"></td>
+                    <td><input type="text" class="mmr readonly" readonly></td>
                     <td><span class="championship-star"></span></td>
-                    <td><input type="text" class="wins readonly" readonly value="0"></td>
-                    <td><input type="text" class="losses readonly" readonly value="0"></td>
-                    <td><input type="text" class="win-rate readonly" readonly value="0"></td>
-                    <td><input type="text" class="avg-game-diff readonly" readonly value="0.00"></td>
-                    <td><input type="text" class="close-rate readonly" readonly value="0"></td>
-                    <td><input type="text" class="dominant-wins readonly" readonly value="0%"></td>
-                    <td><input type="text" class="dominant-losses readonly" readonly value="0%"></td>
-                    <td><input type="text" class="best-partner readonly" readonly value="-"></td>
+                    <td><input type="text" class="wins readonly" readonly></td>
+                    <td><input type="text" class="losses readonly" readonly></td>
+                    <td><input type="text" class="win-rate readonly" readonly></td>
+                    <td><input type="text" class="avg-game-diff readonly" readonly></td>
+                    <td><input type="text" class="close-rate readonly" readonly></td>
+                    <td><input type="text" class="dominant-wins readonly" readonly></td>
+                    <td><input type="text" class="dominant-losses readonly" readonly></td>
+                    <td><input type="text" class="best-partner readonly" readonly></td>
                 </tr>`;
             }
             rankingBody.innerHTML = rowsHtml;
-            updateRankingVisibility();
             console.log("순위표 렌더링 완료!");
         }
+    </script>
 
-        function updateRankingVisibility() {
-            const lowerRanks = document.querySelectorAll('#ranking-table .lower-rank');
-            const toggleButton = document.getElementById('toggle-rankings');
-            const isVisible = lowerRanks[0]?.classList.contains('show');
-            lowerRanks.forEach(row => {
-                row.style.display = isVisible ? 'table-row' : 'none';
-            });
-            toggleButton.textContent = isVisible ? '접기' : '더보기';
+    <script type="module" defer>
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-analytics.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCj33GM2pM2-Vz1Fmh6eyMwQkWjByA7xdw",
+            authDomain: "tetus-c91f0.firebaseapp.com",
+            databaseURL: "https://tetus-c91f0-default-rtdb.firebaseio.com",
+            projectId: "tetus-c91f0",
+            storageBucket: "tetus-c91f0.firebasestorage.app",
+            messagingSenderId: "877913022272",
+            appId: "1:877913022272:web:ec685d63235c87c3c1e4a5",
+            measurementId: "G-7FJY9EKPV5"
+        };
+
+        let db;
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            getAnalytics(app);
+            console.log("Firebase 초기화 성공!");
+        } catch (e) { 
+            console.error("Firebase 초기화 실패:", e);
+            showToast(`Firebase 초기화 실패: ${e.message || '알 수 없는 오류'}`);
         }
 
+        let currentFilter = 'all';
+        let sortKey = 'mmr';
+        let sortOrder = 'desc';
+
         async function saveAllData() {
+            if (!db) {
+                showToast('DB 연결 실패!');
+                return;
+            }
             const saveAllBtn = document.getElementById('save-all');
             saveAllBtn.disabled = true;
             try {
+                const batch = writeBatch(db);
                 const savedRounds = new Map();
+                const scheduleData = [];
+
+                // 스케줄 데이터 수집 및 로컬스토리지 저장
                 document.querySelectorAll('.schedule-table').forEach(table => {
                     const roundId = parseInt(table.getAttribute('data-round-id'));
                     const rows = table.querySelectorAll('tbody tr');
-                    const matches = Array.from(rows).map(row => ({
-                        player1: row.querySelector('.player1').value.trim(),
-                        player2: row.querySelector('.player2').value.trim(),
-                        player3: row.querySelector('.player3').value.trim(),
-                        player4: row.querySelector('.player4').value.trim(),
-                        score: row.querySelector('.score').value.trim(),
-                        isFourPoint: row.querySelector('.is-four-point').checked
-                    })).filter(match => 
-                        match.player1 && match.player2 && match.player3 && match.player4 && match.score
-                    );
+                    const matches = Array.from(rows)
+                        .map(row => ({
+                            player1: row.querySelector('.player1').value.trim(),
+                            player2: row.querySelector('.player2').value.trim(),
+                            player3: row.querySelector('.player3').value.trim(),
+                            player4: row.querySelector('.player4').value.trim(),
+                            score: row.querySelector('.score').value.trim(),
+                            isFourPoint: row.querySelector('.is-four-point').checked
+                        }))
+                        .filter(match => 
+                            match.player1 && match.player2 && match.player3 && match.player4 && match.score && /^\d+-\d+$/.test(match.score)
+                        );
                     if (matches.length > 0) {
                         savedRounds.set(roundId, {
                             timestamp: new Date().toISOString(),
                             matches,
                             champions: []
                         });
+                        matches.forEach(match => {
+                            scheduleData.push({
+                                round: roundId,
+                                players: [match.player1, match.player2, match.player3, match.player4],
+                                score: match.score,
+                                isFourPoint: match.isFourPoint,
+                                timestamp: new Date().toISOString()
+                            });
+                        });
                     }
                 });
-                localStorage.setItem('savedRounds', JSON.stringify([...savedRounds]));
-                console.log("통합 데이터 저장 성공!");
-                showToast("모든 데이터 저장 완료!");
-                await updateRanking(); // 저장 후 즉시 순위 업데이트
+
+                // 로컬스토리지에 저장
+                localStorage.setItem('techinSavedRounds', JSON.stringify([...savedRounds]));
+
+                // Firebase에 스케줄 데이터 저장
+                const scheduleDocRef = doc(db, 'league', 'data', 'schedule', 'v1');
+                batch.set(scheduleDocRef, { matches: scheduleData, lastUpdated: serverTimestamp() }, { merge: true });
+
+                // 랭킹 데이터 수집
+                const rankingRows = document.querySelectorAll('#ranking-table tbody tr');
+                const rankingData = Array.from(rankingRows).map(row => {
+                    const rawName = row.querySelector('.ranking-player').value.trim();
+                    const name = rawName.replace(/\*/g, '');
+                    const wins = parseInt(row.querySelector('.wins').value) || 0;
+                    const losses = parseInt(row.querySelector('.losses').value) || 0;
+                    return {
+                        name,
+                        mmr: parseFloat(row.querySelector('.mmr').value) || 1500,
+                        championships: row.querySelector('.championship-star')?.dataset.count || '0',
+                        wins,
+                        losses,
+                        winRate: row.querySelector('.win-rate').value || '0',
+                        avgGameDiff: row.querySelector('.avg-game-diff').value || '0.00',
+                        closeRate: row.querySelector('.close-rate').value || '0',
+                        dominantWins: row.querySelector('.dominant-wins').value || '0',
+                        dominantLosses: row.querySelector('.dominant-losses').value || '0',
+                        bestPartner: row.querySelector('.best-partner').value || '-',
+                        isFemale: rawName.includes('*'),
+                        seasonMMRIncrease: parseFloat(row.querySelector('.mmr').dataset.seasonMMRIncrease) || 0,
+                        streakCount: parseInt(row.querySelector('.streak-cell')?.textContent.replace(/[WL]/, '') || '0'),
+                        streakIsWin: row.querySelector('.streak-cell')?.classList.contains('streak-win')
+                    };
+                }).filter(player => player.name && (player.wins + player.losses > 0));
+
+                // Firebase에 랭킹 데이터 저장
+                const rankingDocRef = doc(db, 'league', 'data', 'rankings', 'v1');
+                batch.set(rankingDocRef, { players: rankingData, lastUpdated: serverTimestamp() }, { merge: true });
+
+                // 백업 저장
+                const backupDocRef = doc(collection(db, 'league', 'backups', 'data'), `backup_${new Date().toISOString().replace(/[:.]/g, '-')}`);
+                batch.set(backupDocRef, {
+                    schedule: scheduleData,
+                    rankings: rankingData,
+                    timestamp: serverTimestamp()
+                });
+
+                await batch.commit();
+                console.log("데이터 저장 및 백업 성공!");
+                showToast("데이터 저장 완료!");
             } catch (e) {
                 console.error("데이터 저장 실패:", e);
                 showToast(`데이터 저장 실패: ${e.message || '알 수 없는 오류'}`);
             } finally {
                 saveAllBtn.disabled = false;
             }
+        }
+
+        async function loadData() {
+            if (!db) {
+                showToast("DB 연결 실패");
+                createScheduleRounds();
+                return;
+            }
+            try {
+                // 로컬스토리지에서 데이터 로드
+                const savedRounds = new Map(JSON.parse(localStorage.getItem('techinSavedRounds') || '[]'));
+
+                // Firebase에서 스케줄 데이터 로드
+                const scheduleDoc = await getDoc(doc(db, 'league', 'data', 'schedule', 'v1'));
+                if (scheduleDoc.exists()) {
+                    const scheduleData = scheduleDoc.data().matches || [];
+                    const roundWins = {};
+                    const roundMatches = {};
+                    scheduleData.forEach(match => {
+                        const roundId = match.round;
+                        if (!roundMatches[roundId]) roundMatches[roundId] = [];
+                        roundMatches[roundId].push(match);
+                        if (match.players.some(p => p.trim()) || match.score.trim()) {
+                            const timestamp = match.timestamp || new Date().toISOString();
+                            const champions = [];
+                            if (match.score && /^\d+-\d+$/.test(match.score) && !match.isFourPoint) {
+                                const [score1, score2] = match.score.split('-').map(Number);
+                                const winners = score1 > score2 ? [match.players[0], match.players[1]] : [match.players[2], match.players[3]];
+                                winners.forEach(player => {
+                                    if (!roundWins[roundId]) roundWins[roundId] = {};
+                                    if (!roundWins[roundId][player]) roundWins[roundId][player] = 0;
+                                    roundWins[roundId][player]++;
+                                    if (roundWins[roundId][player] === 3 && !champions.includes(player)) {
+                                        champions.push(player.replace(/\*/g, ''));
+                                    }
+                                });
+                            }
+                            savedRounds.set(roundId, { timestamp, matches: roundMatches[roundId], champions });
+                        }
+                    });
+
+                    createScheduleRounds(savedRounds);
+                    document.querySelectorAll('.schedule-table').forEach(table => {
+                        const roundId = table.getAttribute('data-round-id');
+                        const matches = scheduleData.filter(m => m.round == roundId);
+                        const rows = table.querySelectorAll('tbody tr');
+                        rows.forEach((row, index) => {
+                            const match = matches[index];
+                            if (match) {
+                                row.querySelector('.player1').value = match.players[0] || '';
+                                row.querySelector('.player2').value = match.players[1] || '';
+                                row.querySelector('.player3').value = match.players[2] || '';
+                                row.querySelector('.player4').value = match.players[3] || '';
+                                row.querySelector('.score').value = match.score || '';
+                                row.querySelector('.is-four-point').checked = match.isFourPoint || false;
+                            }
+                        });
+                    });
+                    console.log("스케줄 데이터 로드 완료!");
+                } else {
+                    console.warn("스케줄 데이터 없음!");
+                    createScheduleRounds(savedRounds);
+                    showToast("스케줄 데이터가 없습니다!");
+                }
+
+                // Firebase에서 랭킹 데이터 로드
+                const rankingDoc = await getDoc(doc(db, 'league', 'data', 'rankings', 'v1'));
+                if (rankingDoc.exists()) {
+                    updateRankingTable(rankingDoc.data().players || []);
+                    console.log("랭킹 데이터 로드 완료!");
+                } else {
+                    console.warn("랭킹 데이터 없음!");
+                    showToast("랭킹 데이터가 없습니다!");
+                }
+            } catch (e) {
+                console.error("로드 실패:", e);
+                showToast(`데이터 로드 실패: ${e.message || '알 수 없는 오류'}`);
+            }
+        }
+
+        async function updateRankingTable(rankingData) {
+            let filteredData = rankingData;
+            if (currentFilter === 'male') filteredData = rankingData.filter(p => !p.isFemale);
+            else if (currentFilter === 'female') filteredData = rankingData.filter(p => p.isFemale);
+
+            filteredData.sort((a, b) => {
+                if (sortKey === 'rank') return sortOrder === 'asc' ? a.rank - b.rank : b.rank - a.rank;
+                if (sortKey === 'player') {
+                    const nameA = a.name.toLowerCase();
+                    const nameB = b.name.toLowerCase();
+                    return sortOrder === 'asc' ? nameA.localeCompare(nameB, 'ko') : nameB.localeCompare(nameA, 'ko');
+                }
+                if (sortKey === 'mmr') return sortOrder === 'asc' ? a.mmr - b.mmr : b.mmr - a.mmr;
+                if (sortKey === 'championships') return sortOrder === 'asc' ? parseInt(a.championships) - parseInt(b.championships) : parseInt(b.championships) - parseInt(a.championships);
+                if (sortKey === 'wins') return sortOrder === 'asc' ? parseInt(a.wins) - parseInt(b.wins) : parseInt(b.wins) - parseInt(a.wins);
+                if (sortKey === 'losses') return sortOrder === 'asc' ? parseInt(a.losses) - parseInt(b.losses) : parseInt(b.losses) - parseInt(a.losses);
+                if (sortKey === 'winRate') return sortOrder === 'asc' ? parseFloat(a.winRate) - parseFloat(b.winRate) : parseFloat(b.winRate) - parseFloat(a.winRate);
+                if (sortKey === 'avgGameDiff') return sortOrder === 'asc' ? parseFloat(a.avgGameDiff) - parseFloat(b.avgGameDiff) : parseFloat(b.avgGameDiff) - parseFloat(a.avgGameDiff);
+                if (sortKey === 'closeRate') return sortOrder === 'asc' ? parseFloat(a.closeRate) - parseFloat(b.closeRate) : parseFloat(b.closeRate) - parseFloat(a.closeRate);
+                if (sortKey === 'dominantWins') return sortOrder === 'asc' ? parseInt(a.dominantWins) - parseInt(b.dominantWins) : parseInt(b.dominantWins) - parseInt(a.dominantWins);
+                if (sortKey === 'dominantLosses') return sortOrder === 'asc' ? parseInt(a.dominantLosses) - parseInt(b.dominantLosses) : parseInt(b.dominantLosses) - parseInt(a.dominantLosses);
+                if (sortKey === 'bestPartner') {
+                    const winsA = parseInt(a.bestPartner.match(/(\d+)승/)?.[1] || 0);
+                    const winsB = parseInt(b.bestPartner.match(/(\d+)승/)?.[1] || 0);
+                    return sortOrder === 'asc' ? winsA - winsB : winsB - winsA;
+                }
+                return 0;
+            });
+
+            const rankingRows = document.querySelectorAll('#ranking-table tbody tr');
+            rankingRows.forEach((row, index) => {
+                const player = filteredData[index];
+                if (player) {
+                    row.cells[0].innerHTML = `${index + 1}<span class="streak-cell ${player.streakCount > 0 ? (player.streakIsWin ? 'streak-win' : 'streak-loss') : 'streak-none'}">${player.streakCount > 0 ? (player.streakIsWin ? `W${player.streakCount}` : `L${player.streakCount}`) : '–'}</span>`;
+                    row.querySelector('.ranking-player').value = player.isFemale ? `${player.name}*` : player.name;
+                    row.querySelector('.mmr').value = isNaN(player.mmr) ? '1500' : Math.round(player.mmr);
+                    row.querySelector('.mmr').dataset.seasonMMRIncrease = isNaN(player.seasonMMRIncrease) ? '0.00' : player.seasonMMRIncrease.toFixed(2);
+                    const champStar = row.querySelector('.championship-star');
+                    champStar.dataset.count = player.championships;
+                    champStar.textContent = player.championships == 1 ? '⭐' : player.championships > 1 ? `⭐(${player.championships})` : '';
+                    row.querySelector('.wins').value = player.wins || '0';
+                    row.querySelector('.losses').value = player.losses || '0';
+                    row.querySelector('.win-rate').value = player.winRate || '0';
+                    row.querySelector('.avg-game-diff').value = player.avgGameDiff || '0.00';
+                    row.querySelector('.close-rate').value = player.closeRate || '0';
+                    row.querySelector('.dominant-wins').value = player.dominantWins || '0';
+                    row.querySelector('.dominant-losses').value = player.dominantLosses || '0';
+                    row.querySelector('.best-partner').value = player.bestPartner || '-';
+                } else {
+                    row.cells[0].innerHTML = `${index + 1}<span class="streak-cell streak-none">–</span>`;
+                    row.querySelectorAll('input:not([type=button])').forEach(input => input.value = '');
+                    row.querySelector('.championship-star').textContent = '';
+                }
+            });
         }
 
         async function updateRanking() {
@@ -1012,18 +597,20 @@
                 }
             });
 
-            const savedRounds = new Map(JSON.parse(localStorage.getItem('savedRounds') || '[]'));
-            savedRounds.forEach((table, roundId) => {
+            const scheduleTables = document.querySelectorAll('.schedule-table');
+            scheduleTables.forEach((table) => {
                 let roundHasMixedMatch = false;
+                const roundId = table.getAttribute('data-round-id');
+                const rows = table.querySelectorAll('tbody tr');
                 let roundWins = {};
 
-                table.matches.forEach(match => {
-                    const p1Raw = match.player1;
-                    const p2Raw = match.player2;
-                    const p3Raw = match.player3;
-                    const p4Raw = match.player4;
-                    const score = match.score;
-                    const isFourPoint = match.isFourPoint;
+                rows.forEach(row => {
+                    const p1Raw = row.querySelector('.player1').value.trim();
+                    const p2Raw = row.querySelector('.player2').value.trim();
+                    const p3Raw = row.querySelector('.player3').value.trim();
+                    const p4Raw = row.querySelector('.player4').value.trim();
+                    const score = row.querySelector('.score').value.trim();
+                    const isFourPoint = row.querySelector('.is-four-point').checked;
 
                     const p1 = p1Raw.replace(/\*/g, '');
                     const p2 = p2Raw.replace(/\*/g, '');
@@ -1253,37 +840,52 @@
             else if (currentFilter === 'female') sortedPlayers = sortedPlayers.filter(p => p.isFemale);
 
             sortedPlayers.sort((a, b) => {
-                if (sortKey === 'rank') {
-                    return sortOrder === 'asc' ? a.rank - b.rank : b.rank - a.rank;
-                } else if (sortKey === 'player') {
+                if (sortKey === 'rank') return sortOrder === 'asc' ? a.rank - b.rank : b.rank - a.rank;
+                if (sortKey === 'player') {
                     const nameA = a.name.toLowerCase();
                     const nameB = b.name.toLowerCase();
                     return sortOrder === 'asc' ? nameA.localeCompare(nameB, 'ko') : nameB.localeCompare(nameA, 'ko');
-                } else if (sortKey === 'mmr') {
-                    return sortOrder === 'asc' ? a.mmr - b.mmr : b.mmr - a.mmr;
-                } else if (sortKey === 'championships') {
-                    return sortOrder === 'asc' ? parseInt(a.championships) - parseInt(b.championships) : parseInt(b.championships) - parseInt(a.championships);
-                } else if (sortKey === 'wins') {
-                    return sortOrder === 'asc' ? parseInt(a.wins) - parseInt(b.wins) : parseInt(b.wins) - parseInt(a.wins);
-                } else if (sortKey === 'losses') {
-                    return sortOrder === 'asc' ? parseInt(a.losses) - parseInt(b.losses) : parseInt(b.losses) - parseInt(a.losses);
-                } else if (sortKey === 'winRate') {
-                    return sortOrder === 'asc' ? parseFloat(a.winRate) - parseFloat(b.winRate) : parseFloat(b.winRate) - parseFloat(a.winRate);
-                } else if (sortKey === 'avgGameDiff') {
-                    return sortOrder === 'asc' ? parseFloat(a.avgGameDiff) - parseFloat(b.avgGameDiff) : parseFloat(b.avgGameDiff) - parseFloat(a.avgGameDiff);
-                } else if (sortKey === 'closeRate') {
-                    return sortOrder === 'asc' ? parseFloat(a.closeRate) - parseFloat(b.closeRate) : parseFloat(b.closeRate) - parseFloat(a.closeRate);
-                } else if (sortKey === 'dominantWins') {
-                    return sortOrder === 'asc' ? parseInt(a.dominantWins) - parseInt(b.dominantWins) : parseInt(b.dominantWins) - parseInt(a.dominantWins);
-                } else if (sortKey === 'dominantLosses') {
-                    return sortOrder === 'asc' ? parseInt(a.dominantLosses) - parseInt(b.dominantLosses) : parseInt(b.dominantLosses) - parseInt(a.dominantLosses);
-                } else if (sortKey === 'bestPartner') {
+                }
+                if (sortKey === 'mmr') return sortOrder === 'asc' ? a.mmr - b.mmr : b.mmr - a.mmr;
+                if (sortKey === 'championships') return sortOrder === 'asc' ? parseInt(a.championships) - parseInt(b.championships) : parseInt(b.championships) - parseInt(a.championships);
+                if (sortKey === 'wins') return sortOrder === 'asc' ? parseInt(a.wins) - parseInt(b.wins) : parseInt(b.wins) - parseInt(a.wins);
+                if (sortKey === 'losses') return sortOrder === 'asc' ? parseInt(a.losses) - parseInt(b.losses) : parseInt(b.losses) - parseInt(a.losses);
+                if (sortKey === 'winRate') return sortOrder === 'asc' ? parseFloat(a.winRate) - parseFloat(b.winRate) : parseFloat(b.winRate) - parseFloat(a.winRate);
+                if (sortKey === 'avgGameDiff') return sortOrder === 'asc' ? parseFloat(a.avgGameDiff) - parseFloat(b.avgGameDiff) : parseFloat(b.avgGameDiff) - parseFloat(a.avgGameDiff);
+                if (sortKey === 'closeRate') return sortOrder === 'asc' ? parseFloat(a.closeRate) - parseFloat(b.closeRate) : parseFloat(b.closeRate) - parseFloat(a.closeRate);
+                if (sortKey === 'dominantWins') return sortOrder === 'asc' ? parseInt(a.dominantWins) - parseInt(b.dominantWins) : parseInt(b.dominantWins) - parseInt(a.dominantWins);
+                if (sortKey === 'dominantLosses') return sortOrder === 'asc' ? parseInt(a.dominantLosses) - parseInt(b.dominantLosses) : parseInt(b.dominantLosses) - parseInt(a.dominantLosses);
+                if (sortKey === 'bestPartner') {
                     const winsA = parseInt(a.bestPartner.match(/(\d+)승/)?.[1] || 0);
                     const winsB = parseInt(b.bestPartner.match(/(\d+)승/)?.[1] || 0);
                     return sortOrder === 'asc' ? winsA - winsB : winsB - winsA;
                 }
                 return 0;
             });
+
+            try {
+                const historyDocRef = doc(db, 'league', 'data', 'mmrHistory', 'v1');
+                const historyDocSnap = await getDoc(historyDocRef);
+                const existingHistory = historyDocSnap.exists() ? historyDocSnap.data().snapshots || [] : [];
+                const newSnapshot = { 
+                    game: existingHistory.length + 1,
+                    createdAt: new Date().toISOString()
+                };
+                sortedPlayers.forEach(p => {
+                    if (p.wins > 0 || p.losses > 0) {
+                        const cleanName = p.name.replace(/[@.*]+/g, '_').replace(/_+/g, '_').trim();
+                        newSnapshot[cleanName] = isNaN(p.mmr) ? BASE_MMR : Math.round(p.mmr);
+                    }
+                });
+                if (Object.keys(newSnapshot).length > 1) {
+                    existingHistory.push(newSnapshot);
+                    await setDoc(historyDocRef, { snapshots: existingHistory });
+                    console.log("MMR 히스토리 저장 완료!");
+                }
+            } catch (e) {
+                console.error("MMR 히스토리 저장 실패:", e);
+                showToast(`MMR 히스토리 저장 실패: ${e.message || '알 수 없는 오류'}`);
+            }
 
             const rankingRows = document.querySelectorAll('#ranking-table tbody tr');
             rankingRows.forEach((row, index) => {
@@ -1330,9 +932,7 @@
                 }
             });
 
-            // 순위 데이터를 localStorage에 저장
-            localStorage.setItem('rankingData', JSON.stringify(sortedPlayers));
-            updateRankingVisibility();
+            await saveAllData();
             showToast('순위 업데이트 완료!');
             updateRankingBtn.disabled = false;
         }
@@ -1367,23 +967,20 @@
             document.body.removeChild(link);
         }
 
-        function waitForElements(selector, callback, retries = 20, delay = 200) {
+        function waitForElements(selector, callback, retries = 10, delay = 100) {
             let attempts = 0;
             function check() {
                 const elements = document.querySelectorAll(selector);
                 const scheduleContainer = document.getElementById('schedule-container');
                 const rankingBody = document.querySelector('#ranking-table tbody');
-                console.log(`waitForElements 시도 ${attempts + 1}: 요소 상태 - schedule-container: ${!!scheduleContainer}, ranking-table tbody: ${!!rankingBody}, selector: ${elements.length}`);
                 if (elements.length > 0 && scheduleContainer && rankingBody) {
-                    console.log("DOM 요소 모두 준비됨!");
                     callback();
                 } else if (attempts < retries) {
                     attempts++;
-                    console.log(`DOM 요소 대기 중 (${attempts}/${retries})...`);
                     setTimeout(check, delay);
                 } else {
                     console.error("DOM 요소 로드 실패:", selector);
-                    showToast("페이지 로드 오류! 요소를 찾을 수 없습니다.");
+                    showToast("페이지 로드 오류!");
                 }
             }
             check();
@@ -1397,21 +994,13 @@
             const partnerPageBtn = document.getElementById('partner-page-btn');
             const howToUseBtn = document.getElementById('how-to-use-btn');
 
-            console.log("setupInputListeners - 버튼 상태:");
-            console.log("save-all:", !!saveAllBtn);
-            console.log("update-ranking:", !!updateRankingBtn);
-            console.log("toggle-rankings:", !!toggleRankingsBtn);
-            console.log("h2h-page-btn:", !!h2hPageBtn);
-            console.log("partner-page-btn:", !!partnerPageBtn);
-            console.log("how-to-use-btn:", !!howToUseBtn);
-
             saveAllBtn?.addEventListener('click', saveAllData);
             updateRankingBtn?.addEventListener('click', updateRanking);
             toggleRankingsBtn?.addEventListener('click', () => {
-                const lowerRanks = document.querySelectorAll('#ranking-table .lower-rank');
+                const lowerRanks = document.querySelectorAll('.lower-rank');
                 const isVisible = lowerRanks[0]?.classList.contains('show');
                 lowerRanks.forEach(row => row.classList.toggle('show'));
-                updateRankingVisibility();
+                toggleRankingsBtn.textContent = isVisible ? '더보기' : '접기';
             });
             h2hPageBtn?.addEventListener('click', () => {
                 window.location.href = 'h2h.html';
@@ -1434,9 +1023,10 @@
                     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     currentFilter = btn.dataset.filter;
-                    const savedRounds = new Map(JSON.parse(localStorage.getItem('savedRounds') || '[]'));
-                    createRankingRows(savedRounds);
-                    await updateRanking();
+                    const rankingDoc = await getDoc(doc(db, 'league', 'data', 'rankings', 'v1'));
+                    if (rankingDoc.exists()) {
+                        updateRankingTable(rankingDoc.data().players || []);
+                    }
                 });
             });
 
@@ -1449,9 +1039,10 @@
                         sortKey = newSortKey;
                         sortOrder = 'desc';
                     }
-                    const savedRounds = new Map(JSON.parse(localStorage.getItem('savedRounds') || '[]'));
-                    createRankingRows(savedRounds);
-                    await updateRanking();
+                    const rankingDoc = await getDoc(doc(db, 'league', 'data', 'rankings', 'v1'));
+                    if (rankingDoc.exists()) {
+                        updateRankingTable(rankingDoc.data().players || []);
+                    }
                 });
             });
 
@@ -1467,31 +1058,20 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            console.log("DOMContentLoaded 이벤트 시작");
-            waitForElements('#schedule-container, #ranking-table tbody', async () => {
-                console.log("waitForElements 콜백 실행");
-                try {
-                    applyTheme(localStorage.getItem('theme') || 'dark');
-                    console.log("applyTheme 호출 성공");
-                    const savedRounds = new Map(JSON.parse(localStorage.getItem('savedRounds') || '[]'));
-                    createRankingRows(savedRounds);
-                    createScheduleRounds(savedRounds);
-                    setupInputListeners();
-                    await updateRanking(); // 페이지 로드 시 순위 업데이트 호출
-                } catch (e) {
-                    console.error("초기화 실패:", e.message, e.stack);
-                    showToast("페이지 초기화 오류!");
+            waitForElements('#schedule-container, #ranking-table tbody', () => {
+                applyTheme(localStorage.getItem('theme') || 'dark');
+                createRankingRows();
+                if (db) {
+                    loadData();
+                } else {
+                    createScheduleRounds();
+                    showToast("DB 연결 실패!");
                 }
+                setupInputListeners();
                 const themeToggle = document.getElementById('theme-toggle');
                 if (themeToggle) {
                     themeToggle.addEventListener('click', () => {
-                        console.log("themeToggle 클릭");
-                        try {
-                            applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-                        } catch (e) {
-                            console.error("themeToggle applyTheme 호출 실패:", e.message, e.stack);
-                            showToast("테마 전환 오류!");
-                        }
+                        applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
                     });
                 }
                 const downloadCsvBtn = document.getElementById('download-csv');
