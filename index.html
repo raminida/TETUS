@@ -61,68 +61,68 @@
         .section { background: var(--surface-color); padding: var(--spacing-lg); border-radius: var(--radius); box-shadow: 0 10px 30px var(--shadow-color); margin-bottom: 2.5rem; border: 1px solid var(--border-color); }
         h2 { font-family: 'Poppins', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--primary-color); margin-bottom: var(--spacing-sm); padding-bottom: var(--spacing-sm); border-bottom: 2px solid var(--border-color); }
         details { margin-bottom: 1rem; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border-color); }
-        details summary { padding: var(--spacing-md) 15px; cursor: pointer; font-size: 1.1rem; font-weight: 700; outline: none; transition: background 0.3s ease, color 0.3s ease; background: linear-gradient(135deg, #2a2a2a, #222222); color: var(--secondary-color); }
+        details summary { padding: calc(var(--spacing-md) * 0.9); cursor: pointer; font-size: 0.99rem; font-weight: 700; outline: none; transition: background 0.3s ease, color 0.3s ease; background: linear-gradient(135deg, #2a2a2a, #222222); color: var(--secondary-color); }
         html[data-theme="light"] details summary { background: linear-gradient(135deg, #f9f9f9, #f1f1f1); color: var(--text-color); }
         details[open] > summary { background: var(--primary-color); color: var(--bg-color); }
         html[data-theme="light"] details[open] > summary { color: var(--secondary-color); }
-        .round-group-content { padding: 15px 10px 5px 10px; background: rgba(0,0,0,0.1); border-top: 1px solid var(--border-color); }
+        .round-group-content { padding: calc(15px * 0.9) calc(10px * 0.9) calc(5px * 0.9) calc(10px * 0.9); background: rgba(0,0,0,0.1); border-top: 1px solid var(--border-color); }
         html[data-theme="light"] .round-group-content { background: rgba(0,0,0,0.02); }
-        .table-wrapper { overflow-x: auto; overflow-y: auto; max-height: 70vh; max-width: 100%; -webkit-overflow-scrolling: touch; }
+        .table-wrapper { overflow-x: auto; overflow-y: auto; max-height: calc(70vh * 0.9); max-width: 100%; -webkit-overflow-scrolling: touch; }
         table { width: 100%; min-width: 100%; border-collapse: collapse; }
-        th, td { padding: var(--spacing-md) 4px; text-align: center; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; white-space: nowrap; }
+        th, td { padding: calc(var(--spacing-md) * 0.9) calc(4px * 0.9); text-align: center; border-bottom: 1px solid var(--border-color); font-size: 0.81rem; white-space: nowrap; }
         #ranking-table thead th { position: sticky; top: 0; background: var(--surface-color); z-index: 10; cursor: pointer; }
         #ranking-table thead th:hover { background: var(--primary-color); color: var(--bg-color); }
         th { font-family: 'Poppins', sans-serif; background-color: rgba(0, 0, 0, 0.2); color: var(--primary-variant-color); font-weight: 700; }
         html[data-theme="light"] th { background-color: #F9FAFB; }
         .rank-cell { font-weight: 900; color: var(--accent-gold); text-shadow: 0 0 5px var(--shadow-color); position: relative; line-height: 1.2; }
-        .streak-cell { font-size: 0.7rem; white-space: nowrap; margin-left: var(--spacing-sm); }
+        .streak-cell { font-size: 0.63rem; white-space: nowrap; margin-left: var(--spacing-sm); }
         .streak-win { color: #4CAF50; font-weight: bold; }
         .streak-loss { color: #F44336; font-weight: bold; }
         .streak-none { color: var(--text-secondary-color); }
         #ranking-table th:nth-child(2), #ranking-table td:nth-child(2) { position: sticky; left: 0; background: var(--surface-color); z-index: 1; }
-        input[type="text"] { width: 100%; min-width: 72px; max-width: 108px; padding: calc(var(--spacing-sm) * 0.9); background-color: var(--surface-color); border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; color: var(--text-color); font-family: 'Noto Sans KR', sans-serif; text-align: center; font-size: 0.81rem; }
-        input.ranking-player, input.mmr { min-width: 81px; max-width: 126px; }
+        input[type="text"] { width: 100%; min-width: calc(72px * 0.9); max-width: calc(108px * 0.9); padding: calc(var(--spacing-sm) * 0.9); background-color: var(--surface-color); border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; color: var(--text-color); font-family: 'Noto Sans KR', sans-serif; text-align: center; font-size: 0.81rem; }
+        input.ranking-player, input.mmr { min-width: calc(81px * 0.9); max-width: calc(126px * 0.9); }
         input.readonly { background-color: #252525; color: var(--text-secondary-color); font-weight: bold; }
         html[data-theme="light"] input.readonly { background-color: #f0f0f0; }
         .btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: var(--spacing-lg); }
-        .btn { display: inline-block; padding: var(--spacing-md) var(--spacing-lg); background: linear-gradient(135deg, var(--primary-color), var(--primary-variant-color)); color: #FFFFFF; text-decoration: none; border-radius: var(--radius); cursor: pointer; font-weight: 700; font-size: 1rem; border: none; text-align: center; }
+        .btn { display: inline-block; padding: calc(var(--spacing-md) * 0.9) calc(var(--spacing-lg) * 0.9); background: linear-gradient(135deg, var(--primary-color), var(--primary-variant-color)); color: #FFFFFF; text-decoration: none; border-radius: var(--radius); cursor: pointer; font-weight: 700; font-size: 0.9rem; border: none; text-align: center; }
         html[data-theme="dark"] .btn { color: var(--bg-color); }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .update-btn { width: 100%; margin-top: var(--spacing-lg); padding: 15px; background: linear-gradient(135deg, var(--accent-gold), #F5B02E); color: var(--bg-color); border: none; border-radius: var(--radius); font-size: 1.2rem; font-weight: 900; cursor: pointer; }
+        .update-btn { width: 100%; margin-top: var(--spacing-lg); padding: calc(15px * 0.9); background: linear-gradient(135deg, var(--accent-gold), #F5B02E); color: var(--bg-color); border: none; border-radius: var(--radius); font-size: 1.08rem; font-weight: 900; cursor: pointer; }
         .toast { position: fixed; bottom: var(--spacing-lg); left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #333, #111); color: #fff; padding: var(--spacing-md) 25px; border-radius: 50px; box-shadow: 0 5px 15px var(--shadow-color); opacity: 0; transition: opacity 0.4s, transform 0.4s; font-weight: 700; z-index: 1000; }
         .toast.show { opacity: 1; }
         .championship-star { color: var(--accent-gold); text-shadow: 0 0 5px var(--shadow-color); font-size: 1.1rem; font-weight: 900; }
         .theme-toggle { position: fixed; top: 15px; right: 15px; background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; font-size: 1.5rem; cursor: pointer; color: var(--text-color); display: flex; justify-content: center; align-items: center; z-index: 1000; }
         .ranking-player[value$="*"] { color: var(--primary-variant-color); }
         .ranking-filter { display: flex; gap: var(--spacing-sm); margin-bottom: var(--spacing-md); }
-        .filter-btn { padding: var(--spacing-sm) var(--spacing-md); background: var(--surface-color); border: 1px solid var(--border-color); border-radius: var(--radius); cursor: pointer; color: var(--text-color); font-weight: 700; }
+        .filter-btn { padding: calc(var(--spacing-sm) * 0.9) calc(var(--spacing-md) * 0.9); background: var(--surface-color); border: 1px solid var(--border-color); border-radius: var(--radius); cursor: pointer; color: var(--text-color); font-weight: 700; }
         .filter-btn.active { background: var(--primary-color); color: var(--bg-color); }
-        .toggle-btn { padding: var(--spacing-sm) var(--spacing-md); margin: var(--spacing-sm) auto; display: block; }
+        .toggle-btn { padding: calc(var(--spacing-sm) * 0.9) calc(var(--spacing-md) * 0.9); margin: var(--spacing-sm) auto; display: block; }
         tr.lower-rank { display: none; }
         tr.lower-rank.show { display: table-row; }
         .saved-indicator { color: var(--accent-gold); margin-left: 5px; font-size: 0.9rem; }
-        .saved-info { color: var(--text-secondary-color); margin-left: 5px; font-size: 0.8rem; white-space: normal; word-wrap: break-word; max-width: 200px; display: inline-block; vertical-align: middle; }
+        .saved-info { color: var(--text-secondary-color); margin-left: 5px; font-size: 0.8rem; white-space: nowrap; display: inline-block; vertical-align: middle; }
         .champion-name { color: var(--accent-gold); font-weight: bold; }
-        input[type="checkbox"] { margin: 0 auto; display: block; width: 18px; height: 18px; }
+        input[type="checkbox"] { margin: 0 auto; display: block; width: calc(18px * 0.9); height: calc(18px * 0.9); }
         .popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--surface-color); padding: var(--spacing-lg); border-radius: var(--radius); box-shadow: 0 10px 30px var(--shadow-color); z-index: 2000; color: var(--text-color); border: 1px solid var(--border-color); max-width: 400px; text-align: center; }
         .popup.show { display: block; }
         .close-btn { position: absolute; top: var(--spacing-sm); right: var(--spacing-sm); background: none; border: none; color: var(--text-color); font-size: 1.5rem; cursor: pointer; }
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; }
         .overlay.show { display: block; }
-        .round-save-btn { margin: var(--spacing-md) auto; display: block; padding: 10px 16px; font-size: 1rem; min-width: 120px; }
+        .round-save-btn { margin: calc(var(--spacing-md) * 0.9) auto; display: block; padding: calc(10px * 0.9) calc(16px * 0.9); font-size: 0.9rem; min-width: calc(120px * 0.9); }
         @media screen and (max-width: 600px) {
-            th, td { padding: 5.4px 2.7px; font-size: 0.72rem; }
-            input[type="text"] { min-width: 54px; max-width: 72px; font-size: 0.72rem; padding: 5.4px; }
-            input.ranking-player, input.mmr { min-width: 63px; max-width: 90px; }
-            input.best-partner { min-width: 162px; max-width: 180px; }
+            th, td { padding: calc(5.4px * 0.9) calc(2.7px * 0.9); font-size: 0.648rem; }
+            input[type="text"] { min-width: calc(54px * 0.9); max-width: calc(72px * 0.9); font-size: 0.648rem; padding: calc(5.4px * 0.9); }
+            input.ranking-player, input.mmr { min-width: calc(63px * 0.9); max-width: calc(90px * 0.9); }
+            input.best-partner { min-width: calc(162px * 0.9); max-width: calc(180px * 0.9); }
             .schedule-table td input.player1, .schedule-table td input.player2,
-            .schedule-table td input.player3, .schedule-table td input.player4 { min-width: 54px; max-width: 72px; }
-            .schedule-table td input.score { min-width: 45px; max-width: 63px; }
-            .schedule-table td input[type="checkbox"] { width: 16.2px; height: 16.2px; }
-            .schedule-table th, .schedule-table td { padding: 5.4px 1.8px; }
+            .schedule-table td input.player3, .schedule-table td input.player4 { min-width: calc(54px * 0.9); max-width: calc(72px * 0.9); }
+            .schedule-table td input.score { min-width: calc(45px * 0.9); max-width: calc(63px * 0.9); }
+            .schedule-table td input[type="checkbox"] { width: calc(16.2px * 0.9); height: calc(16.2px * 0.9); }
+            .schedule-table th, .schedule-table td { padding: calc(5.4px * 0.9) calc(1.8px * 0.9); }
             .schedule-table td { border: 0.5px solid var(--border-color); }
-            .btn { padding: 9px 14.4px; font-size: 0.9rem; min-width: 108px; }
-            .round-save-btn { padding: 9px 14.4px; font-size: 0.9rem; min-width: 108px; }
+            .btn { padding: calc(9px * 0.9) calc(14.4px * 0.9); font-size: 0.81rem; min-width: calc(108px * 0.9); }
+            .round-save-btn { padding: calc(9px * 0.9) calc(14.4px * 0.9); font-size: 0.81rem; min-width: calc(108px * 0.9); }
             h1 { font-size: 2.2rem; }
             h2 { font-size: 1.6rem; }
             .saved-info { font-size: 0.72rem; max-width: 120px; }
@@ -140,8 +140,6 @@
                 <button id="how-to-use-btn" class="btn">이용방법</button>
             </div>
             <div id="schedule-container"></div>
-            <button id="save-all" class="btn">모든 데이터 저장</button>
-            <button id="update-ranking" class="btn update-btn">순위 업데이트</button>
         </div>
         <div class="section">
             <h2>시즌 순위표</h2>
@@ -189,6 +187,37 @@
     <div id="overlay" class="overlay"></div>
 
     <script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+
         function applyTheme(theme) {
             const validTheme = theme === 'light' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', validTheme);
@@ -243,9 +272,10 @@
                                 </tbody>
                             </table>
                         </div>
+                        <button class="btn round-save-btn" onclick="saveAllData()">모든 데이터 저장</button>
                     </details>`;
                 }
-                roundsHtml += `<button class="btn round-save-btn" onclick="saveAllData()">모든 데이터 저장</button></div></details>`;
+                roundsHtml += `</div></details>`;
             }
             container.innerHTML = roundsHtml;
             console.log("회차 일정표 렌더링 완료!");
@@ -326,7 +356,6 @@
                 const savedRounds = new Map();
                 const scheduleData = [];
 
-                // 스케줄 데이터 수집 및 로컬스토리지 저장
                 document.querySelectorAll('.schedule-table').forEach(table => {
                     const roundId = parseInt(table.getAttribute('data-round-id'));
                     const rows = table.querySelectorAll('tbody tr');
@@ -360,14 +389,10 @@
                     }
                 });
 
-                // 로컬스토리지에 저장
                 localStorage.setItem('techinSavedRounds', JSON.stringify([...savedRounds]));
-
-                // Firebase에 스케줄 데이터 저장
                 const scheduleDocRef = doc(db, 'league', 'data', 'schedule', 'v1');
                 batch.set(scheduleDocRef, { matches: scheduleData, lastUpdated: serverTimestamp() }, { merge: true });
 
-                // 랭킹 데이터 수집
                 const rankingRows = document.querySelectorAll('#ranking-table tbody tr');
                 const rankingData = Array.from(rankingRows).map(row => {
                     const rawName = row.querySelector('.ranking-player').value.trim();
@@ -393,11 +418,9 @@
                     };
                 }).filter(player => player.name && (player.wins + player.losses > 0));
 
-                // Firebase에 랭킹 데이터 저장
                 const rankingDocRef = doc(db, 'league', 'data', 'rankings', 'v1');
                 batch.set(rankingDocRef, { players: rankingData, lastUpdated: serverTimestamp() }, { merge: true });
 
-                // 백업 저장
                 const backupDocRef = doc(collection(db, 'league', 'backups', 'data'), `backup_${new Date().toISOString().replace(/[:.]/g, '-')}`);
                 batch.set(backupDocRef, {
                     schedule: scheduleData,
@@ -425,10 +448,7 @@
                 return;
             }
             try {
-                // 로컬스토리지에서 데이터 로드
                 const savedRounds = new Map(JSON.parse(localStorage.getItem('techinSavedRounds') || '[]'));
-
-                // Firebase에서 스케줄 데이터 로드
                 const scheduleDoc = await getDoc(doc(db, 'league', 'data', 'schedule', 'v1'));
                 if (scheduleDoc.exists()) {
                     const scheduleData = scheduleDoc.data().matches || [];
@@ -481,7 +501,6 @@
                     showToast("스케줄 데이터가 없습니다!");
                 }
 
-                // Firebase에서 랭킹 데이터 로드
                 const rankingDoc = await getDoc(doc(db, 'league', 'data', 'rankings', 'v1'));
                 if (rankingDoc.exists()) {
                     updateRankingTable(rankingDoc.data().players || []);
