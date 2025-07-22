@@ -80,8 +80,8 @@
         .streak-loss { color: #F44336; font-weight: bold; }
         .streak-none { color: var(--text-secondary-color); }
         #ranking-table th:nth-child(2), #ranking-table td:nth-child(2) { position: sticky; left: 0; background: var(--surface-color); z-index: 1; }
-        input[type="text"] { width: 100%; min-width: 80px; max-width: 120px; padding: var(--spacing-sm); background-color: var(--surface-color); border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; color: var(--text-color); font-family: 'Noto Sans KR', sans-serif; text-align: center; }
-        input.ranking-player, input.mmr { min-width: 90px; max-width: 140px; }
+        input[type="text"] { width: 100%; min-width: 72px; max-width: 108px; padding: calc(var(--spacing-sm) * 0.9); background-color: var(--surface-color); border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; color: var(--text-color); font-family: 'Noto Sans KR', sans-serif; text-align: center; font-size: 0.81rem; }
+        input.ranking-player, input.mmr { min-width: 81px; max-width: 126px; }
         input.readonly { background-color: #252525; color: var(--text-secondary-color); font-weight: bold; }
         html[data-theme="light"] input.readonly { background-color: #f0f0f0; }
         .btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: var(--spacing-lg); }
@@ -101,28 +101,31 @@
         tr.lower-rank { display: none; }
         tr.lower-rank.show { display: table-row; }
         .saved-indicator { color: var(--accent-gold); margin-left: 5px; font-size: 0.9rem; }
-        .saved-info { color: var(--text-secondary-color); margin-left: 5px; font-size: 0.8rem; }
+        .saved-info { color: var(--text-secondary-color); margin-left: 5px; font-size: 0.8rem; white-space: normal; word-wrap: break-word; max-width: 200px; display: inline-block; vertical-align: middle; }
         .champion-name { color: var(--accent-gold); font-weight: bold; }
-        input[type="checkbox"] { margin: 0 auto; display: block; }
+        input[type="checkbox"] { margin: 0 auto; display: block; width: 18px; height: 18px; }
         .popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--surface-color); padding: var(--spacing-lg); border-radius: var(--radius); box-shadow: 0 10px 30px var(--shadow-color); z-index: 2000; color: var(--text-color); border: 1px solid var(--border-color); max-width: 400px; text-align: center; }
         .popup.show { display: block; }
         .close-btn { position: absolute; top: var(--spacing-sm); right: var(--spacing-sm); background: none; border: none; color: var(--text-color); font-size: 1.5rem; cursor: pointer; }
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; }
         .overlay.show { display: block; }
+        .round-save-btn { margin: var(--spacing-md) auto; display: block; padding: 10px 16px; font-size: 1rem; min-width: 120px; }
         @media screen and (max-width: 600px) {
-            th, td { padding: 6px 3px; font-size: 0.8rem; }
-            input[type="text"] { min-width: 60px; max-width: 80px; font-size: 0.8rem; padding: 6px; }
-            input.ranking-player, input.mmr { min-width: 70px; max-width: 100px; }
-            input.best-partner { min-width: 180px; max-width: 200px; }
+            th, td { padding: 5.4px 2.7px; font-size: 0.72rem; }
+            input[type="text"] { min-width: 54px; max-width: 72px; font-size: 0.72rem; padding: 5.4px; }
+            input.ranking-player, input.mmr { min-width: 63px; max-width: 90px; }
+            input.best-partner { min-width: 162px; max-width: 180px; }
             .schedule-table td input.player1, .schedule-table td input.player2,
-            .schedule-table td input.player3, .schedule-table td input.player4 { min-width: 60px; max-width: 80px; }
-            .schedule-table td input.score { min-width: 50px; max-width: 70px; }
-            .schedule-table th, .schedule-table td { padding: 6px 2px; }
+            .schedule-table td input.player3, .schedule-table td input.player4 { min-width: 54px; max-width: 72px; }
+            .schedule-table td input.score { min-width: 45px; max-width: 63px; }
+            .schedule-table td input[type="checkbox"] { width: 16.2px; height: 16.2px; }
+            .schedule-table th, .schedule-table td { padding: 5.4px 1.8px; }
             .schedule-table td { border: 0.5px solid var(--border-color); }
-            .btn { padding: 10px 16px; font-size: 1rem; min-width: 120px; }
+            .btn { padding: 9px 14.4px; font-size: 0.9rem; min-width: 108px; }
+            .round-save-btn { padding: 9px 14.4px; font-size: 0.9rem; min-width: 108px; }
             h1 { font-size: 2.2rem; }
             h2 { font-size: 1.6rem; }
-            .saved-info { font-size: 0.7rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; display: inline-block; vertical-align: middle; }
+            .saved-info { font-size: 0.72rem; max-width: 120px; }
             .popup { max-width: 320px; padding: var(--spacing-md); }
         }
     </style>
@@ -226,7 +229,7 @@
                     const roundData = savedRounds.get(i);
                     const isSaved = !!roundData;
                     const savedDate = roundData?.timestamp ? new Date(roundData.timestamp).toLocaleDateString('ko-KR') : '';
-                    const champions = roundData?.champions?.map(name => `<span class="champion-name">${name}</span>`).join(', ') || '없음';
+                    const champions = roundData?.champions?.length > 0 ? roundData.champions.map(name => `<span class="champion-name">${name}</span>`).join(', ') : '우승없음';
                     roundsHtml += `
                     <details>
                         <summary>${i}회${isSaved ? `<span class="saved-indicator">💾</span><span class="saved-info">[${savedDate}, 우승: ${champions}]</span>` : ''}</summary>
@@ -242,7 +245,7 @@
                         </div>
                     </details>`;
                 }
-                roundsHtml += `</div></details>`;
+                roundsHtml += `<button class="btn round-save-btn" onclick="saveAllData()">모든 데이터 저장</button></div></details>`;
             }
             container.innerHTML = roundsHtml;
             console.log("회차 일정표 렌더링 완료!");
@@ -315,7 +318,9 @@
                 return;
             }
             const saveAllBtn = document.getElementById('save-all');
+            const roundSaveBtns = document.querySelectorAll('.round-save-btn');
             saveAllBtn.disabled = true;
+            roundSaveBtns.forEach(btn => btn.disabled = true);
             try {
                 const batch = writeBatch(db);
                 const savedRounds = new Map();
@@ -403,11 +408,13 @@
                 await batch.commit();
                 console.log("데이터 저장 및 백업 성공!");
                 showToast("데이터 저장 완료!");
+                createScheduleRounds(new Map(JSON.parse(localStorage.getItem('techinSavedRounds') || '[]')));
             } catch (e) {
                 console.error("데이터 저장 실패:", e);
                 showToast(`데이터 저장 실패: ${e.message || '알 수 없는 오류'}`);
             } finally {
                 saveAllBtn.disabled = false;
+                roundSaveBtns.forEach(btn => btn.disabled = false);
             }
         }
 
