@@ -41,59 +41,221 @@
 <html lang="ko" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>2025 호수오픈 대시보드</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025 테친 오픈 대시보드</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
     <style>
-        :root{--bg:#121212;--surface:#1E1E1E;--primary:#4CAF50;--primary-variant:#81C784;--text:#E0E0E0;--text-sec:#A0A0A0;--gold:#FFD700;--border:#333;--shadow:rgba(0,0,0,0.5)}
-        [data-theme="light"]{--bg:#F0F4F8;--surface:#FFF;--primary:#1A3C34;--primary-variant:#2A6B5B;--text:#1F2937;--text-sec:#6B7280;--border:#E5E7EB;--shadow:rgba(0,0,0,0.1)}
-        body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);margin:0;padding:20px}
-        .container{max-width:960px;margin:auto}
-        h1{font-family:'Poppins',sans-serif;font-size:2.8rem;text-align:center;color:transparent;background:linear-gradient(135deg,var(--primary),var(--primary-variant));-webkit-background-clip:text;padding:20px 0;margin-bottom:3rem}
-        .section{background:var(--surface);padding:30px;border-radius:16px;box-shadow:0 10px 30px var(--shadow);margin-bottom:3rem;border:1px solid var(--border)}
-        h2{font-family:'Poppins',sans-serif;font-size:2.2rem;color:var(--primary);margin-bottom:20px;border-bottom:2px solid var(--border)}
-        .charts-container{display:grid;gap:40px}
-        .chart-control{margin-bottom:20px;text-align:center}
-        .chart-control label{font-weight:700;margin-right:10px}
-        .chart-control select{padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);width:200px}
-        .chart-control button{padding:8px 16px;border-radius:6px;border:1px solid var(--border);background:linear-gradient(135deg,var(--primary),var(--primary-variant));color:#FFF;cursor:pointer}
-        .awards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
-        .award-card{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center}
-        [data-theme="light"] .award-card{background:#F9FAFB}
-        .award-icon{font-size:3rem;margin-bottom:10px;color:var(--gold)}
-        .award-title{font-family:'Poppins',sans-serif;font-size:1.3rem;color:var(--primary-variant);margin-bottom:5px}
-        .award-winner{font-size:1.1rem;font-weight:700;color:var(--text)}
-        .award-value{font-size:0.9rem;color:var(--text-sec)}
-        .award-runner-up{font-size:0.9rem;color:var(--text-sec);margin-top:5px}
-        .btn{display:inline-block;padding:12px 28px;margin:10px;background:linear-gradient(135deg,var(--primary),var(--primary-variant));color:#FFF;text-decoration:none;border-radius:8px;font-weight:700}
-        [data-theme="dark"] .btn{color:var(--bg)}
-        .theme-toggle{position:fixed;top:20px;right:20px;background:var(--surface);border:1px solid var(--border);border-radius:50%;width:40px;height:40px;font-size:1.5rem;cursor:pointer;color:var(--text);display:flex;justify-content:center;align-items:center}
-        .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#333,#111);color:#fff;padding:12px 25px;border-radius:50px;box-shadow:0 5px 15px var(--shadow);opacity:0;transition:opacity 0.4s;font-weight:700}
-        [data-theme="light"] .toast{background:linear-gradient(135deg,#f9f9f9,#f1f1f1);color:#333}
-        .toast.show{opacity:1}
-        @media (max-width:640px){
-            body{padding:10px}
-            h1{font-size:2.2rem}
-            h2{font-size:1.8rem}
-            .section{padding:20px}
-            .awards-grid{grid-template-columns:1fr}
-            #mmr-chart-container canvas{height:30vh;min-height:200px;max-height:300px;padding:5px}
-            #mmr-chart-container{padding:0 5px}
-            .charts-container{gap:20px}
+        :root {
+            --bg: #121212;
+            --surface: #1E1E1E;
+            --primary: #4CAF50;
+            --primary-variant: #81C784;
+            --text: #E0E0E0;
+            --text-sec: #A0A0A0;
+            --gold: #FFD700;
+            --border: #333;
+            --shadow: rgba(0, 0, 0, 0.5);
         }
-        @media (max-width:480px){
-            #mmr-chart-container canvas{height:25vh;min-height:180px;max-height:250px}
+        [data-theme="light"] {
+            --bg: #F0F4F8;
+            --surface: #FFF;
+            --primary: #1A3C34;
+            --primary-variant: #2A6B5B;
+            --text: #1F2937;
+            --text-sec: #6B7280;
+            --border: #E5E7EB;
+            --shadow: rgba(0, 0, 0, 0.1);
         }
-        #mmr-chart-container{position:relative;width:100%;max-width:100%;overflow-x:auto}
-        #mmr-chart-container canvas{height:40vh;width:100%;max-height:400px}
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 960px;
+            margin: auto;
+        }
+        h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.8rem;
+            text-align: center;
+            color: transparent;
+            background: linear-gradient(135deg, var(--primary), var(--primary-variant));
+            -webkit-background-clip: text;
+            background-clip: text;
+            padding: 20px 0;
+            margin-bottom: 3rem;
+        }
+        .section {
+            background: var(--surface);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px var(--shadow);
+            margin-bottom: 3rem;
+            border: 1px solid var(--border);
+        }
+        h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+        }
+        .charts-container {
+            display: grid;
+            gap: 40px;
+        }
+        .chart-control {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .chart-control label {
+            font-weight: 700;
+            margin-right: 10px;
+        }
+        .chart-control select {
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            width: 200px;
+        }
+        .chart-control button {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: linear-gradient(135deg, var(--primary), var--primary-variant);
+            color: #FFF;
+            cursor: pointer;
+        }
+        [data-theme="dark"] .chart-control button {
+            color: var(--bg);
+        }
+        .awards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .award-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        [data-theme="light"] .award-card {
+            background: #F9FAFB;
+        }
+        .award-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            color: var(--gold);
+        }
+        .award-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.3rem;
+            color: var(--primary-variant);
+            margin-bottom: 5px;
+        }
+        .award-winner {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+        .award-value {
+            font-size: 0.9rem;
+            color: var(--text-sec);
+        }
+        .award-runner-up {
+            font-size: 0.9rem;
+            color: var(--text-sec);
+            margin-top: 5px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            margin: 10px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-variant));
+            color: #FFF;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 700;
+        }
+        [data-theme="dark"] .btn {
+            color: var(--bg);
+        }
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #333, #111);
+            color: #fff;
+            padding: 12px 25px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px var(--shadow);
+            opacity: 0;
+            transition: opacity 0.4s;
+            font-weight: 700;
+        }
+        [data-theme="light"] .toast {
+            background: linear-gradient(135deg, #f9f9f9, #f1f1f1);
+            color: #333;
+        }
+        .toast.show {
+            opacity: 1;
+        }
+        @media (max-width: 640px) {
+            body { padding: 10px; }
+            h1 { font-size: 2.2rem; }
+            h2 { font-size: 1.8rem; }
+            .section { padding: 20px; }
+            .awards-grid { grid-template-columns: 1fr; }
+            #mmr-chart-container canvas { height: 30vh; min-height: 200px; max-height: 300px; padding: 5px; }
+            #mmr-chart-container { padding: 0 5px; }
+            .charts-container { gap: 20px; }
+        }
+        @media (max-width: 480px) {
+            #mmr-chart-container canvas { height: 25vh; min-height: 180px; max-height: 250px; }
+        }
+        #mmr-chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            overflow-x: auto;
+        }
+        #mmr-chart-container canvas {
+            height: 40vh;
+            width: 100%;
+            max-height: 400px;
+        }
     </style>
 </head>
 <body>
     <button class="theme-toggle" id="theme-toggle">☀️</button>
     <div class="container">
-        <h1>2025 호수오픈 대시보드</h1>
+        <h1>2025 테친 오픈 대시보드</h1>
         <div class="section">
             <h2>통계 차트</h2>
             <div class="charts-container">
@@ -149,21 +311,6 @@
             }
             return gk_fileData[filename] || "";
         }
-    </script>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, collection, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAlcszFYMqJjaJQHajx7K695zoeRS7PsxU",
-            authDomain: "tennis-plan-jibung.firebaseapp.com",
-            projectId: "tennis-plan-jibung",
-            storageBucket: "tennis-plan-jibung.appspot.com",
-            messagingSenderId: "491083537160",
-            appId: "1:491083537160:web:0c2ec53b1285aa1cdc6abd"
-        };
-        const db = getFirestore(initializeApp(firebaseConfig));
 
         let mmrChart, allPlayersData = [], fullMmrHistory = [], matchesData = [], awardsData = {};
 
@@ -175,13 +322,13 @@
         const isMixedTeam = (p1, p2, data) => {
             const player1 = data.find(p => normalizePlayerName(p.name) === normalizePlayerName(p1));
             const player2 = data.find(p => normalizePlayerName(p.name) === normalizePlayerName(p2));
-            return player1 && player2 && ((player1.gender === 'M' && player2.gender === 'F') || (player1.gender === 'F' && player2.gender === 'M'));
+            return player1 && player2 && ((player1.isFemale && !player2.isFemale) || (!player1.isFemale && player2.isFemale));
         };
 
         const isMaleTeam = (p1, p2, data) => {
             const player1 = data.find(p => normalizePlayerName(p.name) === normalizePlayerName(p1));
             const player2 = data.find(p => normalizePlayerName(p.name) === normalizePlayerName(p2));
-            return player1 && player2 && player1.gender === 'M' && player2.gender === 'M';
+            return player1 && player2 && !player1.isFemale && !player2.isFemale;
         };
 
         const calculateMMRChange = (winner, loser, match, data) => {
@@ -201,13 +348,34 @@
             console.log(`디버깅 [${player.name}] - ${award}: ${score},`, ...metrics);
         };
 
+        const loadFromCacheOrDefault = (key, defaultValue) => {
+            try {
+                const cached = localStorage.getItem(key);
+                if (cached && cached !== '[]' && cached !== '{}') {
+                    const { data, timestamp } = JSON.parse(cached);
+                    const cacheAge = (Date.now() - timestamp) / (1000 * 60 * 60);
+                    if (cacheAge < 24) {
+                        console.log(`${key} 캐시 로드, 나이: ${cacheAge.toFixed(2)}시간`);
+                        return data;
+                    } else {
+                        console.log(`${key} 캐시 오래됨, 삭제`);
+                        localStorage.removeItem(key);
+                    }
+                }
+            } catch (e) {
+                console.error(`캐시 파싱 오류 (${key}):`, e);
+            }
+            return defaultValue;
+        };
+
         const setupMmrPlayerSelector = () => {
             const select = document.getElementById('mmr-player-select');
             if (!select) {
                 console.error("MMR 선수 선택 셀렉터 없음");
-                return showToast("MMR 선수 선택 오류!");
+                showToast("MMR 선수 선택 오류!");
+                return;
             }
-            select.innerHTML = allPlayersData.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
+            select.innerHTML = allPlayersData.map(p => `<option value="${p.name}">${p.name}${p.isFemale ? '*' : ''}</option>`).join('');
             select.addEventListener('change', e => {
                 const selectedPlayers = Array.from(e.target.selectedOptions).map(opt => opt.value);
                 console.log("선택된 플레이어:", selectedPlayers);
@@ -217,7 +385,8 @@
             const resetButton = document.getElementById('reset-mmr-chart');
             if (!resetButton) {
                 console.error("MMR 차트 초기화 버튼 없음");
-                return showToast("MMR 차트 초기화 버튼 오류!");
+                showToast("MMR 차트 초기화 버튼 오류!");
+                return;
             }
             resetButton.addEventListener('click', () => {
                 select.selectedIndex = -1;
@@ -235,11 +404,13 @@
             const ctx = document.getElementById('mmr-chart')?.getContext('2d');
             if (!ctx) {
                 console.error("MMR 차트 캔버스 없음");
-                return showToast("그래프 오류!");
+                showToast("그래프 오류!");
+                return;
             }
             if (!selectedPlayers.length) {
                 console.error("선택된 플레이어 없음:", selectedPlayers);
-                return showToast("플레이어 선택 필요!");
+                showToast("플레이어 선택 필요!");
+                return;
             }
 
             const endDate = new Date().getTime();
@@ -356,11 +527,17 @@
             }
         };
 
-        const showToast = msg => {
+        const showToast = (msg, duration = 3000) => {
+            console.log(`showToast 호출: ${msg}, DOM 로드 여부: ${document.readyState}`);
             const toast = document.getElementById('toast');
+            if (!toast) {
+                console.error('Toast 요소 없음');
+                return;
+            }
+            if (toast.classList.contains('show')) return;
             toast.textContent = msg;
             toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
+            setTimeout(() => toast.classList.remove('show'), duration);
         };
 
         const applyTheme = theme => {
@@ -373,157 +550,92 @@
             }
         };
 
-        const cleanInvalidMatches = async () => {
-            const matchesSnap = await getDocs(collection(db, 'league', 'matches', 'data')).catch(e => {
-                console.error(`매치 데이터 조회 실패: ${e.message}`);
-                if (e.name === "BloomFilterError") {
-                    console.error("BloomFilterError 발생, 인덱스 재설정 필요");
-                    showToast("Firestore BloomFilter 오류! Google Cloud Console에서 인덱스 확인하세요.");
-                }
-                return { docs: [] };
-            });
-            const batch = writeBatch(db);
-            let invalidCount = 0;
-            matchesSnap.forEach(doc => {
-                const data = doc.data();
-                const createdAt = new Date(data.createdAt || '1970-01-01');
-                if ((!data.player1 || !data.player2 || !data.winner || !data.loserPlayer1 || !data.loserPlayer2) || createdAt < new Date(new Date().getTime() - 60 * 24 * 60 * 60 * 1000)) {
-                    batch.delete(doc.ref);
-                    invalidCount++;
-                }
-            });
-            if (invalidCount > 0) {
-                await batch.commit().catch(e => {
-                    console.error(`불완전한 매치 삭제 실패: ${e.message}`);
-                });
-            }
-            return invalidCount;
-        };
-
         const loadDashboard = async () => {
             try {
                 console.log("loadDashboard 시작");
-                await cleanInvalidMatches();
 
-                const rankingPromise = getDoc(doc(db, 'league', 'data', 'rankings', 'v1')).catch(e => {
-                    console.error(`랭킹 로드 실패: ${e.message}`);
-                    showToast("랭킹 데이터 로드 실패! Firestore 할당량을 확인하세요.");
-                    return null;
-                });
-                const historyPromise = getDoc(doc(db, 'league', 'data', 'mmrHistory', 'v1')).catch(e => {
-                    console.error(`MMR 히스토리 로드 실패: ${e.message}`);
-                    showToast("MMR 히스토리 데이터 로드 실패! Firestore에서 mmrHistory/v1 확인하세요.");
-                    return null;
-                });
-                const matchesPromise = getDocs(collection(db, 'league', 'matches', 'data')).catch(e => {
-                    console.error(`매치 데이터 로드 실패: ${e.message}`);
-                    if (e.name === "BloomFilterError") {
-                        console.error("BloomFilterError 발생, 인덱스 재설정 필요");
-                        showToast("Firestore BloomFilter 오류! Google Cloud Console에서 인덱스 확인하세요.");
-                    }
-                    return { docs: [] };
-                });
-                const awardsPromise = getDoc(doc(db, 'league', 'data', 'awards', 'v1')).catch(e => {
-                    console.error(`어워드 로드 실패: ${e.message}`);
-                    showToast("어워드 데이터 로드 실패! Firestore 설정을 확인하세요.");
-                    return null;
-                });
-                const schedulePromise = getDoc(doc(db, 'league', 'data', 'schedule', 'v1')).catch(e => {
-                    console.error(`스케줄 데이터 로드 실패: ${e.message}`);
-                    showToast("스케줄 데이터 로드 실패!");
-                    return null;
-                });
-
-                const [rankingSnap, historySnap, matchesSnap, awardsSnap, scheduleSnap] = await Promise.all([
-                    rankingPromise,
-                    historyPromise,
-                    matchesPromise,
-                    awardsPromise,
-                    schedulePromise
-                ]);
-
-                if (!rankingSnap || !rankingSnap.exists() || typeof rankingSnap.data() !== 'object' || !Array.isArray(rankingSnap.data().players)) {
-                    console.error("랭킹 데이터 유효하지 않음:", {
-                        exists: rankingSnap?.exists(),
-                        data: rankingSnap?.data()
-                    });
-                    showToast("랭킹 데이터 없음! Firestore 설정을 확인하세요.");
-                    return;
+                // localStorage에서 데이터 로드
+                const savedRounds = new Map(JSON.parse(localStorage.getItem('savedRounds') || '[]'));
+                allPlayersData = JSON.parse(localStorage.getItem('rankingData') || '[]');
+                if (!allPlayersData.length) {
+                    console.warn("랭킹 데이터 없음, 기본 선수로 초기화");
+                    allPlayersData = [{ name: "기본 선수", mmr: 1500, wins: 0, losses: 0, gameDiff: 0, totalSets: 0, isFemale: false, championships: 0, dominantWins: 0, dominantLosses: 0, closeSets: 0 }];
                 }
-                allPlayersData = rankingSnap.data().players || [];
+                allPlayersData = allPlayersData.map(p => ({
+                    ...p,
+                    gender: femalePlayersList.includes(normalizePlayerName(p.name)) || p.isFemale ? 'F' : 'M'
+                }));
                 console.log("랭킹 데이터:", allPlayersData.length, "명");
 
-                fullMmrHistory = historySnap && historySnap.exists() && Array.isArray(historySnap.data()?.snapshots) ? historySnap.data().snapshots : [];
-                console.log("MMR 히스토리:", fullMmrHistory.length, "스냅샷");
+                // MMR 히스토리 생성
+                fullMmrHistory = [];
+                matchesData = [];
+                const BASE_MMR = 1500;
+                savedRounds.forEach((roundData, roundId) => {
+                    if (!roundData.matches) return;
+                    const timestamp = roundData.timestamp || new Date().toISOString();
+                    const snapshot = { createdAt: timestamp };
+                    allPlayersData.forEach(p => {
+                        snapshot[normalizePlayerName(p.name).replace(/\./g, '_')] = p.mmr || BASE_MMR;
+                    });
 
-                const endDate = new Date().getTime();
-                const startDate = endDate - 60 * 24 * 60 * 60 * 1000; // 60일 전
-                let roundTimestamps = [];
-                if (scheduleSnap && scheduleSnap.exists() && Array.isArray(scheduleSnap.data().matches)) {
-                    roundTimestamps = scheduleSnap.data().matches
-                        .filter(match => match.timestamp && new Date(match.timestamp).getTime() >= startDate && new Date(match.timestamp).getTime() <= endDate)
-                        .map(match => ({
-                            round: match.round,
-                            timestamp: new Date(match.timestamp).getTime()
-                        }))
-                        .sort((a, b) => a.timestamp - b.timestamp)
-                        .filter((v, i, arr) => i === 0 || v.timestamp !== arr[i - 1].timestamp);
-                    console.log("스케줄 타임스탬프:", roundTimestamps);
-                } else {
-                    console.warn("스케줄 데이터 없음, 7일 간격 기본 스냅샷 사용");
-                    showToast("스케줄 데이터 없음, 7일 간격 기본 스냅샷 사용");
-                }
+                    roundData.matches.forEach((match, index) => {
+                        const p1 = match.player1.replace(/\*/g, '');
+                        const p2 = match.player2.replace(/\*/g, '');
+                        const p3 = match.player3.replace(/\*/g, '');
+                        const p4 = match.player4.replace(/\*/g, '');
+                        const score = match.score;
+                        const isFourPoint = match.isFourPoint;
 
-                fullMmrHistory = fullMmrHistory.filter(h => {
-                    const createdAt = new Date(h.createdAt).getTime();
-                    return createdAt >= startDate && createdAt <= endDate;
-                });
+                        if (!p1 || !p2 || !p3 || !p4 || !/^\d+-\d+$/.test(score)) return;
 
-                const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
-                let intervalDates = [];
-                for (let t = startDate; t <= endDate; t += SEVEN_DAYS_MS) {
-                    intervalDates.push(t);
-                }
+                        const [score1, score2] = score.split('-').map(Number);
+                        const gameDiff = Math.abs(score1 - score2);
+                        const winnerPlayer1 = score1 > score2 ? p1 : p3;
+                        const winnerPlayer2 = score1 > score2 ? p2 : p4;
+                        const loserPlayer1 = score1 > score2 ? p3 : p1;
+                        const loserPlayer2 = score1 > score2 ? p4 : p2;
 
-                fullMmrHistory = intervalDates.map(targetDate => {
-                    const nearestSnapshot = fullMmrHistory.reduce((prev, curr) => {
-                        const currTime = new Date(curr.createdAt).getTime();
-                        const prevTime = prev ? new Date(prev.createdAt).getTime() : Infinity;
-                        return Math.abs(currTime - targetDate) < Math.abs(prevTime - targetDate) ? curr : prev;
-                    }, null);
-                    if (!nearestSnapshot) {
-                        const snapshot = { createdAt: new Date(targetDate).toISOString() };
-                        allPlayersData.forEach(p => {
-                            const cleanName = normalizePlayerName(p.name).replace(/\./g, '_');
-                            snapshot[cleanName] = p.mmr || 1500;
+                        matchesData.push({
+                            id: `${roundId}-${index}`,
+                            player1: p1,
+                            player2: p2,
+                            winnerPlayer1,
+                            winnerPlayer2,
+                            loserPlayer1,
+                            loserPlayer2,
+                            gameDiff,
+                            createdAt: timestamp
                         });
-                        console.log(`스냅샷 생성: ${snapshot.createdAt}, 기본 MMR 1500`);
-                        return snapshot;
-                    }
-                    return { ...nearestSnapshot, createdAt: new Date(targetDate).toISOString() };
+
+                        // MMR 계산
+                        const team1MMR = ((allPlayersData.find(p => p.name === p1)?.mmr || BASE_MMR) + (allPlayersData.find(p => p.name === p2)?.mmr || BASE_MMR)) / 2;
+                        const team2MMR = ((allPlayersData.find(p => p.name === p3)?.mmr || BASE_MMR) + (allPlayersData.find(p => p.name === p4)?.mmr || BASE_MMR)) / 2;
+                        const mmrChange = calculateMMRChange(winnerPlayer1, loserPlayer1, { winnerPlayer1, winnerPlayer2, loserPlayer1, loserPlayer2 }, allPlayersData);
+
+                        [p1, p2].forEach(p => {
+                            const player = allPlayersData.find(pl => pl.name === p);
+                            if (player) {
+                                snapshot[normalizePlayerName(p).replace(/\./g, '_')] = (player.mmr || BASE_MMR) + (score1 > score2 ? mmrChange : -mmrChange);
+                            }
+                        });
+                        [p3, p4].forEach(p => {
+                            const player = allPlayersData.find(pl => pl.name === p);
+                            if (player) {
+                                snapshot[normalizePlayerName(p).replace(/\./g, '_')] = (player.mmr || BASE_MMR) + (score2 > score1 ? mmrChange : -mmrChange);
+                            }
+                        });
+                    });
+
+                    fullMmrHistory.push(snapshot);
                 });
 
-                matchesData = matchesSnap && matchesSnap.docs ? matchesSnap.docs.map(doc => {
-                    const data = doc.data();
-                    if (!data.player1 || !data.player2 || !data.winner || !data.loserPlayer1 || !data.loserPlayer2) {
-                        console.warn(`불완전한 매치 데이터 감지: ${doc.id}`, data);
-                        return null;
-                    }
-                    return { ...data, id: doc.id };
-                }).filter(match => match !== null) : [];
+                localStorage.setItem('mmrHistoryCache', JSON.stringify({ data: fullMmrHistory, timestamp: Date.now() }));
+                localStorage.setItem('matchesDataCache', JSON.stringify({ data: matchesData, timestamp: Date.now() }));
+                console.log("MMR 히스토리:", fullMmrHistory.length, "스냅샷");
                 console.log("매치 데이터:", matchesData.length, "경기");
 
-                awardsData = awardsSnap && awardsSnap.exists() && typeof awardsSnap.data() === 'object' ? awardsSnap.data() : {};
-                console.log("어워드 데이터:", Object.keys(awardsData).length, "개");
-
-                allPlayersData = allPlayersData.map(player => ({
-                    ...player,
-                    gender: femalePlayersList.includes(normalizePlayerName(player.name)) || player.isFemale ? 'F' : 'M'
-                }));
-
-                const mixedMatches = matchesData.filter(match => isMixedTeam(match.winnerPlayer1, match.winnerPlayer2, allPlayersData) || isMixedTeam(match.loserPlayer1, match.loserPlayer2, allPlayersData));
-                console.log("혼성 팀 매치:", mixedMatches.length, "경기");
-
+                // 어워드 계산
                 const playedPlayers = allPlayersData.filter(p => totalGames(p) >= 0);
                 if (playedPlayers.length) {
                     const getRank = (p, stat) => [...playedPlayers].sort((a, b) => (b[stat] || 0) - (a[stat] || 0)).findIndex(pl => pl.name === p.name) + 1;
@@ -582,7 +694,11 @@
                             }
                         }
 
-                        const playerHistory = fullMmrHistory.map(h => h[normalizePlayerName(player.name).replace(/\./g, '_')]).filter(mmr => mmr !== undefined);
+                        const playerHistory = fullMmrHistory
+                            .map(h => h[normalizePlayerName(player.name).replace(/\./g, '_')])
+                            .filter(mmr => mmr !== undefined);
+                        console.log(`플레이어 ${player.name} 히스토리:`, playerHistory.length, "레코드", playerHistory.slice(0, 5));
+
                         const initialMMR = playerHistory.length > 0 ? playerHistory[0] : 1500;
                         player.mmrGrowthRate = initialMMR > 0 ? ((player.mmr - initialMMR) / initialMMR * 100) : 0;
                         const mmrGrowthRank = getRank(player, 'mmrGrowthRate');
@@ -600,7 +716,7 @@
                         const winRateImproveRank = getRank(player, 'winRateImprovement');
                         const winRateImproveScore = getPercentileScore(winRateImproveRank) / 10;
 
-                        let improvedScore = (mmrGrowthScore * 0.3) + (winRateImproveScore * 0.3) + (winRateImproveScore * 0.4) * gameCountBonus;
+                        let improvedScore = (mmrGrowthScore * 0.3 + winRateImproveScore * 0.3 + winRateImproveScore * 0.4) * gameCountBonus;
                         improvedScore = improvedScore.toFixed(1);
                         debugLog(player, '발전상 점수', improvedScore, { mmrGrowthScore, winRateImproveScore });
                         if (parseFloat(improvedScore) > maxImprovedScore) {
@@ -663,7 +779,7 @@
                         }
                     });
 
-                    await setDoc(doc(db, 'league', 'data', 'awards', 'v1'), {
+                    awardsData = {
                         mvpMale: { winner: mvpMalePlayer || { name: '-', value: '-' }, runnerUp: mvpMaleRunnerUp || { name: '-', value: '-' } },
                         mvpFemale: { winner: mvpFemalePlayer || { name: '-', value: '-' }, runnerUp: mvpFemaleRunnerUp || { name: '-', value: '-' } },
                         mostImproved: { winner: mostImprovedPlayer || { name: '-', value: '-' }, runnerUp: improvedRunnerUp || { name: '-', value: '-' } },
@@ -671,10 +787,9 @@
                         winKing: { winner: winKingPlayer || { name: '-', value: '-' }, runnerUp: winKingRunnerUp || { name: '-', value: '-' } },
                         playerOfMonth: { winner: playerOfMonthPlayer || { name: '-', value: '-' }, runnerUp: playerOfMonthRunnerUp || { name: '-', value: '-' } },
                         peakMmr: { winner: peakMmrPlayer || { name: '-', value: '-' }, runnerUp: peakMmrRunnerUp || { name: '-', value: '-' } }
-                    }, { merge: true }).catch(e => {
-                        console.error("어워드 저장 실패:", e.message);
-                        showToast("어워드 저장 실패! Firestore 할당량 초과 가능성 있음.");
-                    });
+                    };
+                    localStorage.setItem('awardsCache', JSON.stringify({ data: awardsData, timestamp: Date.now() }));
+                    console.log("어워드 데이터:", Object.keys(awardsData).length, "개");
 
                     const awardDetails = {
                         mvpMale: { title: "시즌 MVP (남)", icon: "👑" },
@@ -689,7 +804,8 @@
                     const grid = document.querySelector('.awards-grid');
                     if (!grid) {
                         console.error("어워드 그리드 요소 없음");
-                        return showToast("어워드 그리드 오류!");
+                        showToast("어워드 그리드 오류!");
+                        return;
                     }
                     grid.innerHTML = '';
                     for (const key in awardDetails) {
@@ -702,75 +818,37 @@
                         const runnerUpValue = data.runnerUp?.value || data.value || '-';
                         const card = document.createElement('div');
                         card.className = 'award-card';
+                        console.log(`award-card HTML 생성: ${key}`);
                         card.innerHTML = `
                             <div class="award-icon">${awardInfo.icon}</div>
                             <div class="award-title">${awardInfo.title}</div>
-                            <div class="award-winner">${winner}</div>
+                            <div class="award-winner">${winner}${winner !== '-' ? (allPlayersData.find(p => p.name === winner)?.isFemale ? '*' : '') : ''}</div>
                             <div class="award-value">${key === 'dominantForce' ? '압도 점수' : key === 'winKing' ? '승차' : key === 'playerOfMonth' ? '월간 점수' : key === 'mostImproved' ? '개선 점수' : key === 'mvpMale' || key === 'mvpFemale' ? 'MVP 점수' : key === 'peakMmr' ? '최고 MMR' : '점수'}: ${winnerValue}</div>
-                            <div class="award-runner-up">2위: ${runnerUp} (${key === 'dominantForce' ? '압도 점수' : key === 'winKing' ? '승차' : key === 'playerOfMonth' ? '월간 점수' : key === 'mostImproved' ? '개선 점수' : key === 'mvpMale' || key === 'mvpFemale' ? 'MVP 점수' : key === 'peakMmr' ? '최고 MMR' : '점수'}: ${runnerUpValue})</div>
+                            <div class="award-runner-up">2위: ${runnerUp}${runnerUp !== '-' ? (allPlayersData.find(p => p.name === runnerUp)?.isFemale ? '*' : '') : ''} (${key === 'dominantForce' ? '압도 점수' : key === 'winKing' ? '승차' : key === 'playerOfMonth' ? '월간 점수' : key === 'mostImproved' ? '개선 점수' : key === 'mvpMale' || key === 'mvpFemale' ? 'MVP 점수' : key === 'peakMmr' ? '최고 MMR' : '점수'}: ${runnerUpValue})</div>
                         `;
                         grid.appendChild(card);
                     }
                 }
 
-                if (allPlayersData.length) {
-                    setupMmrPlayerSelector();
-                    if (fullMmrHistory.length) {
-                        renderMmrChart(fullMmrHistory, allPlayersData.slice(0, 1).map(p => p.name));
-                    } else {
-                        showToast("MMR 히스토리 데이터 없음!");
-                    }
+                setupMmrPlayerSelector();
+                if (fullMmrHistory.length) {
+                    renderMmrChart(fullMmrHistory, allPlayersData.slice(0, 1).map(p => p.name));
                 } else {
-                    console.warn("allPlayersData 없음");
-                    showToast("플레이어 데이터 로드 실패!");
+                    console.warn("MMR 히스토리 데이터 없음, 기본 차트 렌더링");
+                    fullMmrHistory = [{ createdAt: new Date().toISOString(), [normalizePlayerName(allPlayersData[0]?.name || "기본 선수").replace(/\./g, '_')]: 1500 }];
+                    renderMmrChart(fullMmrHistory, [allPlayersData[0]?.name || "기본 선수"]);
                 }
                 console.log("loadDashboard 완료");
             } catch (e) {
                 console.error("loadDashboard 전체 실패:", e.message);
-                if (e.name === "BloomFilterError") {
-                    console.error("BloomFilterError 발생, 인덱스 재설정 필요");
-                    showToast("Firestore BloomFilter 오류! Google Cloud Console에서 인덱스 확인하세요.");
-                } else if (e.message.includes("Quota exceeded")) {
-                    showToast("Firestore 할당량 초과! Google Cloud Console에서 사용량 및 인덱스 설정을 확인하세요.");
-                } else {
-                    showToast("데이터 로드 실패! Firestore에서 mmrHistory/v1 및 matches/data 확인하세요.");
-                }
+                showToast("데이터 로드 실패! 네트워크 및 데이터 확인하세요.");
             }
         };
 
         document.addEventListener('DOMContentLoaded', () => {
+            console.log("DOMContentLoaded 이벤트 발생, DOM 로드 완료");
             const savedTheme = localStorage.getItem('theme') || 'dark';
             applyTheme(savedTheme);
-            const cachedMatches = localStorage.getItem('matchesDataCache');
-            const cachedHistory = localStorage.getItem('mmrHistoryCache');
-            if (cachedMatches && cachedMatches !== '[]') {
-                const { data, timestamp } = JSON.parse(cachedMatches);
-                const cacheAge = (Date.now() - timestamp) / (1000 * 60 * 60);
-                if (cacheAge < 24) {
-                    matchesData = data.filter(match => match && match.player1 && match.player2 && match.winner && match.loserPlayer1 && match.loserPlayer2 && new Date(match.createdAt || '1970-01-01') >= new Date(new Date().getTime() - 60 * 24 * 60 * 60 * 1000));
-                    console.log("로컬 캐시에서 매치 데이터 로드:", matchesData.length, "경기, 캐시 나이:", cacheAge.toFixed(2), "시간");
-                } else {
-                    console.log("매치 데이터 캐시 오래됨, Firestore에서 로드 시도");
-                    localStorage.removeItem('matchesDataCache');
-                }
-            } else {
-                console.log("매치 데이터 캐시 비었음, Firestore에서 로드 시도");
-                localStorage.removeItem('matchesDataCache');
-            }
-            if (cachedHistory && cachedHistory !== '[]') {
-                const { data, timestamp } = JSON.parse(cachedHistory);
-                const cacheAge = (Date.now() - timestamp) / (1000 * 60 * 60);
-                if (cacheAge < 24) {
-                    fullMmrHistory = data;
-                    console.log("로컬 캐시에서 MMR 히스토리 로드:", fullMmrHistory.length, "스냅샷, 캐시 나이:", cacheAge.toFixed(2), "시간");
-                } else {
-                    console.log("MMR 히스토리 캐시 오래됨, Firestore에서 로드 시도");
-                    localStorage.removeItem('mmrHistoryCache');
-                }
-            } else {
-                console.log("MMR 히스토리 캐시 비었음, Firestore에서 로드 시도");
-                localStorage.removeItem('mmrHistoryCache');
-            }
             loadDashboard();
             document.getElementById('theme-toggle').addEventListener('click', () => applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
         });
