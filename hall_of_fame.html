@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>시즌별 기록</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Poppins:wght@600;700&display=stylesheet" rel="stylesheet">
+    <style>
+        :root {
+            /* US Open Dark Theme (Blue) */
+            --bg-color: #121212;
+            --surface-color: #1E1E1E;
+            --primary-color: #3399FF; /* Brighter Blue for Dark Mode */
+            --primary-variant-color: #66B2FF;
+            --secondary-color: #FFFFFF;
+            --text-color: #E0E0E0;
+            --text-secondary-color: #A0A0A0;
+            --accent-gold: #FFC107; /* Tennis ball yellow */
+            --border-color: #333333;
+            --shadow-color: rgba(0, 0, 0, 0.5);
+            --spacing-sm: 8px;
+            --spacing-md: 12px;
+            --spacing-lg: 20px;
+            --radius: 8px;
+        }
+        html[data-theme="light"] {
+            /* US Open Light Theme (Blue) */
+            --bg-color: #F0F4F8;
+            --surface-color: #FFFFFF;
+            --primary-color: #0055A5; /* Official US Open Blue */
+            --primary-variant-color: #007BFF;
+            --text-color: #1F2937;
+            --text-secondary-color: #6B7280;
+            --border-color: #E5E7EB;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: var(--spacing-md); transition: background-color 0.3s, color 0.3s; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { font-family: 'Poppins', sans-serif; font-size: 2.8rem; font-weight: 900; text-align: center; color: var(--secondary-color); background: linear-gradient(135deg, var(--primary-color), var(--primary-variant-color)); -webkit-background-clip: text; background-clip: text; color: transparent; padding-top: var(--spacing-lg); margin-bottom: 2rem; letter-spacing: -2px; text-shadow: 2px 2px 10px var(--shadow-color); }
+        .section { background: var(--surface-color); padding: var(--spacing-lg); border-radius: var(--radius); box-shadow: 0 10px 30px var(--shadow-color); margin-bottom: 2.5rem; border: 1px solid var(--border-color); }
+        h2 { font-family: 'Poppins', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--primary-color); margin-bottom: var(--spacing-sm); padding-bottom: var(--spacing-sm); border-bottom: 2px solid var(--border-color); }
+        .btn { display: inline-block; padding: var(--spacing-md) var(--spacing-lg); background: linear-gradient(135deg, var(--primary-color), var(--primary-variant-color)); color: #FFFFFF; text-decoration: none; border-radius: var(--radius); cursor: pointer; font-weight: 700; font-size: 1rem; border: none; text-align: center; }
+        html[data-theme="dark"] .btn { color: var(--bg-color); }
+        .theme-toggle { position: fixed; top: 15px; right: 15px; background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; font-size: 1.5rem; cursor: pointer; color: var(--text-color); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .toast { position: fixed; bottom: var(--spacing-lg); left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #333, #111); color: #fff; padding: var(--spacing-md) 25px; border-radius: 50px; box-shadow: 0 5px 15px var(--shadow-color); opacity: 0; transition: opacity 0.4s, transform 0.4s; font-weight: 700; z-index: 2001; }
+        .toast.show { opacity: 1; }
+        
+        .season-records {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+        }
+        .season-card {
+            background: rgba(0,0,0,0.1);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: var(--spacing-lg);
+        }
+        html[data-theme="light"] .season-card {
+             background: rgba(0,0,0,0.02);
+        }
+        .season-card h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            color: var(--primary-variant-color);
+            margin-top: 0;
+            margin-bottom: var(--spacing-md);
+        }
+        .award-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .award-list li {
+            display: flex;
+            align-items: center;
+            font-size: 1.1rem;
+            margin-bottom: var(--spacing-md);
+        }
+        .award-list .icon {
+            font-size: 1.5rem;
+            margin-right: var(--spacing-sm);
+        }
+        .award-list .name {
+            font-weight: 700;
+            color: var(--text-color);
+        }
+        .award-list .value {
+            font-size: 0.9rem;
+            color: var(--text-secondary-color);
+            margin-left: auto;
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" id="theme-toggle">☀️</button>
+    <div class="container">
+        <h1>시즌별 기록</h1>
+        
+        <div class="section">
+            <div id="records-container" class="season-records">
+                </div>
+            <a href="index.html" class="btn" style="margin-top: var(--spacing-lg);">메인으로 돌아가기</a>
+        </div>
+    </div>
+    <div id="toast" class="toast"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+        // tetus-c91f0 설정
+        const firebaseConfig = {
+            apiKey: "AIzaSyCj33GM2pM2-Vz1Fmh6eyMwQkWjByA7xdw",
+            authDomain: "tetus-c91f0.firebaseapp.com",
+            projectId: "tetus-c91f0",
+            storageBucket: "tetus-c91f0.firebasestorage.app",
+            messagingSenderId: "877913022272",
+            appId: "1:877913022272:web:ec685d63235c87c3c1e4a5",
+            measurementId: "G-7FJY9EKPV5"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // 표시할 시즌 목록
+        const SEASONS_TO_DISPLAY = [
+            { id: 'v2', name: '2025-26시즌' },
+            { id: 'v1', name: '2025 여름시즌' } 
+        ];
+
+        const showToast = (message) => {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        };
+
+        const applyTheme = (theme) => {
+            const validTheme = theme === 'light' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', validTheme);
+            localStorage.setItem('theme', validTheme);
+            document.getElementById('theme-toggle').textContent = validTheme === 'dark' ? '☀️' : '🌙';
+        };
+
+        async function loadSeasonRecords() {
+            const container = document.getElementById('records-container');
+            if (!container) return;
+
+            container.innerHTML = '<h2>데이터 로딩 중...</h2>';
+            let contentHtml = '';
+
+            for (const season of SEASONS_TO_DISPLAY) {
+                try {
+                    const rankingDoc = await getDoc(doc(db, 'league', 'data', 'rankings', season.id));
+                    
+                    if (!rankingDoc.exists()) {
+                        console.warn(`${season.name} (${season.id}) 랭킹 데이터를 찾을 수 없습니다.`);
+                        continue;
+                    }
+
+                    const players = rankingDoc.data().players || [];
+                    if (players.length === 0) {
+                        console.warn(`${season.name} (${season.id}) 랭킹에 플레이어가 없습니다.`);
+                        continue;
+                    }
+
+                    // 1, 2, 3위 찾기 (이미 MMR로 정렬되어 있다고 가정)
+                    const rank1 = players[0] ? { name: players[0].name, mmr: Math.round(players[0].mmr) } : { name: '-', mmr: '-' };
+                    const rank2 = players[1] ? { name: players[1].name, mmr: Math.round(players[1].mmr) } : { name: '-', mmr: '-' };
+                    const rank3 = players[2] ? { name: players[2].name, mmr: Math.round(players[2].mmr) } : { name: '-', mmr: '-' };
+
+                    // 우승 횟수 1위 찾기
+                    let maxChampionships = -1;
+                    let champWinner = { name: '-', value: 0 };
+                    players.forEach(p => {
+                        const champs = parseInt(p.championships || 0);
+                        if (champs > maxChampionships) {
+                            maxChampionships = champs;
+                            champWinner = { name: p.name, value: champs };
+                        }
+                    });
+
+                    contentHtml += `
+                        <div class="season-card">
+                            <h3>${season.name}</h3>
+                            <ul class="award-list">
+                                <li>
+                                    <span class="icon">🥇</span>
+                                    <span class="name">${rank1.name}</span>
+                                    <span class="value">MMR ${rank1.mmr}</span>
+                                </li>
+                                <li>
+                                    <span class="icon">🥈</span>
+                                    <span class="name">${rank2.name}</span>
+                                    <span class="value">MMR ${rank2.mmr}</span>
+                                </li>
+                                <li>
+                                    <span class="icon">🥉</span>
+                                    <span class="name">${rank3.name}</span>
+                                    <span class="value">MMR ${rank3.mmr}</span>
+                                </li>
+                                <li>
+                                    <span class="icon">🏆</span>
+                                    <span class="name">${champWinner.name}</span>
+                                    <span class="value">${champWinner.value}회 우승</span>
+                                </li>
+                            </ul>
+                        </div>
+                    `;
+
+                } catch (error) {
+                    console.error(`${season.name} 로드 실패:`, error);
+                    showToast(`${season.name} 기록 로드 중 오류 발생`);
+                }
+            }
+
+            container.innerHTML = contentHtml || '<h2>표시할 시즌 기록이 없습니다.</h2>';
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            applyTheme(savedTheme);
+            document.getElementById('theme-toggle').addEventListener('click', () => {
+                applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+            });
+
+            try {
+                await signInAnonymously(auth);
+                console.log("Signed in anonymously.");
+                loadSeasonRecords();
+            } catch (error) {
+                console.error("Anonymous sign-in failed:", error);
+                showToast("DB 인증에 실패했습니다.");
+            }
+        });
+    </script>
+</body>
+</html>
