@@ -133,7 +133,55 @@
             .saved-info { font-size: 0.65rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; display: inline-block; vertical-align: middle; }
             .popup { max-width: 90vw; width: auto; padding: var(--spacing-md); }
             .ranking-controls { flex-direction: column; align-items: stretch; }
+
+            /* --- *** 선수관리 팝업 너비 수정 *** --- */
+            #player-management-popup {
+                width: 95vw; /* auto 대신 95vw */
+                box-sizing: border-box; /* 패딩 포함해서 95vw */
+            }
+            /* --- --- */
         }
+
+        /* --- 자동완성 바 스타일 --- */
+        .autocomplete-bar {
+            display: none; /* 평소엔 숨김 */
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--surface-color);
+            border-top: 1px solid var(--border-color);
+            box-shadow: 0 -5px 15px var(--shadow-color);
+            padding: 10px;
+            box-sizing: border-box;
+            white-space: nowrap;
+            overflow-x: auto; /* 이름 많으면 스크롤 */
+            z-index: 1500; /* 팝업보단 낮고, 페이지보단 높게 */
+        }
+        .autocomplete-bar.show {
+            display: block;
+        }
+        .autocomplete-bar button {
+            display: inline-block;
+            padding: 8px 12px;
+            margin-right: 8px;
+            background-color: var(--primary-color);
+            color: var(--bg-color);
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        html[data-theme="light"] .autocomplete-bar button {
+             color: var(--secondary-color); /* 라이트모드에선 흰색 */
+        }
+        .autocomplete-bar span {
+            color: var(--text-secondary-color);
+            padding: 8px;
+            font-size: 0.9rem;
+        }
+        /* --- --- */
     </style>
 </head>
 <body>
@@ -162,8 +210,9 @@
                     <button class="filter-btn" data-filter="male">남자 순위</button>
                     <button class="filter-btn" data-filter="female">여자 순위</button>
                 </div>
-                <input type="search" id="ranking-search" list="player-name-list" placeholder="선수 이름 검색...">
-                <datalist id="player-name-list"></datalist>
+                <!-- *** datalist 삭제 *** -->
+                <input type="search" id="ranking-search" placeholder="선수 이름 검색...">
+                <!-- <datalist id="player-name-list"></datalist> -->
                 <button id="manage-players-btn" class="btn secondary">선수 관리</button>
             </div>
             <div class="table-wrapper">
@@ -228,7 +277,7 @@
         <button id="backup-password-submit-btn" class="btn">확인</button>
     </div>
 
-    <!-- *** 선수 이름 변경 팝업 추가 *** -->
+    <!-- 선수 이름 변경 팝업 -->
     <div id="rename-player-popup" class="popup" style="width: 400px;">
         <button class="close-btn" data-target="rename-player-popup">×</button>
         <h3>선수 이름 변경</h3>
@@ -240,6 +289,11 @@
         <div class="popup-buttons">
             <button id="confirm-rename-btn" class="btn danger">변경 실행</button>
         </div>
+    </div>
+
+    <!-- *** 자동완성 제안 바 *** -->
+    <div id="autocomplete-bar" class="autocomplete-bar">
+        <!-- JS로 채워짐 -->
     </div>
 
 
@@ -265,7 +319,6 @@
         
         // --- 시즌 설정 ---
         const BASE_COLLECTION = 'league';
-        // SEASONS 및 PREVIOUS_SEASON_VERSION 제거됨
         const CURRENT_SEASON_VERSION = 'v2'; // '2025-26 시즌'을 v2로 가정
         // --- /시즌 설정 ---
 
@@ -275,6 +328,9 @@
         let activeView = 'current'; // 'current'로 고정
         let scheduleUnsubscribe = null;
         let rankingUnsubscribe = null;
+        
+        // *** 자동완성을 위한 현재 활성 input ***
+        let currentActiveInput = null; 
 
         const showToast = (message) => {
             const toast = document.getElementById('toast');
@@ -292,8 +348,42 @@
         
         const updateRankingTitleAndCountdown = (view) => {
             const titleEl = document.getElementById('ranking-main-title');
-            // 탭이 제거되었으므로, 현재 시즌 제목으로 고정합니다.
             titleEl.innerHTML = '2025-26시즌 순위표';
+        };
+
+        // *** 새 자동완성 제안 업데이트 함수 ***
+        const updateAutocompleteSuggestions = (filterText) => {
+            const bar = document.getElementById('autocomplete-bar');
+            if (!bar) return;
+
+            bar.innerHTML = ''; // 일단 비움
+            const filter = filterText.toLowerCase().trim();
+            
+            if (!allPlayersData || allPlayersData.length === 0) {
+                bar.innerHTML = '<span>선수 데이터 없음</span>';
+                return;
+            }
+
+            // 필터링
+            let suggestions = allPlayersData;
+            if (filter) {
+                // 초성 검색 또는 이름 포함
+                suggestions = allPlayersData.filter(p => p.name.toLowerCase().includes(filter));
+            }
+            
+            // 상위 15개만 표시
+            suggestions.slice(0, 15).forEach(player => {
+                const btn = document.createElement('button');
+                btn.textContent = player.name;
+                btn.dataset.name = player.name; // data 속성에 저장
+                bar.appendChild(btn);
+            });
+
+            if (suggestions.length === 0 && filter) {
+                bar.innerHTML = '<span>일치하는 선수 없음</span>';
+            } else if (suggestions.length === 0 && !filter) {
+                bar.innerHTML = '<span>선수 이름을 입력하세요...</span>';
+            }
         };
 
 
@@ -317,17 +407,17 @@
                         <summary>${i}회${isSaved ? `<span class="saved-indicator">💾</span><span class="saved-info">[${savedDate}, 우승: ${champions}]</span>` : ''}</summary>
                         <div class="table-wrapper">
                             <table class="schedule-table" data-round-id="${i}">
-                                <!-- *** 모바일 UI 수정: 헤더 변경 *** -->
+                                <!-- 모바일 UI 수정: 헤더 변경 -->
                                 <thead><tr><th>P1</th><th>P2</th><th>vs</th><th>P3</th><th>P4</th><th>Score</th><th>4점</th></tr></thead>
                                 <tbody>
                                     ${Array(3).fill().map(() => `
                                     <tr>
-                                        <!-- 자동완성 기능 (list="player-name-list")은 이전 요청에서 이미 적용됨 -->
-                                        <td><input type="text" placeholder="이름" class="player1 player-input" list="player-name-list"></td>
-                                        <td><input type="text" placeholder="이름" class="player2 player-input" list="player-name-list"></td>
+                                        <!-- *** datalist 속성 삭제 *** -->
+                                        <td><input type="text" placeholder="이름" class="player1 player-input"></td>
+                                        <td><input type="text" placeholder="이름" class="player2 player-input"></td>
                                         <td>vs</td>
-                                        <td><input type="text" placeholder="이름" class="player3 player-input" list="player-name-list"></td>
-                                        <td><input type="text" placeholder="이름" class="player4 player-input" list="player-name-list"></td>
+                                        <td><input type="text" placeholder="이름" class="player3 player-input"></td>
+                                        <td><input type="text" placeholder="이름" class="player4 player-input"></td>
                                         <td><input type="text" placeholder="6-4" class="score score-input"></td>
                                         <td><input type="checkbox" class="is-four-point"></td>
                                     </tr>`).join('')}
@@ -361,7 +451,6 @@
                 const existingTimestamps = new Map();
                 if (scheduleDoc.exists()) {
                     (scheduleDoc.data().matches || []).forEach(match => {
-                        // 회차의 첫 번째 경기 타임스탬프를 저장
                         if (!existingTimestamps.has(match.round)) {
                             existingTimestamps.set(match.round, match.timestamp);
                         }
@@ -372,7 +461,6 @@
                 const scheduleData = [];
                 document.querySelectorAll('.schedule-table').forEach(table => {
                     const roundId = parseInt(table.getAttribute('data-round-id'));
-                    // 해당 회차의 기존 타임스탬프를 가져오거나, 없으면 새로 생성
                     const roundTimestamp = existingTimestamps.get(roundId) || new Date().toISOString();
                     
                     table.querySelectorAll('tbody tr').forEach(row => {
@@ -385,7 +473,7 @@
                                 players, 
                                 score, 
                                 isFourPoint,
-                                timestamp: roundTimestamp // 회차 내 모든 경기가 동일한 타임스탬프를 갖도록 수정
+                                timestamp: roundTimestamp
                             });
                         }
                     });
@@ -436,10 +524,9 @@
                 potwContainer.innerHTML = '';
             }
             
-            const playerList = document.getElementById('player-name-list');
-            if (playerList) {
-                playerList.innerHTML = allPlayersData.map(p => `<option value="${p.name}"></option>`).join('');
-            }
+            // *** datalist 채우는 코드 삭제 ***
+            // const playerList = document.getElementById('player-name-list');
+            // if (playerList) { ... }
 
             let genderFilteredData;
             if (currentFilter === 'male') {
@@ -761,7 +848,6 @@
             });
         };
 
-        // *** 선수 이름 변경 로직 ***
         const handlePlayerRename = async () => {
             const btn = document.getElementById('confirm-rename-btn');
             const oldName = btn.dataset.oldName;
@@ -772,7 +858,6 @@
                 return;
             }
             
-            // 새 이름이 (삭제되지 않은) 다른 선수 이름과 겹치는지 확인
             if (allPlayersData.some(p => p.name === newName)) {
                 showToast("이미 존재하는 이름입니다.");
                 return;
@@ -793,13 +878,11 @@
                 const allMatches = scheduleDoc.data().matches || [];
                 let matchesModified = false;
 
-                // 1. 경기 일정(Schedule) 문서 업데이트
                 const updatedMatches = allMatches.map(match => {
                     const updatedPlayers = match.players.map(pName => {
                         const cleanPName = pName.replace(/\*/g, '');
                         if (cleanPName === oldName) {
                             matchesModified = true;
-                            // 성별(*) 유지
                             return pName.includes('*') ? `${newName}*` : newName;
                         }
                         return pName;
@@ -813,15 +896,10 @@
                     batch.set(scheduleDocRef, { matches: updatedMatches }, { merge: true });
                 }
                 
-                // 2. 백업(backups) 문서도 업데이트 (선택사항이지만, 하는게 좋음)
-                // -> 복잡도 증가로 일단 생략. schedule만 수정 후 재계산.
-
-                // 3. 수정한 schedule을 DB에 씀
                 await batch.commit();
 
                 showToast("2단계: 랭킹(Rankings) 재계산 중...");
                 
-                // 4. 수정된 schedule 기준으로 랭킹 전체 재계산
                 await updateRanking(); 
                 
                 showToast("모든 작업 완료!");
@@ -889,7 +967,6 @@
                     <span>${player.name}</span>
                     <div class="controls">
                         <label><input type="checkbox" class="is-female-checkbox" ${player.isFemale ? 'checked' : ''}> 여성</label>
-                        <!-- *** 이름변경 버튼 추가 *** -->
                         <button class="btn secondary rename-player-btn" style="padding: 5px 8px; font-size: 0.8rem;">이름변경</button>
                         <button class="btn danger delete-player-btn" style="padding: 5px 8px; font-size: 0.8rem;">삭제</button>
                     </div>
@@ -897,18 +974,14 @@
                 listContainer.appendChild(item);
             });
 
-            // *** 이벤트 리스너: 삭제/이름변경 (이벤트 위임) ***
-            // 기존 .delete-player-btn 루프 삭제
             listContainer.addEventListener('click', (e) => {
                 const item = e.target.closest('.player-management-item');
                 if (!item) return;
                 const playerName = item.dataset.playerName;
 
                 if (e.target.classList.contains('delete-player-btn')) {
-                    // UI에서만 제거 (저장 시 반영)
                     item.remove();
                 } else if (e.target.classList.contains('rename-player-btn')) {
-                    // 이름 변경 팝업 열기
                     document.getElementById('rename-old-name').textContent = playerName;
                     document.getElementById('rename-new-name').value = '';
                     document.getElementById('confirm-rename-btn').dataset.oldName = playerName;
@@ -1078,11 +1151,29 @@
         };
 
         const setupInputListeners = () => {
-            // *** 4점 자동체크 리스너 (이벤트 위임) ***
-            document.getElementById('schedule-container').addEventListener('input', (e) => {
+            const scheduleContainer = document.getElementById('schedule-container');
+            const autocompleteBar = document.getElementById('autocomplete-bar');
+
+            // *** 새 자동완성 로직 ***
+            scheduleContainer.addEventListener('focusin', (e) => {
+                if (e.target.classList.contains('player-input')) {
+                    currentActiveInput = e.target;
+                    autocompleteBar.classList.add('show');
+                    updateAutocompleteSuggestions(e.target.value); // 현재 값으로 바로 필터링
+                }
+            });
+
+            scheduleContainer.addEventListener('input', (e) => {
+                if (e.target.classList.contains('player-input')) {
+                    if (currentActiveInput !== e.target) {
+                        currentActiveInput = e.target; // (혹시 모르니) 활성 입력칸 동기화
+                    }
+                    updateAutocompleteSuggestions(e.target.value);
+                }
+                
+                // 4점 자동체크
                 if (e.target.classList.contains('score-input')) {
                     const score = e.target.value.trim();
-                    // 4-0, 4-1, 4-2, 4-3, 0-4, 1-4, 2-4, 3-4 스코어 감지
                     const scorePattern = /^4-\d$|^\d-4$/; 
                     const tr = e.target.closest('tr');
                     if (tr) {
@@ -1090,11 +1181,28 @@
                         if (checkbox && scorePattern.test(score)) {
                             checkbox.checked = true;
                         }
-                        // 참고: 6-x 스코어를 입력해도 체크를 풀지는 않음. 편의기능일 뿐.
                     }
                 }
             });
 
+            scheduleContainer.addEventListener('focusout', (e) => {
+                if (e.target.classList.contains('player-input')) {
+                    // 딜레이를 줘서, 만약 사용자가 '제안 버튼'을 클릭했다면
+                    // 클릭 이벤트가 먼저 처리될 시간을 줌.
+                    setTimeout(() => {
+                        autocompleteBar.classList.remove('show');
+                    }, 200); // 0.2초 딜레이
+                }
+            });
+
+            autocompleteBar.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON' && currentActiveInput) {
+                    currentActiveInput.value = e.target.dataset.name;
+                    // (focusout이 딜레이 후 바를 숨길 것임)
+                }
+            });
+            
+            // --- 기존 리스너 ---
             document.addEventListener('click', function(e) {
                 if (e.target.classList.contains('save-all-btn')) {
                     e.preventDefault();
@@ -1187,8 +1295,6 @@
 
 
             document.getElementById('save-player-changes-btn').addEventListener('click', savePlayerChanges);
-
-            // *** 이름 변경 팝업 확인 버튼 리스너 ***
             document.getElementById('confirm-rename-btn').addEventListener('click', handlePlayerRename);
         };
 
