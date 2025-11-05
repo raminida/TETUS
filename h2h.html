@@ -170,6 +170,7 @@
             <h1 id="player-name" class="player-name">선수 로딩 중...</h1>
         </div>
         
+        <!-- 요청대로 탭 수정 (2025/26시즌, 통산 기록) -->
         <div class="season-tabs">
             <button class="tab-btn active" data-view="current">2025/26시즌</button>
             <button class="tab-btn" data-view="alltime">통산 기록</button>
@@ -233,13 +234,14 @@
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
+        // *** 요청대로 "Tetus" (tetus-league-v2) Firebase config로 변경 ***
         const firebaseConfig = {
-            apiKey: "AIzaSyAlcszFYMqJjaJQHajx7K695zoeRS7PsxU",
-            authDomain: "tennis-plan-jibung.firebaseapp.com",
-            projectId: "tennis-plan-jibung",
-            storageBucket: "tennis-plan-jibung.appspot.com",
-            messagingSenderId: "491083537160",
-            appId: "1:491083537160:web:0c2ec53b1285aa1cdc6abd"
+            apiKey: "AIzaSyD-S_5P1nZtCpY_vG-a8sX-3Fk-mCc4e-U",
+            authDomain: "tetus-league-v2.firebaseapp.com",
+            projectId: "tetus-league-v2",
+            storageBucket: "tetus-league-v2.appspot.com",
+            messagingSenderId: "538860344477",
+            appId: "1:538860344477:web:8e7b97367b84f0c6e5f8f6"
         };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
@@ -247,9 +249,8 @@
 
         const BASE_COLLECTION = 'league';
         const CURRENT_SEASON_VERSION = 'v2';
-        const PREVIOUS_SEASON_VERSION = 'v1'; // '통산 기록'을 위해 v1(여름시즌) 데이터 필요
+        const PREVIOUS_SEASON_VERSION = 'v1'; 
         
-        // 탭 전환을 위해 activeView 다시 사용
         let activeView = 'current';
 
         const getParams = () => {
@@ -491,12 +492,10 @@
             let rankingDocs = [];
             let scheduleDocs = [];
 
-            // activeView에 따라 로드할 데이터 분기
             if (activeView === 'current') {
                 rankingDocs.push(getDoc(doc(db, BASE_COLLECTION, 'data', 'rankings', CURRENT_SEASON_VERSION)));
                 scheduleDocs.push(getDoc(doc(db, BASE_COLLECTION, 'data', 'schedule', CURRENT_SEASON_VERSION)));
             } else { // alltime (통산 기록)
-                // v1(여름)과 v2(겨울) 데이터를 모두 합산
                 rankingDocs.push(getDoc(doc(db, BASE_COLLECTION, 'data', 'rankings', PREVIOUS_SEASON_VERSION)));
                 rankingDocs.push(getDoc(doc(db, BASE_COLLECTION, 'data', 'rankings', CURRENT_SEASON_VERSION)));
                 scheduleDocs.push(getDoc(doc(db, BASE_COLLECTION, 'data', 'schedule', PREVIOUS_SEASON_VERSION)));
@@ -513,14 +512,12 @@
                 let playerData;
                 
                 if (activeView === 'alltime') {
-                    // 통산 기록 탭: 데이터 합산 로직
                     const cumulativeStats = {};
                     allMatches.forEach(match => {
                         if (!match.players || match.players.length < 4 || !match.score.includes('-')) return;
                         match.players.forEach((p, i) => {
                             const name = p.replace(/\*/g, '');
                             if (!cumulativeStats[name]) {
-                                // v2(current) 플레이어 목록에서 isFemale 정보 가져오기 (없으면 v1에서)
                                 const pData = allPlayers.find(pl => pl.name === name);
                                 cumulativeStats[name] = { name, wins: 0, losses: 0, championships: 0, isFemale: pData ? pData.isFemale : p.includes('*') };
                             }
@@ -531,47 +528,39 @@
                         
                         winners.forEach(w => { if(cumulativeStats[w]) cumulativeStats[w].wins++ });
                         losers.forEach(l => { if(cumulativeStats[l]) cumulativeStats[l].losses++ });
-                        
-                        // TODO: 우승(championships) 합산 로직 (현재 랭킹 스냅샷에만 있음)
                     });
                     
-                    // v2(current)의 우승/파트너/MMR 정보 우선 사용
-                    const currentPlayerData = allPlayers.find(p => p.name === mainPlayerName && p.mmr); // v2데이터 찾기
+                    const currentPlayerData = allPlayers.find(p => p.name === mainPlayerName && p.mmr); 
                     
                     playerData = cumulativeStats[mainPlayerName];
                     
                     if (playerData) {
                         const total = playerData.wins + playerData.losses;
-                        playerData.winRate = total > 0 ? Math.round((playerData.wins / total) * 100) : 0;
-                        
-                        // 통산 탭에서는 현재 MMR(v2)을 보여줌
+                        playerData.winRate = total > 0 ? Math.round((p.wins / total) * 100) : 0;
                         playerData.mmr = currentPlayerData?.mmr || 'N/A'; 
                         playerData.bestPartner = currentPlayerData?.bestPartner || '-';
-                        
-                        // 우승 횟수 합산 (v1 + v2)
                         playerData.championships = allPlayers
                             .filter(p => p.name === mainPlayerName)
                             .reduce((acc, p) => acc + (p.championships || 0), 0);
                     }
 
                 } else {
-                    // 2025/26시즌 (current) 탭
                     playerData = allPlayers.find(p => p.name === mainPlayerName);
                 }
 
                 if (!playerData) {
                     ['stat-mmr', 'stat-rank', 'stat-record', 'stat-winrate', 'stat-champs', 'stat-partner'].forEach(id => document.getElementById(id).textContent = '-');
-                    // H2H 등 비우기
                     renderMatchHistory([], [], mainPlayerName);
                     setupH2H([], [], mainPlayerName);
                     calculateAndRenderRelationships([], mainPlayerName);
                     return;
                 }
                 
-                // 순위는 'current' 뷰에서만 의미가 있음
                 let rank = '-';
                 if(activeView === 'current') {
-                    const sortedPlayers = [...allPlayers].sort((a,b) => b.mmr - a.mmr);
+                    // v2 (current) 플레이어 목록만으로 순위 계산
+                    const currentPlayers = rankingSnaps[0].exists() ? rankingSnaps[0].data().players : [];
+                    const sortedPlayers = [...currentPlayers].sort((a,b) => b.mmr - a.mmr);
                     const rankIndex = sortedPlayers.findIndex(p => p.name === mainPlayerName) + 1;
                     rank = rankIndex > 0 ? `${rankIndex}위` : '-';
                 }
@@ -583,8 +572,6 @@
                 document.getElementById('stat-champs').textContent = playerData.championships || 0;
                 document.getElementById('stat-partner').textContent = playerData.bestPartner || '-';
                 
-                // H2H와 관계도는 현재 뷰(current 또는 alltime)의 매치 기록을 기반으로 계산
-                // 'alltime'을 위한 모든 플레이어 목록 (H2H 드롭다운용)
                 const uniquePlayers = [...new Map(allPlayers.map(p => [p.name, p])).values()];
 
                 renderMatchHistory(allMatches, uniquePlayers, mainPlayerName, false);
@@ -608,22 +595,19 @@
         document.addEventListener('DOMContentLoaded', async () => {
              try {
                 await signInAnonymously(auth);
-                loadProfileData(); // 초기 로드 (current 탭)
+                loadProfileData(); 
              } catch(e) {
                  console.error("Auth failed", e);
              }
 
-             // 탭 전환 이벤트 리스너 다시 추가
              document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    // 이미 활성화된 탭이면 무시
                     if (btn.classList.contains('active')) return;
                     
                     document.querySelector('.tab-btn.active').classList.remove('active');
                     btn.classList.add('active');
                     activeView = btn.dataset.view;
                     
-                    // 데이터 다시 로드
                     loadProfileData();
                 });
             });
