@@ -127,10 +127,9 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // 표시할 시즌 목록
+        // ★★★ 2025 여름 시즌 삭제 ★★★
         const SEASONS_TO_DISPLAY = [
-            { id: 'v2', name: '2025-26시즌' },
-            { id: 'v1', name: '2025 여름시즌' } 
+            { id: 'v2', name: '2025-26시즌' }
         ];
 
         const showToast = (message) => {
@@ -174,16 +173,18 @@
                     const rank2 = players[1] ? { name: players[1].name, mmr: Math.round(players[1].mmr) } : { name: '-', mmr: '-' };
                     const rank3 = players[2] ? { name: players[2].name, mmr: Math.round(players[2].mmr) } : { name: '-', mmr: '-' };
 
-                    // 우승 횟수 1위 찾기
-                    let maxChampionships = -1;
-                    let champWinner = { name: '-', value: 0 };
+                    // ★★★ 우승 횟수 1위 찾기 로직 수정 ★★★
+                    let maxChampionships = 0; // 0으로 시작
+                    let champWinner = { name: '우승자 없음', value: 0 }; // 기본값 변경
+                    
                     players.forEach(p => {
                         const champs = parseInt(p.championships || 0);
-                        if (champs > maxChampionships) {
+                        if (champs > maxChampionships) { // 0보다 큰(1 이상) 경우에만 갱신
                             maxChampionships = champs;
                             champWinner = { name: p.name, value: champs };
                         }
                     });
+                    // ★★★ 수정 끝 ★★★
 
                     contentHtml += `
                         <div class="season-card">
@@ -207,7 +208,7 @@
                                 <li>
                                     <span class="icon">🏆</span>
                                     <span class="name">${champWinner.name}</span>
-                                    <span class="value">${champWinner.value}회 우승</span>
+                                    <span class="value">${champWinner.name === '우승자 없음' ? '-' : `${champWinner.value}회 우승`}</span>
                                 </li>
                             </ul>
                         </div>
