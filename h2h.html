@@ -230,22 +230,32 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+        // *** 요청한 새 ID 반영 및 SDK 버전/임포트문 통합 ***
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-analytics.js";
+        // 기존 코드에 필요했던 auth와 firestore 임포트 (새 버전으로)
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
-        // *** 요청대로 "Tetus" (tetus-league-v2) Firebase config로 변경 ***
+        // *** 요청한 새 firebaseConfig로 교체 ***
         const firebaseConfig = {
-            apiKey: "AIzaSyD-S_5P1nZtCpY_vG-a8sX-3Fk-mCc4e-U",
-            authDomain: "tetus-league-v2.firebaseapp.com",
-            projectId: "tetus-league-v2",
-            storageBucket: "tetus-league-v2.appspot.com",
-            messagingSenderId: "538860344477",
-            appId: "1:538860344477:web:8e7b97367b84f0c6e5f8f6"
+            apiKey: "AIzaSyCj33GM2pM2-Vz1Fmh6eyMwQkWjByA7xdw",
+            authDomain: "tetus-c91f0.firebaseapp.com",
+            databaseURL: "https://tetus-c91f0-default-rtdb.firebaseio.com",
+            projectId: "tetus-c91f0",
+            storageBucket: "tetus-c91f0.firebasestorage.app",
+            messagingSenderId: "877913022272",
+            appId: "1:877913022272:web:ec685d63235c87c3c1e4a5",
+            measurementId: "G-7FJY9EKPV5"
         };
+        
+        // Firebase 초기화 (analytics 포함)
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
+        const analytics = getAnalytics(app); // analytics 초기화
+
+        // --- 이하 로직은 동일 ---
 
         const BASE_COLLECTION = 'league';
         const CURRENT_SEASON_VERSION = 'v2';
@@ -536,7 +546,7 @@
                     
                     if (playerData) {
                         const total = playerData.wins + playerData.losses;
-                        playerData.winRate = total > 0 ? Math.round((p.wins / total) * 100) : 0;
+                        playerData.winRate = total > 0 ? Math.round((playerData.wins / total) * 100) : 0;
                         playerData.mmr = currentPlayerData?.mmr || 'N/A'; 
                         playerData.bestPartner = currentPlayerData?.bestPartner || '-';
                         playerData.championships = allPlayers
