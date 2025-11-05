@@ -1,713 +1,242 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2025 테친 오픈 - 상대 전적</title>
+    <title>시즌별 기록</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Poppins:wght@600;700&family=Roboto+Condensed:wght@400;700&display=stylesheet" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Poppins:wght@600;700&display=stylesheet" rel="stylesheet">
     <style>
         :root {
-            --bg: #001F3F;
-            --surface: #003087;
-            --primary: #D32F2F;
-            --primary-variant: #F44336;
-            --text: #FFFFFF;
-            --text-sec: #CFD8DC;
-            --gold: #FFD700;
-            --border: #4682B4;
-            --shadow: rgba(0, 0, 0, 0.7);
+            /* US Open Dark Theme (Blue) */
+            --bg-color: #121212;
+            --surface-color: #1E1E1E;
+            --primary-color: #3399FF; /* Brighter Blue for Dark Mode */
+            --primary-variant-color: #66B2FF;
+            --secondary-color: #FFFFFF;
+            --text-color: #E0E0E0;
+            --text-secondary-color: #A0A0A0;
+            --accent-gold: #FFC107; /* Tennis ball yellow */
+            --border-color: #333333;
+            --shadow-color: rgba(0, 0, 0, 0.5);
             --spacing-sm: 8px;
             --spacing-md: 12px;
             --spacing-lg: 20px;
             --radius: 8px;
         }
-        [data-theme="light"] {
-            --bg: #F5F6F5;
-            --surface: #FFFFFF;
-            --primary: #003087;
-            --primary-variant: #4682B4;
-            --text: #001F3F;
-            --text-sec: #455A64;
-            --border: #B0C4DE;
-            --shadow: rgba(0, 0, 0, 0.2);
+        html[data-theme="light"] {
+            /* US Open Light Theme (Blue) */
+            --bg-color: #F0F4F8;
+            --surface-color: #FFFFFF;
+            --primary-color: #0055A5; /* Official US Open Blue */
+            --primary-variant-color: #007BFF;
+            --text-color: #1F2937;
+            --text-secondary-color: #6B7280;
+            --border-color: #E5E7EB;
+            --shadow-color: rgba(0, 0, 0, 0.1);
         }
-        body {
-            font-family: 'Roboto Condensed', 'Noto Sans KR', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: var(--spacing-md);
-            transition: background-color 0.3s, color 0.3s;
-        }
-        .container {
-            max-width: 1700px;
-            margin: 0 auto;
-        }
-        h1 {
-            font-family: 'Poppins', sans-serif;
-            font-size: 2.8rem;
-            font-weight: 900;
-            text-align: center;
-            color: var(--text);
-            background: linear-gradient(135deg, var(--primary), var(--primary-variant));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            padding-top: var(--spacing-lg);
-            margin-bottom: 2rem;
-            letter-spacing: -2px;
-            text-shadow: 2px 2px 10px var(--shadow);
-        }
-        .section {
-            background: var(--surface);
-            padding: var(--spacing-lg);
-            border-radius: var(--radius);
-            box-shadow: 0 10px 30px var(--shadow);
-            margin-bottom: 2.5rem;
-            border: 2px solid var(--border);
-        }
-        h2 {
-            font-family: 'Poppins', sans-serif;
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: var(--spacing-sm);
-            padding-bottom: var(--spacing-sm);
-            border-bottom: 3px solid var(--border);
-        }
-        .input-group {
-            display: flex;
-            gap: var(--spacing-sm);
-            margin-bottom: var(--spacing-lg);
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        input[type="text"] {
-            width: 100%;
-            min-width: 200px;
-            max-width: 300px;
-            padding: var(--spacing-sm);
-            background: var(--surface);
-            border: 2px solid var(--border);
-            border-radius: 6px;
-            box-sizing: border-box;
-            color: var(--text);
-            font-family: 'Roboto Condensed', sans-serif;
-            text-align: left;
-            transition: border-color 0.2s;
-        }
-        input[type="text"]:focus {
-            border-color: var(--primary);
-            outline: none;
-        }
-        input[list] {
-            position: relative;
-        }
-        datalist {
-            display: none;
-        }
-        .btn {
-            display: inline-block;
-            padding: var(--spacing-md) var(--spacing-lg);
-            background: linear-gradient(135deg, var(--primary), var(--primary-variant));
-            color: var(--text);
-            text-decoration: none;
-            border-radius: var(--radius);
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 1rem;
-            border: none;
-            text-align: center;
-            transition: transform 0.2s;
-        }
-        [data-theme="dark"] .btn {
-            color: var(--bg);
-        }
-        .btn:hover {
-            transform: scale(1.05);
-        }
-        .table-wrapper {
-            overflow-x: auto;
-            overflow-y: auto;
-            max-height: 70vh;
-            max-width: 100%;
-            -webkit-overflow-scrolling: touch;
-        }
-        table {
-            width: 100%;
-            min-width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: var(--spacing-md) 4px;
-            text-align: center;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.9rem;
-            color: var(--text);
-        }
-        th {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.15), var(--surface));
-            color: var(--primary-variant);
-            font-weight: 700;
-        }
-        [data-theme="light"] th {
-            background: linear-gradient(135deg, #F9FAFB, #FFFFFF);
-            color: var(--primary);
-        }
-        td.matchup {
-            white-space: normal;
-            min-width: 250px;
-        }
-        td.score-diff, td.mmr-change {
-            color: var(--gold);
-        }
-        td.score-diff.positive, td.mmr-change.positive {
-            color: #4CAF50;
-        }
-        td.score-diff.negative, td.mmr-change.negative {
-            color: #D32F2F;
-        }
-        .stats-grid {
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: var(--spacing-md); transition: background-color 0.3s, color 0.3s; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { font-family: 'Poppins', sans-serif; font-size: 2.8rem; font-weight: 900; text-align: center; color: var(--secondary-color); background: linear-gradient(135deg, var(--primary-color), var(--primary-variant-color)); -webkit-background-clip: text; background-clip: text; color: transparent; padding-top: var(--spacing-lg); margin-bottom: 2rem; letter-spacing: -2px; text-shadow: 2px 2px 10px var(--shadow-color); }
+        .section { background: var(--surface-color); padding: var(--spacing-lg); border-radius: var(--radius); box-shadow: 0 10px 30px var(--shadow-color); margin-bottom: 2.5rem; border: 1px solid var(--border-color); }
+        h2 { font-family: 'Poppins', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--primary-color); margin-bottom: var(--spacing-sm); padding-bottom: var(--spacing-sm); border-bottom: 2px solid var(--border-color); }
+        .btn { display: inline-block; padding: var(--spacing-md) var(--spacing-lg); background: linear-gradient(135deg, var(--primary-color), var(--primary-variant-color)); color: #FFFFFF; text-decoration: none; border-radius: var(--radius); cursor: pointer; font-weight: 700; font-size: 1rem; border: none; text-align: center; }
+        html[data-theme="dark"] .btn { color: var(--bg-color); }
+        .theme-toggle { position: fixed; top: 15px; right: 15px; background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; font-size: 1.5rem; cursor: pointer; color: var(--text-color); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .toast { position: fixed; bottom: var(--spacing-lg); left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #333, #111); color: #fff; padding: var(--spacing-md) 25px; border-radius: 50px; box-shadow: 0 5px 15px var(--shadow-color); opacity: 0; transition: opacity 0.4s, transform 0.4s; font-weight: 700; z-index: 2001; }
+        .toast.show { opacity: 1; }
+        
+        .season-records {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: var(--spacing-sm);
-            margin-bottom: var(--spacing-lg);
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
         }
-        .stat-box {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), var(--surface));
-            padding: var(--spacing-md);
+        .season-card {
+            background: rgba(0,0,0,0.1);
+            border: 1px solid var(--border-color);
             border-radius: var(--radius);
-            text-align: center;
-            border: 1px solid var(--border);
-            transition: transform 0.2s;
+            padding: var(--spacing-lg);
         }
-        .stat-box:hover {
-            transform: translateY(-5px);
+        html[data-theme="light"] .season-card {
+             background: rgba(0,0,0,0.02);
         }
-        [data-theme="light"] .stat-box {
-            background: linear-gradient(135deg, #F9FAFB, #FFFFFF);
-        }
-        .stat-box h3 {
-            font-size: 1.2rem;
-            margin: 0 0 var(--spacing-sm);
-            color: var(--primary);
-        }
-        .stat-box p {
+        .season-card h3 {
+            font-family: 'Poppins', sans-serif;
             font-size: 1.5rem;
-            font-weight: 700;
+            color: var(--primary-variant-color);
+            margin-top: 0;
+            margin-bottom: var(--spacing-md);
+        }
+        .award-list {
+            list-style: none;
+            padding: 0;
             margin: 0;
-            color: var(--gold);
         }
-        .toast {
-            position: fixed;
-            bottom: var(--spacing-lg);
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(135deg, #333, #111);
-            color: #fff;
-            padding: var(--spacing-md) 25px;
-            border-radius: 50px;
-            box-shadow: 0 5px 15px var(--shadow);
-            opacity: 0;
-            transition: opacity 0.4s, transform 0.4s;
-            font-weight: 700;
-            font-family: 'Roboto Condensed', sans-serif;
-            z-index: 1000;
-        }
-        [data-theme="light"] .toast {
-            background: linear-gradient(135deg, #F9FAFB, #FFFFFF);
-            color: #001F3F;
-        }
-        .toast.show {
-            opacity: 1;
-        }
-        .theme-toggle {
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            background: var(--surface);
-            border: 2px solid var(--border);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text);
+        .award-list li {
             display: flex;
-            justify-content: center;
             align-items: center;
-            z-index: 1000;
-            transition: transform 0.2s;
+            font-size: 1.1rem;
+            margin-bottom: var(--spacing-md);
         }
-        .theme-toggle:hover {
-            transform: rotate(360deg);
+        .award-list .icon {
+            font-size: 1.5rem;
+            margin-right: var(--spacing-sm);
         }
-        @media screen and (max-width: 600px) {
-            th, td {
-                padding: 4px 2px;
-                font-size: 0.7rem;
-                color: var(--text);
-            }
-            td.matchup {
-                min-width: 100px;
-                max-width: 200px;
-                font-size: 0.7rem;
-                letter-spacing: -0.5px;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-            input[type="text"] {
-                min-width: 150px;
-                max-width: 100%;
-                font-size: 0.9rem;
-            }
-            .btn {
-                padding: 8px 12px;
-                font-size: 0.9rem;
-            }
-            h1 {
-                font-size: 2rem;
-            }
-            h2 {
-                font-size: 1.5rem;
-            }
-            .input-group {
-                flex-direction: column;
-            }
-            .stats-grid {
-                grid-template-columns: repeat(3, 1fr);
-                gap: var(--spacing-sm);
-            }
-            .stat-box {
-                padding: 8px;
-            }
-            .stat-box h3 {
-                font-size: 0.9rem;
-            }
-            .stat-box p {
-                font-size: 1.1rem;
-            }
+        .award-list .name {
+            font-weight: 700;
+            color: var(--text-color);
+        }
+        .award-list .value {
+            font-size: 0.9rem;
+            color: var(--text-secondary-color);
+            margin-left: auto;
         }
     </style>
 </head>
 <body>
     <button class="theme-toggle" id="theme-toggle">☀️</button>
     <div class="container">
-        <h1>2025 테친 오픈 - 상대 전적</h1>
+        <h1>시즌별 기록</h1>
+        
         <div class="section">
-            <h2>선수 선택</h2>
-            <div class="input-group">
-                <input type="text" id="player1" list="player-list" placeholder="선수 1 (필수)">
-                <input type="text" id="player2" list="player-list" placeholder="선수 2 (선택)">
-                <datalist id="player-list"></datalist>
-                <button id="search-btn" class="btn">전적 검색</button>
-                <button id="back-btn" class="btn">메인으로</button>
-            </div>
-            <div class="stats-grid" id="stats-grid"></div>
-            <div class="table-wrapper">
-                <table id="h2h-table">
-                    <thead>
-                        <tr>
-                            <th>회차</th>
-                            <th>결과</th>
-                            <th>대진</th>
-                            <th>스코어</th>
-                            <th>스코어차</th>
-                            <th>MMR 변화</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
+            <div id="records-container" class="season-records">
+                </div>
+            <a href="index.html" class="btn" style="margin-top: var(--spacing-lg);">메인으로 돌아가기</a>
         </div>
     </div>
     <div id="toast" class="toast"></div>
 
-    <script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-            return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-            if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-                try {
-                    var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                    var firstSheetName = workbook.SheetNames[0];
-                    var worksheet = workbook.Sheets[firstSheetName];
-                    var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                    var filteredData = jsonData.filter(row => row.some(filledCell));
-                    var headerRowIndex = filteredData.findIndex((row, index) =>
-                        row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                    );
-                    if (headerRowIndex === -1 || headerRowIndex > 25) {
-                        headerRowIndex = 0;
-                    }
-                    var csv = XLSX.utils.sheet_to_csv(XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)), { header: 1 });
-                    console.log(`XLSX 파일 ${filename} 파싱 성공`);
-                    return csv;
-                } catch (e) {
-                    console.error("XLSX 파싱 오류:", e);
-                    showToast(`XLSX 파싱 실패: ${e.message || '알 수 없는 오류'}`);
-                    return "";
-                }
-            }
-            return gk_fileData[filename] || "";
-        }
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-        function showToast(message, duration = 3000) {
+        // tetus-c91f0 설정
+        const firebaseConfig = {
+            apiKey: "AIzaSyCj33GM2pM2-Vz1Fmh6eyMwQkWjByA7xdw",
+            authDomain: "tetus-c91f0.firebaseapp.com",
+            projectId: "tetus-c91f0",
+            storageBucket: "tetus-c91f0.firebasestorage.app",
+            messagingSenderId: "877913022272",
+            appId: "1:877913022272:web:ec685d63235c87c3c1e4a5",
+            measurementId: "G-7FJY9EKPV5"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // 표시할 시즌 목록
+        const SEASONS_TO_DISPLAY = [
+            { id: 'v2', name: '2025-26시즌' },
+            { id: 'v1', name: '2025 여름시즌' } 
+        ];
+
+        const showToast = (message) => {
             const toast = document.getElementById('toast');
-            if (toast) {
-                toast.textContent = message;
-                toast.classList.add('show');
-                setTimeout(() => toast.classList.remove('show'), duration);
-            } else {
-                console.warn("Toast 요소 없음!");
-            }
-        }
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        };
 
-        function applyTheme(theme) {
+        const applyTheme = (theme) => {
             const validTheme = theme === 'light' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', validTheme);
             localStorage.setItem('theme', validTheme);
-            const themeToggle = document.getElementById('theme-toggle');
-            if (themeToggle) {
-                themeToggle.textContent = validTheme === 'dark' ? '☀️' : '🌙';
-            }
-            console.log(`테마 적용: ${validTheme}`);
-        }
+            document.getElementById('theme-toggle').textContent = validTheme === 'dark' ? '☀️' : '🌙';
+        };
 
-        const femalePlayersList = ["남정주", "김유하", "성예진", "한혜령", "조지영", "이은지", "고경리", "김나경", "김지원", "이지화", "정연화", "차경련", "한정아", "유시연", "김유미", "신현정", "이예은", "이선미", "박선숙", "박아름", "이아름", "서유나", "허선영", "송은주", "육하나", "이가영", "이유빈", "정해영", "조수희", "조아현", "최주연", "황수진"];
+        async function loadSeasonRecords() {
+            const container = document.getElementById('records-container');
+            if (!container) return;
 
-        function normalizeName(name) {
-            return name ? name.replace(/[@.*\s]+/g, '').toLowerCase() : '';
-        }
+            container.innerHTML = '<h2>데이터 로딩 중...</h2>';
+            let contentHtml = '';
 
-        function isMixedTeam(p1, p2, data) {
-            const player1 = data.find(p => normalizeName(p.name) === normalizeName(p1));
-            const player2 = data.find(p => normalizeName(p.name) === normalizeName(p2));
-            return player1 && player2 && ((player1.isFemale && !player2.isFemale) || (!player1.isFemale && player2.isFemale));
-        }
-
-        function isMaleTeam(p1, p2, data) {
-            const player1 = data.find(p => normalizeName(p.name) === normalizeName(p1));
-            const player2 = data.find(p => normalizeName(p.name) === normalizeName(p2));
-            return player1 && player2 && !player1.isFemale && !player2.isFemale;
-        }
-
-        function calculateMMRChange(match, playerName, isPlayerTeam1, players) {
-            const BASE_MMR = 1500;
-            let multiplier = 1.0;
-            const winnerIsMixed = isMixedTeam(match.winnerPlayer1, match.winnerPlayer2, players);
-            const loserIsMixed = isMixedTeam(match.loserPlayer1, match.loserPlayer2, players);
-            const winnerIsMale = isMaleTeam(match.winnerPlayer1, match.winnerPlayer2, players);
-            const loserIsMale = isMaleTeam(match.loserPlayer1, match.loserPlayer2, players);
-            if (winnerIsMixed && loserIsMale) multiplier = 2.0;
-            else if (winnerIsMale && loserIsMixed) multiplier = 0.5;
-            const change = Math.round(25 * multiplier);
-            const isWinner = isPlayerTeam1 ? match.score.split('-').map(Number)[0] > match.score.split('-').map(Number)[1] : match.score.split('-').map(Number)[1] > match.score.split('-').map(Number)[0];
-            return { mmrChange: isWinner ? change : -change, reason: `멀티플라이어: ${multiplier}, 혼성: ${winnerIsMixed}/${loserIsMixed}` };
-        }
-
-        function loadPlayerNames() {
-            try {
-                const rankingData = JSON.parse(localStorage.getItem('rankingData') || '[]');
-                const playerList = document.getElementById('player-list');
-                if (!playerList) {
-                    console.error("player-list 요소 없음");
-                    showToast("선수 목록 요소 오류!");
-                    return [];
-                }
-                if (rankingData.length === 0) {
-                    console.warn("랭킹 데이터 없음");
-                    showToast("선수 목록이 없습니다!");
-                    return [];
-                }
-                playerList.innerHTML = rankingData.map(player => 
-                    `<option value="${player.isFemale ? `${player.name}*` : player.name}"></option>`
-                ).join('');
-                console.log("선수 목록 로드 완료:", rankingData.length);
-                return rankingData;
-            } catch (e) {
-                console.error("선수 목록 로드 실패:", e);
-                showToast("선수 목록 로드 실패!");
-                return [];
-            }
-        }
-
-        function loadMatches() {
-            try {
-                const savedRounds = new Map(JSON.parse(localStorage.getItem('savedRounds') || '[]'));
-                const matches = [];
-                savedRounds.forEach((roundData, roundId) => {
-                    if (!roundData.matches) return;
-                    roundData.matches.forEach((match, index) => {
-                        if (!match.player1 || !match.player2 || !match.player3 || !match.player4 || !match.score) return;
-                        matches.push({
-                            round: roundId,
-                            players: [match.player1, match.player2, match.player3, match.player4],
-                            score: match.score,
-                            isFourPoint: match.isFourPoint || false,
-                            winnerPlayer1: match.score.split('-')[0] > match.score.split('-')[1] ? match.player1 : match.player3,
-                            winnerPlayer2: match.score.split('-')[0] > match.score.split('-')[1] ? match.player2 : match.player4,
-                            loserPlayer1: match.score.split('-')[0] > match.score.split('-')[1] ? match.player3 : match.player1,
-                            loserPlayer2: match.score.split('-')[0] > match.score.split('-')[1] ? match.player4 : match.player2
-                        });
-                    });
-                });
-                console.log("매치 데이터 로드 완료:", matches.length);
-                return matches;
-            } catch (e) {
-                console.error("매치 데이터 로드 실패:", e);
-                showToast("매치 데이터 로드 실패!");
-                return [];
-            }
-        }
-
-        async function filterMatches() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const playerFromURL = decodeURIComponent(urlParams.get('player') || '').replace(/\*/g, '');
-            const player1Input = document.getElementById('player1').value.trim() || playerFromURL;
-            const player2Input = document.getElementById('player2').value.trim();
-
-            if (!player1Input) {
-                showToast("선수 1을 선택하세요!");
-                return;
-            }
-
-            const player1 = normalizeName(player1Input);
-            const player2 = player2Input ? normalizeName(player2Input) : null;
-
-            if (player2 && player1 === player2) {
-                showToast("동일한 선수를 선택할 수 없습니다!");
-                return;
-            }
-
-            const matches = loadMatches();
-            const players = loadPlayerNames();
-            let filteredMatches = [];
-            if (player2) {
-                filteredMatches = matches.filter(match => {
-                    const normalizedPlayers = match.players.map(normalizeName);
-                    return normalizedPlayers.includes(player1) && normalizedPlayers.includes(player2);
-                });
-            } else {
-                filteredMatches = matches.filter(match => {
-                    const normalizedPlayers = match.players.map(normalizeName);
-                    return normalizedPlayers.includes(player1);
-                });
-            }
-
-            console.log("필터링된 매치:", filteredMatches);
-
-            const statsGrid = document.getElementById('stats-grid');
-            const tableBody = document.querySelector('#h2h-table tbody');
-            if (!statsGrid || !tableBody) {
-                console.error("stats-grid 또는 h2h-table tbody 요소 없음!");
-                showToast("페이지 요소 오류!");
-                return;
-            }
-            tableBody.innerHTML = '';
-            statsGrid.innerHTML = '';
-
-            if (filteredMatches.length === 0) {
-                showToast(player2 ? "선택한 선수 간의 전적이 없습니다!" : `${player1Input}의 경기 기록이 없습니다!`);
-                return;
-            }
-
-            let wins = 0, losses = 0, totalGameDiff = 0, totalMMRChange = 0;
-            filteredMatches.sort((a, b) => a.round - b.round);
-            filteredMatches.forEach(match => {
-                const player1Index = match.players.findIndex(p => normalizeName(p) === player1);
-                const isPlayer1Team1 = player1Index < 2;
-                let result = '-';
-                let gameDiff = 0;
-                let scoreDiffDisplay = '-';
-                let matchup = `${match.players[0].replace(/\*/g, '')}+${match.players[1].replace(/\*/g, '')} vs ${match.players[2].replace(/\*/g, '')}+${match.players[3].replace(/\*/g, '')}`;
-
-                if (player2) {
-                    const player2Index = match.players.findIndex(p => normalizeName(p) === player2);
-                    const isPlayer2Team1 = player2Index < 2;
-                    const isOpposing = isPlayer1Team1 !== isPlayer2Team1;
-                    if (!isOpposing) return;
-                }
-
-                if (match.score && /^\d+-\d+$/.test(match.score)) {
-                    const [score1, score2] = match.score.split('-').map(Number);
-                    if (isPlayer1Team1) {
-                        gameDiff = score1 - score2;
-                        scoreDiffDisplay = gameDiff > 0 ? `+${gameDiff}` : `${gameDiff}`;
-                        if (score1 > score2) {
-                            wins++;
-                            result = '✅';
-                        } else {
-                            losses++;
-                            result = '❌';
-                        }
-                    } else {
-                        gameDiff = score2 - score1;
-                        scoreDiffDisplay = gameDiff > 0 ? `+${gameDiff}` : `${gameDiff}`;
-                        if (score2 > score1) {
-                            wins++;
-                            result = '✅';
-                        } else {
-                            losses++;
-                            result = '❌';
-                        }
-                    }
-                    totalGameDiff += gameDiff;
-                }
-
-                const { mmrChange, reason } = calculateMMRChange(match, player1Input, isPlayer1Team1, players);
-                totalMMRChange += mmrChange;
-
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${match.round}</td>
-                    <td>${result}</td>
-                    <td class="matchup">${matchup}</td>
-                    <td>${match.score || '-'}</td>
-                    <td class="score-diff ${gameDiff > 0 ? 'positive' : gameDiff < 0 ? 'negative' : ''}">${scoreDiffDisplay}</td>
-                    <td class="mmr-change ${mmrChange > 0 ? 'positive' : mmrChange < 0 ? 'negative' : ''}">${mmrChange !== 0 ? (mmrChange > 0 ? `+${mmrChange}` : mmrChange) : '-'}</td>
-                `;
-                row.title = `대진: ${matchup}\nMMR 변화 이유: ${reason}`;
-                tableBody.appendChild(row);
-            });
-
-            const totalMatches = wins + losses;
-            const winRate = totalMatches > 0 ? ((wins / totalMatches) * 100).toFixed(1) : '0.0';
-            const avgGameDiff = totalMatches > 0 ? (totalGameDiff / totalMatches).toFixed(2) : '0.00';
-            statsGrid.innerHTML = `
-                <div class="stat-box"><h3>총 경기</h3><p>${totalMatches}</p></div>
-                <div class="stat-box"><h3>승</h3><p>${wins}</p></div>
-                <div class="stat-box"><h3>패</h3><p>${losses}</p></div>
-                <div class="stat-box"><h3>승률(%)</h3><p>${winRate}</p></div>
-                <div class="stat-box"><h3>평균 점수차</h3><p>${avgGameDiff > 0 ? '+' : ''}${avgGameDiff}</p></div>
-                <div class="stat-box"><h3>총 MMR 변화</h3><p>${totalMMRChange > 0 ? '+' : ''}${totalMMRChange}</p></div>
-            `;
-            showToast(player2 ? "상대 전적 검색 완료!" : `${player1Input}의 전체 경기 기록 검색 완료!`);
-        }
-
-        function waitForElements(selector, callback, retries = 20, delay = 200) {
-            let attempts = 0;
-            function check() {
-                const elements = document.querySelectorAll(selector);
-                const player1Input = document.getElementById('player1');
-                const player2Input = document.getElementById('player2');
-                const statsGrid = document.getElementById('stats-grid');
-                const tableBody = document.querySelector('#h2h-table tbody');
-                const themeToggle = document.getElementById('theme-toggle');
-                console.log(`waitForElements 시도 ${attempts + 1}: 요소 상태 - player1: ${!!player1Input}, player2: ${!!player2Input}, stats-grid: ${!!statsGrid}, h2h-table tbody: ${!!tableBody}, theme-toggle: ${!!themeToggle}, selector: ${elements.length}`);
-                if (elements.length > 0 && player1Input && player2Input && statsGrid && tableBody && themeToggle) {
-                    console.log("DOM 요소 모두 준비됨!");
-                    callback();
-                } else if (attempts < retries) {
-                    attempts++;
-                    console.log(`DOM 요소 대기 중 (${attempts}/${retries})...`);
-                    setTimeout(check, delay);
-                } else {
-                    console.error("DOM 요소 로드 실패:", selector);
-                    showToast("페이지 로드 오류! 요소를 찾을 수 없습니다.");
-                }
-            }
-            check();
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log("DOMContentLoaded 이벤트 시작");
-            waitForElements('#player1, #player2, #stats-grid, #h2h-table tbody, #theme-toggle', () => {
-                console.log("waitForElements 콜백 실행");
+            for (const season of SEASONS_TO_DISPLAY) {
                 try {
-                    applyTheme(localStorage.getItem('theme') || 'dark');
-                    console.log("applyTheme 호출 성공");
-                } catch (e) {
-                    console.error("applyTheme 호출 실패:", e);
-                    showToast("테마 적용 오류!");
-                }
-                loadPlayerNames();
-                filterMatches();
-                const searchBtn = document.getElementById('search-btn');
-                const backBtn = document.getElementById('back-btn');
-                const themeToggle = document.getElementById('theme-toggle');
-                if (searchBtn) {
-                    searchBtn.addEventListener('click', filterMatches);
-                }
-                if (backBtn) {
-                    backBtn.addEventListener('click', () => {
-                        window.location.href = 'index.html';
-                    });
-                }
-                if (themeToggle) {
-                    themeToggle.addEventListener('click', () => {
-                        console.log("themeToggle 클릭");
-                        try {
-                            applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-                        } catch (e) {
-                            console.error("themeToggle applyTheme 호출 실패:", e);
-                            showToast("테마 전환 오류!");
+                    const rankingDoc = await getDoc(doc(db, 'league', 'data', 'rankings', season.id));
+                    
+                    if (!rankingDoc.exists()) {
+                        console.warn(`${season.name} (${season.id}) 랭킹 데이터를 찾을 수 없습니다.`);
+                        continue;
+                    }
+
+                    const players = rankingDoc.data().players || [];
+                    if (players.length === 0) {
+                        console.warn(`${season.name} (${season.id}) 랭킹에 플레이어가 없습니다.`);
+                        continue;
+                    }
+
+                    // 1, 2, 3위 찾기 (이미 MMR로 정렬되어 있다고 가정)
+                    const rank1 = players[0] ? { name: players[0].name, mmr: Math.round(players[0].mmr) } : { name: '-', mmr: '-' };
+                    const rank2 = players[1] ? { name: players[1].name, mmr: Math.round(players[1].mmr) } : { name: '-', mmr: '-' };
+                    const rank3 = players[2] ? { name: players[2].name, mmr: Math.round(players[2].mmr) } : { name: '-', mmr: '-' };
+
+                    // 우승 횟수 1위 찾기
+                    let maxChampionships = -1;
+                    let champWinner = { name: '-', value: 0 };
+                    players.forEach(p => {
+                        const champs = parseInt(p.championships || 0);
+                        if (champs > maxChampionships) {
+                            maxChampionships = champs;
+                            champWinner = { name: p.name, value: champs };
                         }
                     });
+
+                    contentHtml += `
+                        <div class="season-card">
+                            <h3>${season.name}</h3>
+                            <ul class="award-list">
+                                <li>
+                                    <span class="icon">🥇</span>
+                                    <span class="name">${rank1.name}</span>
+                                    <span class="value">MMR ${rank1.mmr}</span>
+                                </li>
+                                <li>
+                                    <span class="icon">🥈</span>
+                                    <span class="name">${rank2.name}</span>
+                                    <span class="value">MMR ${rank2.mmr}</span>
+                                </li>
+                                <li>
+                                    <span class="icon">🥉</span>
+                                    <span class="name">${rank3.name}</span>
+                                    <span class="value">MMR ${rank3.mmr}</span>
+                                </li>
+                                <li>
+                                    <span class="icon">🏆</span>
+                                    <span class="name">${champWinner.name}</span>
+                                    <span class="value">${champWinner.value}회 우승</span>
+                                </li>
+                            </ul>
+                        </div>
+                    `;
+
+                } catch (error) {
+                    console.error(`${season.name} 로드 실패:`, error);
+                    showToast(`${season.name} 기록 로드 중 오류 발생`);
                 }
-                document.querySelectorAll('#player1, #player2').forEach(input => {
-                    input.addEventListener('change', () => {
-                        const datalist = document.getElementById('player-list');
-                        const options = Array.from(datalist.options).map(opt => opt.value);
-                        if (input.value && !options.includes(input.value)) {
-                            input.value = '';
-                            showToast("유효한 선수 이름을 선택하세요!");
-                        }
-                    });
-                    input.addEventListener('keypress', e => {
-                        if (e.key === 'Enter') filterMatches();
-                    });
-                });
-                console.log("이벤트 리스너 설정 완료!");
+            }
+
+            container.innerHTML = contentHtml || '<h2>표시할 시즌 기록이 없습니다.</h2>';
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            applyTheme(savedTheme);
+            document.getElementById('theme-toggle').addEventListener('click', () => {
+                applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
             });
+
+            try {
+                await signInAnonymously(auth);
+                console.log("Signed in anonymously.");
+                loadSeasonRecords();
+            } catch (error) {
+                console.error("Anonymous sign-in failed:", error);
+                showToast("DB 인증에 실패했습니다.");
+            }
         });
     </script>
 </body>
