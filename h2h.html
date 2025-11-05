@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H2H - Player vs Player</title>
+    <style>
+        /* US Open 테마 스타일 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .player-profile-header {
+            background: linear-gradient(135deg, #004a99 0%, #003366 100%); /* US Open 진한 파란색 */
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .player-profile-header h2 {
+            margin: 0;
+            font-size: 2.2rem;
+            font-weight: 700;
+        }
+
+        .player-profile-header p {
+            margin: 5px 0 0;
+            font-size: 1.2rem;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+
+        /* 탭 스타일 */
+        .tabs {
+            display: flex;
+            background-color: #eef1f5;
+            border-bottom: 1px solid #d1d9e0;
+        }
+
+        .tab-link {
+            flex-grow: 1; /* 탭이 하나이므로 꽉 채움 */
+            padding: 16px 20px;
+            cursor: default; /* 클릭 기능 없으므로 default */
+            border: none;
+            background-color: transparent;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #555;
+            text-align: center;
+            transition: background-color 0.2s, color 0.2s;
+            border-bottom: 3px solid transparent;
+        }
+
+        /* 활성화된 탭 (유일한 탭) */
+        .tab-link.active {
+            background-color: #ffffff;
+            color: #004a99; /* US Open 파란색 */
+            border-bottom: 3px solid #fdd100; /* US Open 노란색 */
+        }
+
+        /* 탭 컨텐츠 */
+        .tab-content {
+            display: none; /* JS로 제어하던 것을 인라인 스타일로 대체 */
+            padding: 25px 20px;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .tab-content h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #003366;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #eef1f5;
+            padding-bottom: 10px;
+        }
+
+        /* H2H 스탯 컨테이너 */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            padding: 15px;
+            background-color: #f9f9fb;
+            border-radius: 8px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #004a99;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="player-profile-header">
+            <h2>Player Name</h2>
+            <p>vs</p>
+            <h2>Opponent Name</h2>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-link active">2025/26시즌</button>
+        </div>
+
+        <div id="h2h-2025" class="tab-content" style="display: block;">
+            <h3>Head-to-Head (2025/26)</h3>
+            
+            <div class="stats-container">
+                <div class="stat-item">
+                    <span class="stat-label">Total Matches</span>
+                    <span class="stat-value">12</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Win / Loss</span>
+                    <span class="stat-value">8 - 4</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Win %</span>
+                    <span class="stat-value">66.67%</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Total Sets</span>
+                    <span class="stat-value">28</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Sets Won</span>
+                    <span class="stat-value">18</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Avg. Match Time</span>
+                    <span class="stat-value">2h 15m</span>
+                </div>
+            </div>
+
+            </div>
+
+    </div>
+    
+    </body>
+</html>
