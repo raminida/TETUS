@@ -119,8 +119,8 @@
             input.ranking-player, input.mmr { min-width: 70px; max-width: 100px; }
             input.best-partner { min-width: 200px; max-width: 225px; }
             
-            /* player-input 칸 줄임 */
-            .schedule-table .player-input { min-width: 50px; max-width: 60px; font-size: 0.65rem; } 
+            /* player-input 칸 줄임 (모바일 편의성 수정) */
+            .schedule-table .player-input { min-width: 45px; max-width: 55px; font-size: 0.65rem; } 
             /* score-input 칸 줄임 */
             .schedule-table .score-input { min-width: 35px; max-width: 45px; } 
             
@@ -138,6 +138,21 @@
             #player-management-popup {
                 width: 95vw; /* auto 대신 95vw */
                 box-sizing: border-box; /* 패딩 포함해서 95vw */
+            }
+            /* --- --- */
+
+            /* --- *** 모바일 편의성 수정 (vs, 4점 칸) *** --- */
+            .schedule-table th:nth-child(3), /* vs */
+            .schedule-table td:nth-child(3) {
+                padding-left: 1px;
+                padding-right: 1px;
+                min-width: 15px; /* vs칸 최소 너비 */
+            }
+            .schedule-table th:nth-child(7), /* 4점 */
+            .schedule-table td:nth-child(7) {
+                padding-left: 1px;
+                padding-right: 1px;
+                min-width: 25px; /* 4점칸 최소 너비 */
             }
             /* --- --- */
         }
@@ -1184,6 +1199,64 @@
                     }
                 }
             });
+
+            // *** [신규] 파트너 자동 로테이션 기능 ***
+            scheduleContainer.addEventListener('change', (e) => {
+                // 'input' 대신 'change' (포커스 아웃 시) 이벤트를 사용
+                if (!e.target.classList.contains('player-input')) {
+                    return;
+                }
+
+                const input = e.target;
+                const currentRow = input.closest('tr');
+                if (!currentRow) return;
+
+                const tbody = currentRow.closest('tbody');
+                if (!tbody || tbody.rows.length < 3) return; // 3게임 테이블이 아니면 중단
+
+                // 이 로직은 첫 번째 게임(첫 번째 <tr>)에서 변경이 일어났을 때만 작동
+                if (tbody.rows[0] === currentRow) {
+                    const game1Row = tbody.rows[0];
+                    const p1Input = game1Row.querySelector('.player1');
+                    const p2Input = game1Row.querySelector('.player2');
+                    const p3Input = game1Row.querySelector('.player3');
+                    const p4Input = game1Row.querySelector('.player4');
+
+                    // 4명 이름 가져오기
+                    const p1 = p1Input.value.trim();
+                    const p2 = p2Input.value.trim();
+                    const p3 = p3Input.value.trim();
+                    const p4 = p4Input.value.trim();
+
+                    // 4명 이름이 모두 채워졌는지 확인
+                    if (p1 && p2 && p3 && p4) {
+                        const game2Row = tbody.rows[1];
+                        const game3Row = tbody.rows[2];
+
+                        // 2, 3번째 게임이 비어있는지 확인 (실수로 덮어쓰지 않기 위해)
+                        // 각 게임의 첫 번째 선수 칸만 확인
+                        const game2P1 = game2Row.querySelector('.player1').value.trim();
+                        const game3P1 = game3Row.querySelector('.player1').value.trim();
+
+                        // 2, 3게임이 비어있을 때만 자동 완성 실행
+                        if (!game2P1 && !game3P1) {
+                            // 2게임 채우기: (P1, P3) vs (P2, P4)
+                            game2Row.querySelector('.player1').value = p1;
+                            game2Row.querySelector('.player2').value = p3; // 파트너 변경
+                            game2Row.querySelector('.player3').value = p2; // 파트너 변경
+                            game2Row.querySelector('.player4').value = p4;
+
+                            // 3게임 채우기: (P1, P4) vs (P2, P3)
+                            game3Row.querySelector('.player1').value = p1;
+                            game3Row.querySelector('.player2').value = p4; // 파트너 변경
+                            game3Row.querySelector('.player3').value = p2; // 파트너 변경
+                            game3Row.querySelector('.player4').value = p3; // 파트너 변경
+                        }
+                    }
+                }
+            });
+            // *** [신규] 기능 종료 ***
+
 
             scheduleContainer.addEventListener('focusout', (e) => {
                 if (e.target.classList.contains('player-input')) {
