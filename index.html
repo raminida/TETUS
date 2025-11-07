@@ -1169,12 +1169,44 @@
             const scheduleContainer = document.getElementById('schedule-container');
             const autocompleteBar = document.getElementById('autocomplete-bar');
 
-            // *** 새 자동완성 로직 ***
+            // *** [수정됨] 모바일 스크롤 보정 로직 추가 ***
             scheduleContainer.addEventListener('focusin', (e) => {
                 if (e.target.classList.contains('player-input')) {
                     currentActiveInput = e.target;
+                    
                     autocompleteBar.classList.add('show');
-                    updateAutocompleteSuggestions(e.target.value); // 현재 값으로 바로 필터링
+                    updateAutocompleteSuggestions(e.target.value); 
+
+                    // 모바일 키보드 + 스크롤 보정
+                    setTimeout(() => {
+                        if (currentActiveInput) {
+                            const barHeight = autocompleteBar.offsetHeight;
+                            const inputRect = currentActiveInput.getBoundingClientRect();
+                            const viewportHeight = window.innerHeight;
+
+                            // 목표: 인풋창 하단이 (화면 높이 - 바 높이 - 10px) 위치에 오도록.
+                            const targetBottom = viewportHeight - barHeight - 10; 
+                            
+                            // 현재 인풋창 하단 위치
+                            const currentBottom = inputRect.bottom;
+                            
+                            // 1. 이미 화면에 잘 보이고 (0보다 크고)
+                            // 2. 목표 위치 근처(+- 50px)에 있다면 스크롤 안함
+                            if (currentBottom > 0 && Math.abs(currentBottom - targetBottom) < 50) {
+                                // do nothing
+                            } else {
+                                // 스크롤이 필요함
+                                // (현재 하단) - (목표 하단) = 스크롤할 양
+                                const scrollAmount = currentBottom - targetBottom;
+                                
+                                window.scrollBy({
+                                    top: scrollAmount,
+                                    left: 0,
+                                    behavior: 'smooth'
+                                });
+                            }
+                        }
+                    }, 250); // 250ms 딜레이 (키보드 올라오는 시간)
                 }
             });
 
