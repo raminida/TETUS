@@ -197,30 +197,6 @@
             font-size: 0.9rem;
         }
         /* --- --- */
-
-        /* --- 선수 추가 UI --- */
-        .add-player-group {
-            display: flex;
-            gap: 10px;
-            padding: 10px;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 10px;
-            flex-wrap: wrap; /* 모바일에서 줄바꿈 */
-        }
-        .add-player-group input[type="text"] {
-            flex-grow: 1; /* 이름 칸이 남는 공간 차지 */
-            max-width: 250px;
-        }
-        .add-player-group label {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            white-space: nowrap; /* '여성' 글자 줄바꿈 방지 */
-        }
-        .add-player-group .btn {
-            padding: var(--spacing-sm) var(--spacing-md); /* 버튼 패딩 살짝 줄임 */
-        }
-        /* --- --- */
     </style>
 </head>
 <body>
@@ -295,16 +271,7 @@
     <div id="player-management-popup" class="popup">
         <button class="close-btn" data-target="player-management-popup">×</button>
         <h3>선수 관리</h3>
-
-        <!-- *** 새 선수 추가 UI *** -->
-        <div class="add-player-group">
-            <input type="text" id="add-player-name" placeholder="새 선수 이름" style="max-width: none;">
-            <label><input type="checkbox" id="add-player-is-female" style="transform: scale(1.0);"> 여성</label>
-            <button id="add-player-btn" class="btn">선수 추가</button>
-        </div>
-        <!-- *** --- *** -->
-
-        <p style="font-size: 0.8rem; color: var(--text-secondary-color); margin-top: 15px;">기존 선수 삭제 또는 성별(*)을 수정합니다. <br><strong>※주의:</strong> 선수를 삭제한 후에는, 경기 일정표에서 해당 선수 이름을 직접 모두 지우고 저장해야 순위표에서 완전히 사라집니다.</p>
+        <p style="font-size: 0.8rem; color: var(--text-secondary-color);">잘못된 선수 삭제 또는 성별(*)을 수정합니다. <br><strong>※주의:</strong> 선수를 삭제한 후에는, 경기 일정표에서 해당 선수 이름을 직접 모두 지우고 저장해야 순위표에서 완전히 사라집니다.</p>
         <div id="player-management-list"></div>
         <div class="popup-buttons">
             <button id="save-player-changes-btn" class="btn">변경사항 저장</button>
@@ -865,18 +832,7 @@
                     return;
                 }
 
-                // *** [수정] allPlayersData를 기반으로 초기 플레이어 맵 생성 ***
-                const initialPlayersMap = {};
-                allPlayersData.forEach(p => {
-                    initialPlayersMap[p.name] = { 
-                        name: p.name, 
-                        isFemale: p.isFemale, 
-                        championships: p.championships || 0 // 기존 우승 횟수 보존
-                    };
-                });
-                // *** --- ***
-
-                const allCalculatedPlayers = calculateRankingFromMatches(allMatchesFromDB, initialPlayersMap); 
+                const allCalculatedPlayers = calculateRankingFromMatches(allMatchesFromDB, {}); 
                 
                 const latestProcessedRound = Math.max(...allMatchesFromDB.map(m => m.round), 0);
                 
@@ -1013,64 +969,6 @@
             document.getElementById('overlay').classList.remove('show');
         };
 
-        // *** [버그 수정] 새 선수 추가 함수 ***
-        const addNewPlayer = async () => {
-            const nameInput = document.getElementById('add-player-name');
-            const femaleInput = document.getElementById('add-player-is-female');
-            const newName = nameInput.value.trim();
-            const isFemale = femaleInput.checked;
-
-            if (!newName) {
-                showToast("선수 이름을 입력하세요.");
-                return;
-            }
-
-            if (allPlayersData.some(p => p.name === newName)) {
-                showToast("이미 존재하는 선수 이름입니다.");
-                return;
-            }
-
-            // 새 선수 기본 정보
-            const newPlayer = {
-                name: newName,
-                isFemale: isFemale,
-                mmr: 1500,
-                wins: 0,
-                losses: 0,
-                championships: 0,
-                totalSets: 0,
-                gameDiff: 0,
-                streakCount: 0,
-                streakIsWin: false,
-                rank: 0,
-                bestPartner: '데이터 부족',
-                tieBreakWinRate: '0%',
-                bagelWins: '0%',
-                bagelLosses: '0%'
-            };
-
-            // 기존 선수 목록에 새 선수 추가
-            const updatedPlayersList = [...allPlayersData, newPlayer];
-
-            try {
-                const rankingsRef = doc(db, BASE_COLLECTION, 'data', 'rankings', CURRENT_SEASON_VERSION);
-                // 업데이트된 전체 선수 목록을 DB에 저장
-                await setDoc(rankingsRef, { players: updatedPlayersList }, { merge: true });
-
-                showToast(`'${newName}' 선수를 목록에 추가했습니다.`);
-                nameInput.value = '';
-                femaleInput.checked = false;
-                
-                // [버그 수정] 로컬 데이터 조작(allPlayersData.push) 삭제.
-                // onSnapshot 리스너가 DB 변경을 감지하고 UI를 자동 갱신할 것임.
-
-            } catch (error) {
-                showToast(`선수 추가 실패: ${error.message}`);
-                console.error("Add player error:", error);
-            }
-        };
-
-
         const populatePlayerManagementPopup = () => {
             const listContainer = document.getElementById('player-management-list');
             listContainer.innerHTML = '';
@@ -1091,29 +989,21 @@
                 listContainer.appendChild(item);
             });
 
-            // [버그 수정] 리스너는 populate가 끝난 후, 컨테이너에 한 번만 위임하는 것이 효율적이나,
-            // 간단하게 기존 로직(매번 새로 생성)을 유지하되, 삭제/이름변경 버튼에 대한 리스너를 다시 설정합니다.
-            
-            listContainer.querySelectorAll('.delete-player-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    // DOM에서 즉시 제거
-                    e.target.closest('.player-management-item').remove();
-                });
-            });
+            listContainer.addEventListener('click', (e) => {
+                const item = e.target.closest('.player-management-item');
+                if (!item) return;
+                const playerName = item.dataset.playerName;
 
-            listContainer.querySelectorAll('.rename-player-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const item = e.target.closest('.player-management-item');
-                    if (!item) return;
-                    const playerName = item.dataset.playerName;
-                    
+                if (e.target.classList.contains('delete-player-btn')) {
+                    item.remove();
+                } else if (e.target.classList.contains('rename-player-btn')) {
                     document.getElementById('rename-old-name').textContent = playerName;
                     document.getElementById('rename-new-name').value = '';
                     document.getElementById('confirm-rename-btn').dataset.oldName = playerName;
                     closePopup('player-management-popup');
                     openPopup('rename-player-popup');
                     setTimeout(() => document.getElementById('rename-new-name').focus(), 100);
-                });
+                }
             });
         };
 
@@ -1124,21 +1014,22 @@
             }
 
             const updatedPlayersMap = new Map();
-            // 현재 DOM에 남아있는 선수들 목록을 가져옴
             document.querySelectorAll('#player-management-list .player-management-item').forEach(item => {
                 const name = item.dataset.playerName;
                 const isFemale = item.querySelector('.is-female-checkbox').checked;
-                
-                // allPlayersData에서 원본 데이터를 찾음 (삭제되지 않은 선수이므로)
-                const originalPlayer = allPlayersData.find(p => p.name === name); 
+                const originalPlayer = allPlayersData.find(p => p.name === name);
                 
                 if (originalPlayer) {
-                    // 성별이 변경되었을 수 있으니 맵에 최신 상태로 저장
                     updatedPlayersMap.set(name, { ...originalPlayer, isFemale });
                 }
             });
 
-            // [버그 수정] 맵의 값들(DOM에 존재하던 선수들)이 최종 저장 목록임
+            allPlayersData.forEach(p => {
+                if (!updatedPlayersMap.has(p.name)) {
+                    updatedPlayersMap.set(p.name, p);
+                }
+            });
+
             const finalUpdatedPlayers = Array.from(updatedPlayersMap.values());
 
             try {
@@ -1148,7 +1039,6 @@
                 showToast('선수 정보 변경 완료! 순위를 다시 계산합니다.');
                 closePopup('player-management-popup');
                 
-                // 순위 재계산 (MMR 등)
                 await updateRanking(); 
             } catch (error) {
                 showToast(`선수 정보 저장 실패: ${error.message}`);
@@ -1268,13 +1158,7 @@
             
             rankingUnsubscribe = onSnapshot(doc(db, BASE_COLLECTION, 'data', 'rankings', CURRENT_SEASON_VERSION), (docSnap) => {
                 const data = docSnap.exists() ? docSnap.data() : {};
-                // [버그 수정] onSnapshot이 UI 갱신의 유일한 창구가 됨
                 updateRankingTable(data.players || [], data.potw || null);
-                
-                // 팝업이 열려있다면, 팝업 목록도 DB 데이터 기준으로 새로고침
-                if (document.getElementById('player-management-popup').classList.contains('show')) {
-                    populatePlayerManagementPopup();
-                }
             }, (error) => {
                 console.error("Ranking onSnapshot failed:", error);
                 showToast("랭킹 로딩 중 오류 발생.");
@@ -1485,9 +1369,6 @@
 
             document.getElementById('save-player-changes-btn').addEventListener('click', savePlayerChanges);
             document.getElementById('confirm-rename-btn').addEventListener('click', handlePlayerRename);
-
-            // *** [신규] 선수 추가 버튼 리스너 ***
-            document.getElementById('add-player-btn').addEventListener('click', addNewPlayer);
         };
 
         document.addEventListener('DOMContentLoaded', async () => {
