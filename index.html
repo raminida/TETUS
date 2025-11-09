@@ -85,6 +85,7 @@
         #ranking-search { max-width: 200px; }
         .filter-btn { padding: var(--spacing-sm) var(--spacing-md); background: var(--surface-color); border: 1px solid var(--border-color); border-radius: var(--radius); cursor: pointer; color: var(--text-color); font-weight: 700; }
         .filter-btn.active { background: var(--primary-color); color: var(--bg-color); }
+        html[data-theme="light"] .filter-btn.active { color: #FFFFFF; }
         .saved-indicator { color: var(--accent-gold); margin-left: 5px; font-size: 0.9rem; }
         .saved-info { color: var(--text-secondary-color); margin-left: 5px; font-size: 0.8rem; }
         .champion-name { color: var(--accent-gold); font-weight: bold; }
@@ -641,6 +642,7 @@
                 p.mmr = constants.BASE_MMR;
                 p.wins = 0; p.losses = 0; p.totalSets = 0; 
                 p.gameDiff = 0; p.streakCount = 0; p.streakIsWin = false;
+                p.lastGameTimestamp = p.lastGameTimestamp || null; // *** [신규] 기존 타임스탬프 유지
             });
 
             const matchesByRound = new Map();
@@ -651,7 +653,8 @@
                         players[cleanName] = {
                             name: cleanName, wins: 0, losses: 0, mmr: constants.BASE_MMR, championships: 0, 
                             totalSets: 0, gameDiff: 0, isFemale: pName.includes('*'), 
-                            streakCount: 0, streakIsWin: false
+                            streakCount: 0, streakIsWin: false,
+                            lastGameTimestamp: null // *** [신규] lastGameTimestamp 추가
                         };
                     }
                 });
@@ -668,9 +671,18 @@
                 return timestampA - timestampB;
             });
 
+            // *** [신규] 배치고사 룰 (1.5배) ***
             const calculateMMRChange = (player, opponentTeamMMR, isWinner, partner, isFourPoint, scoreWeight) => {
                 if (!player) return 0;
                 let K = constants.BASE_K;
+                
+                // --- [RULE 1: PLACEMENT] ---
+                const gamesPlayed = (player.wins || 0) + (player.losses || 0);
+                if (gamesPlayed < 5) { // 5경기 미만 (0~4)
+                    K = constants.BASE_K * 1.5; // K-Factor 1.5배
+                }
+                // --- [RULE 1 END] ---
+
                 let playerMMR = player.mmr || constants.BASE_MMR;
                 const expectedWinRate = 1 / (1 + Math.pow(10, (opponentTeamMMR - playerMMR) / 400));
                 let mmrChange = K * ((isWinner ? 1 : 0) - expectedWinRate) * scoreWeight;
@@ -695,6 +707,9 @@
 
             sortedRounds.forEach(([roundId, roundMatches]) => {
                 
+                // *** [신규] 잠수 방지 룰 (lastGameTimestamp 기록) ***
+                const roundTimestamp = roundMatches[0]?.timestamp; // 라운드의 타임스탬프
+
                 const netMmrChanges = new Map(); 
 
                 roundMatches.forEach(match => {
@@ -720,11 +735,14 @@
                         calculateMMRChange(p4, team1MMR, !isTeam1Winner, p3, match.isFourPoint, scoreWeight)
                     ];
 
-                    const updatePlayerStats_NO_MMR = (name, isWinner, gameDiffVal) => {
+                    // *** [신규] lastGameTimestamp를 넘기도록 수정 ***
+                    const matchTimestamp = match.timestamp || roundTimestamp;
+                    const updatePlayerStats_NO_MMR = (name, isWinner, gameDiffVal, timestamp) => {
                         const p = players[name];
                         if (!p) return;
                         p.totalSets = (p.totalSets || 0) + 1;
                         p.gameDiff = (p.gameDiff || 0) + (isWinner ? gameDiffVal : -gameDiffVal);
+                        if (timestamp) p.lastGameTimestamp = timestamp; // 마지막 게임 시간 기록
                         if (isWinner) {
                             p.wins = (p.wins || 0) + 1;
                             p.streakCount = p.streakIsWin ? (p.streakCount || 0) + 1 : 1;
@@ -736,10 +754,11 @@
                         }
                     };
 
-                    updatePlayerStats_NO_MMR(playerNames[0], isTeam1Winner, gameDiffVal);
-                    updatePlayerStats_NO_MMR(playerNames[1], isTeam1Winner, gameDiffVal);
-                    updatePlayerStats_NO_MMR(playerNames[2], !isTeam1Winner, gameDiffVal);
-                    updatePlayerStats_NO_MMR(playerNames[3], !isTeam1Winner, gameDiffVal);
+                    updatePlayerStats_NO_MMR(playerNames[0], isTeam1Winner, gameDiffVal, matchTimestamp);
+                    updatePlayerStats_NO_MMR(playerNames[1], isTeam1Winner, gameDiffVal, matchTimestamp);
+                    updatePlayerStats_NO_MMR(playerNames[2], !isTeam1Winner, gameDiffVal, matchTimestamp);
+                    updatePlayerStats_NO_MMR(playerNames[3], !isTeam1Winner, gameDiffVal, matchTimestamp);
+                    // *** [신규] 수정 끝 ***
 
                     playerNames.forEach((name, idx) => {
                         if (name) {
@@ -832,7 +851,7 @@
             return allCalculatedPlayers;
         }
 
-        // *** [수정] updateRanking - 새 선수 추가 로직 ***
+        // *** [수정] updateRanking - 룰 적용 로직 추가 ***
         const updateRanking = async () => {
             if (activeView !== 'current') {
                 showToast('현재 시즌 탭에서만 순위를 업데이트할 수 있습니다.');
@@ -851,24 +870,25 @@
                 const rankingsDoc = await getDoc(doc(db, BASE_COLLECTION, 'data', 'rankings', CURRENT_SEASON_VERSION));
                 const currentRankingPlayers = (rankingsDoc.exists() && rankingsDoc.data().players) ? rankingsDoc.data().players : [];
                 
-                // 2. 현재 선수 목록을 initialPlayersMap으로 변환 (기본 스탯만)
+                // 2. 현재 선수 목록을 initialPlayersMap으로 변환 (기본 스탯 + lastGameTimestamp)
                 const initialPlayersMap = {};
                 currentRankingPlayers.forEach(p => {
                     initialPlayersMap[p.name] = { 
                         name: p.name, 
                         isFemale: p.isFemale, 
-                        championships: p.championships || 0 
+                        championships: p.championships || 0,
+                        lastGameTimestamp: p.lastGameTimestamp || null // *** [신규] 기존 타임스탬프 가져오기
                     };
                 });
 
                 // 3. 스케줄 + 현재 선수 목록으로 랭킹 계산
+                // (calculateRankingFromMatches 내부에서 배치고사 룰 적용됨 + lastGameTimestamp 최신화됨)
                 const allCalculatedPlayers = calculateRankingFromMatches(allMatchesFromDB, initialPlayersMap); 
 
                 // 4. 스케줄에 없는 선수(방금 추가한 새 선수 등)가 allCalculatedPlayers에 누락되었으므로
                 //    initialPlayersMap에 있던 선수 정보를 다시 합쳐줌
                 Object.values(initialPlayersMap).forEach(initialPlayer => {
                     if (!allCalculatedPlayers.some(p => p.name === initialPlayer.name)) {
-                        // 스케줄에 없던 선수(0승 0패) 추가
                         allCalculatedPlayers.push({
                             ...initialPlayer,
                             mmr: 1500, wins: 0, losses: 0, totalSets: 0, gameDiff: 0,
@@ -876,15 +896,51 @@
                             winRate: 0, avgGameDiff: '0.00',
                             tieBreakWinRate: '0%', bagelWins: '0%', bagelLosses: '0%',
                             bestPartner: '데이터 부족'
+                            // lastGameTimestamp는 initialPlayer에서 이미 가져옴
                         });
                     }
                 });
+
+                // --- [RULE 2: INACTIVITY PENALTY] ---
+                const now = new Date();
+                const eightWeeksInMs = 8 * 7 * 24 * 60 * 60 * 1000;
+                const oneWeekInMs = 7 * 24 * 60 * 60 * 1000;
+                const baseMMR = 1500;
+                const decayAmount = 20; // 20점씩 하락
+
+                allCalculatedPlayers.forEach(p => {
+                    // lastGameTimestamp는 calculateRankingFromMatches에서 최신화되었거나,
+                    // initialPlayersMap에서 가져온 기존 값을 가짐.
+                    if (p.lastGameTimestamp) { 
+                        const lastGameDate = new Date(p.lastGameTimestamp);
+                        const inactiveTime = now.getTime() - lastGameDate.getTime();
+
+                        // 8주(56일) 이상 지났으면
+                        if (inactiveTime > eightWeeksInMs) {
+                            // 8주의 유예 기간을 뺀, 실제 페널티 적용 기간
+                            const penaltyTime = inactiveTime - eightWeeksInMs;
+                            // 페널티 적용할 '주' 단위 계산 (내림)
+                            const weeksToPenalize = Math.floor(penaltyTime / oneWeekInMs);
+                            
+                            if (weeksToPenalize > 0) {
+                                const totalPenalty = weeksToPenalize * decayAmount;
+                                const newMMR = (p.mmr || baseMMR) - totalPenalty;
+                                // 1500점 밑으로 안 내려감
+                                p.mmr = Math.max(baseMMR, newMMR); 
+                            }
+                        }
+                    } else {
+                        // lastGameTimestamp가 null이면 (게임 한번도 안한 새 선수)
+                        // 페널티 없음.
+                    }
+                });
+                // --- [RULE 2 END] ---
                 
                 const latestProcessedRound = Math.max(...allMatchesFromDB.map(m => m.round), 0);
                 
                 try {
                     const batch = writeBatch(db);
-                    // 5. 새 선수가 포함된 'allCalculatedPlayers'를 DB에 저장
+                    // 5. 룰 적용된 새 선수 목록을 DB에 저장
                     batch.set(doc(db, BASE_COLLECTION, 'data', 'rankings', CURRENT_SEASON_VERSION), { 
                         players: allCalculatedPlayers, 
                         lastProcessedRound: latestProcessedRound, 
@@ -1052,7 +1108,8 @@
                 avgGameDiff: '0.00',
                 tieBreakWinRate: '0%', 
                 bagelWins: '0%', 
-                bagelLosses: '0%'
+                bagelLosses: '0%',
+                lastGameTimestamp: null // *** [신규] lastGameTimestamp 추가
             };
 
             // 1. 전역 데이터 배열(allPlayersData)에 즉시 추가
