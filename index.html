@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2025/26 TU 리그</title>
+
+    <!-- 
+      [신규] 카카오톡/소셜 미디어 공유용 OG 태그 
+      네가 준 URL로 적용
+    -->
+    <meta property="og:title" content="2025/26 TU 리그 (안산 테니스)">
+    <meta property="og:description" content="안산 테니스 2년차+ 테린이성장방! MMR 랭킹, 경기 기록, 업적을 확인하세요.">
+    <meta property="og:image" content="https://github.com/raminida/TETUS/blob/main/ChatGPT%20Image%202025%EB%85%84%2011%EC%9B%94%2011%EC%9D%BC%20%EC%98%A4%EC%A0%84%2001_34_04.png?raw=true">
+    <meta property="og:url" content="https://raminida.github.io/TETUS/index.html">
+    <!-- [신규] 끝 -->
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -39,7 +50,7 @@
         }
         body { font-family: 'Noto Sans KR', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: var(--spacing-md); transition: background-color 0.3s, color 0.3s; }
         .container { max-width: 1700px; margin: 0 auto; }
-
+        
         /* --- [신규] 뉴스 티커 스타일 (US 오픈 테마) --- */
         #news-ticker-section {
             display: none; /* JS로 데이터 로드 후 표시 */
@@ -482,8 +493,8 @@
                 bar.innerHTML = '<span>선수 이름을 입력하세요...</span>';
             }
         };
-        
-        // --- [신규] 가상 뉴스 생성 로직 ---
+
+        // --- [신규] 가상 뉴스 생성 로직 (3줄, H2H 링크, 뉴스 종류 추가) ---
         const generateLeagueNews = (matches, players) => {
             if (!matches || matches.length === 0 || !players || players.length === 0) {
                 document.getElementById('news-ticker-section').style.display = 'none';
@@ -1187,7 +1198,6 @@
                             }
                         }
                     } else {
-                        // lastGameTimestamp가 null이면 (게임 한번도 안한 새 선수)
                         // 페널티 없음.
                     }
                 });
@@ -1743,7 +1753,7 @@
                 }
             });
             
-            // --- 기존 리스너 ---
+            // --- [수정] 옵셔널 체이닝(?.') 추가 ---
             document.addEventListener('click', function(e) {
                 if (e.target.classList.contains('save-all-btn')) {
                     e.preventDefault();
@@ -1792,7 +1802,7 @@
                 setTimeout(() => passwordInput.focus(), 100);
             });
 
-            document.getElementById('manage-players-btn').addEventListener('click', () => {
+            document.getElementById('manage-players-btn')?.addEventListener('click', () => {
                 const passwordInput = document.getElementById('password-input');
                 passwordInput.value = '';
                 openPopup('password-popup');
@@ -1812,8 +1822,8 @@
                 passwordInput.value = '';
             };
 
-            document.getElementById('password-submit-btn').addEventListener('click', submitPassword);
-            document.getElementById('password-input').addEventListener('keypress', (e) => {
+            document.getElementById('password-submit-btn')?.addEventListener('click', submitPassword);
+            document.getElementById('password-input')?.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') submitPassword();
             });
             
@@ -1829,17 +1839,17 @@
                 passwordInput.value = '';
             };
             
-            document.getElementById('backup-password-submit-btn').addEventListener('click', submitBackupPassword);
-            document.getElementById('backup-password-input').addEventListener('keypress', (e) => {
+            document.getElementById('backup-password-submit-btn')?.addEventListener('click', submitBackupPassword);
+            document.getElementById('backup-password-input')?.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') submitBackupPassword();
             });
 
             // *** [신규] 새 선수 추가 버튼 리스너 ***
-            document.getElementById('add-new-player-btn').addEventListener('click', handleAddNewPlayer);
+            document.getElementById('add-new-player-btn')?.addEventListener('click', handleAddNewPlayer);
 
 
-            document.getElementById('save-player-changes-btn').addEventListener('click', savePlayerChanges);
-            document.getElementById('confirm-rename-btn').addEventListener('click', handlePlayerRename);
+            document.getElementById('save-player-changes-btn')?.addEventListener('click', savePlayerChanges);
+            document.getElementById('confirm-rename-btn')?.addEventListener('click', handlePlayerRename);
         };
 
         document.addEventListener('DOMContentLoaded', async () => {
